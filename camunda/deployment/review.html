@@ -1,7 +1,7 @@
 <form role="form">
 
   <p>
-  <img src="{{ camForm.variableManager.variable('comic.png').contentUrl }}" alt=""></img>
+  <img src="{{ camForm.variableManager.variable('comic').contentUrl }}" alt=""></img>
   <br/><br/>
   {{ camForm.variableManager.variable('description').value }}
   </p>
@@ -21,7 +21,7 @@
 
   <input type="hidden" disabled="disabled"
          id="comic"
-         cam-variable-name="comic.png"
+         cam-variable-name="comic"
          cam-variable-type="File" />
 
 </form>
