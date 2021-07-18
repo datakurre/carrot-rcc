@@ -2,7 +2,7 @@
 name = "carrot-rcc"
 version = "0.1.0"
 description = "Camunda external task Robot Framework RCC client"
-homepage = "https://github.com/datakurre/carrot-executor/main/rcc"
+homepage = "https://github.com/datakurre/carrot-rcc"
 authors = ["Asko Soukka <asko.soukka@iki.fi>"]
 license = "MIT"
 packages = [
