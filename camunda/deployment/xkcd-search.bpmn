@@ -1,0 +1,256 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" id="Definitions_09inx8l" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="4.8.1">
+  <bpmn:process id="xkcd-search" name="XKCD comic search" isExecutable="true" camunda:historyTimeToLive="P1D">
+    <bpmn:startEvent id="Event_0vcrohg" name="Search term submitted">
+      <bpmn:extensionElements>
+        <camunda:formData>
+          <camunda:formField id="query" label="Comic search term" type="string">
+            <camunda:validation>
+              <camunda:constraint name="required" />
+            </camunda:validation>
+          </camunda:formField>
+        </camunda:formData>
+      </bpmn:extensionElements>
+      <bpmn:outgoing>Flow_1ns3j1t</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:sequenceFlow id="Flow_1ns3j1t" sourceRef="Event_0vcrohg" targetRef="Gateway_00qq4t2" />
+    <bpmn:sequenceFlow id="Flow_0d4lgiv" sourceRef="robot_fetch" targetRef="Gateway_1d23t3u" />
+    <bpmn:endEvent id="Event_1il4m3d" name="Results accepted">
+      <bpmn:incoming>Flow_1hs8p8m</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:exclusiveGateway id="Gateway_1d23t3u" name="Accepted any?" default="Flow_0nmd3l6">
+      <bpmn:incoming>Flow_0d4lgiv</bpmn:incoming>
+      <bpmn:outgoing>Flow_1hs8p8m</bpmn:outgoing>
+      <bpmn:outgoing>Flow_0nmd3l6</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:sequenceFlow id="Flow_1hs8p8m" name="Yes" sourceRef="Gateway_1d23t3u" targetRef="Event_1il4m3d">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${execution.hasVariable("accepted") ? execution.getVariable("accepted") &gt; 0 : false}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:exclusiveGateway id="Gateway_00qq4t2">
+      <bpmn:incoming>Flow_1ns3j1t</bpmn:incoming>
+      <bpmn:incoming>Flow_1hjllec</bpmn:incoming>
+      <bpmn:outgoing>Flow_18mj359</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:sequenceFlow id="Flow_18mj359" sourceRef="Gateway_00qq4t2" targetRef="robot_search" />
+    <bpmn:sequenceFlow id="Flow_1i36hj7" sourceRef="Event_0w1ucqh" targetRef="Gateway_0tlcygr" />
+    <bpmn:userTask id="Activity_0tz8jfj" name="No results: ${query}">
+      <bpmn:documentation>No results found.</bpmn:documentation>
+      <bpmn:extensionElements>
+        <camunda:formData>
+          <camunda:formField id="retry" label="Search again?" type="boolean" defaultValue="${true}" />
+          <camunda:formField id="query" label="Search term" type="string">
+            <camunda:validation>
+              <camunda:constraint name="required" />
+            </camunda:validation>
+          </camunda:formField>
+        </camunda:formData>
+        <camunda:inputOutput>
+          <camunda:outputParameter name="errorCode" />
+          <camunda:outputParameter name="errorMessage" />
+        </camunda:inputOutput>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_18u19wj</bpmn:incoming>
+      <bpmn:outgoing>Flow_171pgri</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:endEvent id="Event_0kimgio" name="Search cancelled">
+      <bpmn:incoming>Flow_047wgvk</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="Flow_171pgri" sourceRef="Activity_0tz8jfj" targetRef="Gateway_0istbst" />
+    <bpmn:exclusiveGateway id="Gateway_0istbst" name="Search again?" default="Flow_047wgvk">
+      <bpmn:incoming>Flow_171pgri</bpmn:incoming>
+      <bpmn:outgoing>Flow_047wgvk</bpmn:outgoing>
+      <bpmn:outgoing>Flow_1hjllec</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:sequenceFlow id="Flow_047wgvk" name="No" sourceRef="Gateway_0istbst" targetRef="Event_0kimgio" />
+    <bpmn:sequenceFlow id="Flow_1hjllec" name="Yes" sourceRef="Gateway_0istbst" targetRef="Gateway_00qq4t2">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${retry == true}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:serviceTask id="robot_search" name="Search for matching comics" camunda:type="external" camunda:topic="Search for XKCD image">
+      <bpmn:extensionElements>
+        <camunda:inputOutput>
+          <camunda:outputParameter name="results">${execution.getVariableTyped("results")}</camunda:outputParameter>
+        </camunda:inputOutput>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_18mj359</bpmn:incoming>
+      <bpmn:outgoing>Flow_1g4wnik</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:boundaryEvent id="Event_0w1ucqh" name="No results" attachedToRef="robot_search">
+      <bpmn:outgoing>Flow_1i36hj7</bpmn:outgoing>
+      <bpmn:errorEventDefinition id="ErrorEventDefinition_02yq6q7" camunda:errorCodeVariable="errorCode" camunda:errorMessageVariable="errorMessage" />
+    </bpmn:boundaryEvent>
+    <bpmn:sequenceFlow id="Flow_1g4wnik" sourceRef="robot_search" targetRef="robot_fetch" />
+    <bpmn:callActivity id="robot_fetch" name="Fetch and review results" calledElement="xkcd-fetch-review">
+      <bpmn:extensionElements>
+        <camunda:in businessKey="#{execution.processBusinessKey}" />
+        <camunda:in sourceExpression="${execution.getProcessInstanceId()}" target="callerId" />
+        <camunda:in sourceExpression="${url.stringValue()}" target="url" />
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_1g4wnik</bpmn:incoming>
+      <bpmn:outgoing>Flow_0d4lgiv</bpmn:outgoing>
+      <bpmn:multiInstanceLoopCharacteristics camunda:collection="${results.elements()}" camunda:elementVariable="url" />
+    </bpmn:callActivity>
+    <bpmn:subProcess id="Activity_18tcbjy" name="Comic accepted" triggeredByEvent="true">
+      <bpmn:endEvent id="Event_0hycjgf" name="Done">
+        <bpmn:incoming>Flow_0wz4bix</bpmn:incoming>
+      </bpmn:endEvent>
+      <bpmn:sequenceFlow id="Flow_0foonv9" sourceRef="Event_0pnj11k" targetRef="Activity_06vllkm" />
+      <bpmn:sequenceFlow id="Flow_0wz4bix" sourceRef="Activity_06vllkm" targetRef="Event_0hycjgf" />
+      <bpmn:serviceTask id="Activity_06vllkm" name="Increment accepted count" camunda:expression="${execution.hasVariable(&#34;accepted&#34;) ? execution.getVariable(&#34;accepted&#34;) + 1 : 1}" camunda:resultVariable="accepted">
+        <bpmn:incoming>Flow_0foonv9</bpmn:incoming>
+        <bpmn:outgoing>Flow_0wz4bix</bpmn:outgoing>
+      </bpmn:serviceTask>
+      <bpmn:startEvent id="Event_0pnj11k" name="Comic received" isInterrupting="false">
+        <bpmn:outgoing>Flow_0foonv9</bpmn:outgoing>
+        <bpmn:messageEventDefinition id="MessageEventDefinition_0o8e0v8" messageRef="Message_0rv49oz" />
+      </bpmn:startEvent>
+    </bpmn:subProcess>
+    <bpmn:exclusiveGateway id="Gateway_0tlcygr">
+      <bpmn:incoming>Flow_1i36hj7</bpmn:incoming>
+      <bpmn:incoming>Flow_0nmd3l6</bpmn:incoming>
+      <bpmn:outgoing>Flow_18u19wj</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:sequenceFlow id="Flow_0nmd3l6" name="No" sourceRef="Gateway_1d23t3u" targetRef="Gateway_0tlcygr" />
+    <bpmn:sequenceFlow id="Flow_18u19wj" sourceRef="Gateway_0tlcygr" targetRef="Activity_0tz8jfj" />
+  </bpmn:process>
+  <bpmn:message id="Message_0rv49oz" name="xkcd.search.result" />
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="xkcd-search">
+      <bpmndi:BPMNEdge id="Flow_0nmd3l6_di" bpmnElement="Flow_0nmd3l6">
+        <di:waypoint x="710" y="155" />
+        <di:waypoint x="710" y="235" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="689" y="166" width="15" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1g4wnik_di" bpmnElement="Flow_1g4wnik">
+        <di:waypoint x="469" y="130" />
+        <di:waypoint x="527" y="130" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1hjllec_di" bpmnElement="Flow_1hjllec">
+        <di:waypoint x="976" y="285" />
+        <di:waypoint x="976" y="370" />
+        <di:waypoint x="286" y="370" />
+        <di:waypoint x="286" y="155" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="988" y="313" width="19" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_047wgvk_di" bpmnElement="Flow_047wgvk">
+        <di:waypoint x="1001" y="260" />
+        <di:waypoint x="1062" y="260" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1023" y="242" width="15" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_171pgri_di" bpmnElement="Flow_171pgri">
+        <di:waypoint x="893" y="260" />
+        <di:waypoint x="951" y="260" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1i36hj7_di" bpmnElement="Flow_1i36hj7">
+        <di:waypoint x="419" y="188" />
+        <di:waypoint x="419" y="260" />
+        <di:waypoint x="685" y="260" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_18mj359_di" bpmnElement="Flow_18mj359">
+        <di:waypoint x="311" y="130" />
+        <di:waypoint x="369" y="130" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1hs8p8m_di" bpmnElement="Flow_1hs8p8m">
+        <di:waypoint x="735" y="130" />
+        <di:waypoint x="1062" y="130" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="959" y="112" width="19" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0d4lgiv_di" bpmnElement="Flow_0d4lgiv">
+        <di:waypoint x="627" y="130" />
+        <di:waypoint x="685" y="130" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1ns3j1t_di" bpmnElement="Flow_1ns3j1t">
+        <di:waypoint x="208" y="130" />
+        <di:waypoint x="261" y="130" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_18u19wj_di" bpmnElement="Flow_18u19wj">
+        <di:waypoint x="735" y="260" />
+        <di:waypoint x="793" y="260" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="Event_0vcrohg_di" bpmnElement="Event_0vcrohg">
+        <dc:Bounds x="172" y="112" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="161" y="155" width="60" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_1il4m3d_di" bpmnElement="Event_1il4m3d">
+        <dc:Bounds x="1062" y="112" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1039" y="155" width="85" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_0kimgio_di" bpmnElement="Event_0kimgio">
+        <dc:Bounds x="1062" y="242" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1038" y="285" width="85" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_00qq4t2_di" bpmnElement="Gateway_00qq4t2" isMarkerVisible="true">
+        <dc:Bounds x="261" y="105" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1fztt0s_di" bpmnElement="robot_search">
+        <dc:Bounds x="369" y="90" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0dn06qq_di" bpmnElement="robot_fetch">
+        <dc:Bounds x="527" y="90" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_1d23t3u_di" bpmnElement="Gateway_1d23t3u" isMarkerVisible="true">
+        <dc:Bounds x="685" y="105" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="674" y="83" width="72" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_0tlcygr_di" bpmnElement="Gateway_0tlcygr" isMarkerVisible="true">
+        <dc:Bounds x="685" y="235" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1xr39y0_di" bpmnElement="Activity_0tz8jfj">
+        <dc:Bounds x="793" y="220" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_0istbst_di" bpmnElement="Gateway_0istbst" isMarkerVisible="true">
+        <dc:Bounds x="951" y="235" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="940" y="213" width="71" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1vm06uc_di" bpmnElement="Activity_18tcbjy" isExpanded="true">
+        <dc:Bounds x="378" y="430" width="410" height="200" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_0wz4bix_di" bpmnElement="Flow_0wz4bix">
+        <di:waypoint x="628" y="530" />
+        <di:waypoint x="712" y="530" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0foonv9_di" bpmnElement="Flow_0foonv9">
+        <di:waypoint x="448" y="530" />
+        <di:waypoint x="528" y="530" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="Event_0hycjgf_di" bpmnElement="Event_0hycjgf">
+        <dc:Bounds x="712" y="512" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="718" y="555" width="27" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1kgmktr_di" bpmnElement="Activity_06vllkm">
+        <dc:Bounds x="528" y="490" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_0bsbak3_di" bpmnElement="Event_0pnj11k">
+        <dc:Bounds x="412" y="512" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="392" y="555" width="76" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_0w1ucqh_di" bpmnElement="Event_0w1ucqh">
+        <dc:Bounds x="401" y="152" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="344" y="183" width="50" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

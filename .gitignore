@@ -1,0 +1,10 @@
+.cache/
+.direnv/
+.idea/
+env
+dist/
+result
+node_modules
+result
+__pycache__
+carrot-rcc

@@ -1,0 +1,17 @@
+{
+  "compilerOptions": {
+    "target": "esnext",
+    "module": "esnext",
+    "typeRoots": [
+      "./@types"
+    ],
+    "outDir": ".",
+    "moduleResolution": "node",
+    "esModuleInterop": true,
+    "strict": true,
+  },
+  "include": [
+    "*.ts"
+  ],
+  "exclude": []
+}

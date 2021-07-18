@@ -1,0 +1,15 @@
+tasks:
+
+  Search for XKCD image:
+    robotTaskName:
+      Search for XKCD image
+
+  Download XKCD image:
+    robotTaskName:
+      Download XKCD image
+
+condaConfigFile:
+  conda.yaml
+
+artifactsDir:
+  output

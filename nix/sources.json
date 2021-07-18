@@ -1,0 +1,98 @@
+{
+    "gitignore": {
+        "branch": "master",
+        "description": "Nix function for filtering local git sources",
+        "homepage": "",
+        "owner": "hercules-ci",
+        "repo": "gitignore",
+        "rev": "211907489e9f198594c0eb0ca9256a1949c9d412",
+        "sha256": "06j7wpvj54khw0z10fjyi31kpafkr6hi1k0di13k1xp8kywvfyx8",
+        "type": "tarball",
+        "url": "https://github.com/hercules-ci/gitignore/archive/211907489e9f198594c0eb0ca9256a1949c9d412.tar.gz",
+        "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
+    },
+    "niv": {
+        "branch": "master",
+        "description": "Easy dependency management for Nix projects",
+        "homepage": "https://github.com/nmattia/niv",
+        "owner": "nmattia",
+        "repo": "niv",
+        "rev": "e0ca65c81a2d7a4d82a189f1e23a48d59ad42070",
+        "sha256": "1pq9nh1d8nn3xvbdny8fafzw87mj7gsmp6pxkdl65w2g18rmcmzx",
+        "type": "tarball",
+        "url": "https://github.com/nmattia/niv/archive/e0ca65c81a2d7a4d82a189f1e23a48d59ad42070.tar.gz",
+        "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
+    },
+    "nixpkgs-20.09": {
+        "branch": "nixos-20.09",
+        "description": "Nix Packages collection",
+        "homepage": "",
+        "owner": "nixos",
+        "repo": "nixpkgs",
+        "rev": "068984c00e0d4e54b6684d98f6ac47c92dcb642e",
+        "sha256": "00j4xv4lhhqwry7jd67brnws4pwb8vn660n43pvxpkalbpxszwfg",
+        "type": "tarball",
+        "url": "https://github.com/nixos/nixpkgs/archive/068984c00e0d4e54b6684d98f6ac47c92dcb642e.tar.gz",
+        "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
+    },
+    "nixpkgs-21.05": {
+        "branch": "release-21.05",
+        "description": "Nix Packages collection",
+        "homepage": "",
+        "owner": "NixOS",
+        "repo": "nixpkgs",
+        "rev": "1672da0dfdb2e3146f36ffa923aa05d8a5606134",
+        "sha256": "1h103ka8xm82zhdzmrpmhy3fb7chgqr8j76rdmbhqgi365zz9gw7",
+        "type": "tarball",
+        "url": "https://github.com/NixOS/nixpkgs/archive/1672da0dfdb2e3146f36ffa923aa05d8a5606134.tar.gz",
+        "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
+    },
+    "nixpkgs-unstable": {
+        "branch": "master",
+        "description": "Nix Packages collection",
+        "homepage": "",
+        "owner": "NixOS",
+        "repo": "nixpkgs",
+        "rev": "f47e3311b31cf394d8835574ae928ba1230920d0",
+        "sha256": "0qclvvhyz3x3g0d44h2fdzaqsagbv1m66bl90in57s07g126ychs",
+        "type": "tarball",
+        "url": "https://github.com/NixOS/nixpkgs/archive/f47e3311b31cf394d8835574ae928ba1230920d0.tar.gz",
+        "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
+    },
+    "node2nix": {
+        "branch": "master",
+        "description": "Generate Nix expressions to build NPM packages",
+        "homepage": "",
+        "owner": "svanderburg",
+        "repo": "node2nix",
+        "rev": "0c94281ea98f1b17532176106f90f909aa133704",
+        "sha256": "1r677r7sqjp5hg7rs7wall6nipka3pnrglnjdaj098v1xhswzjbx",
+        "type": "tarball",
+        "url": "https://github.com/svanderburg/node2nix/archive/0c94281ea98f1b17532176106f90f909aa133704.tar.gz",
+        "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
+    },
+    "poetry2nix": {
+        "branch": "master",
+        "description": "Convert poetry projects to nix automagically [maintainer=@adisbladis] ",
+        "homepage": "",
+        "owner": "nix-community",
+        "repo": "poetry2nix",
+        "rev": "e40e8ed0e8c11e709e4c8c7c20174facd265a021",
+        "sha256": "152cj4w2jdlrj2k4x1vnspa4vbjqa0jrdr7xhmjjlv7ywdl60kfq",
+        "type": "tarball",
+        "url": "https://github.com/nix-community/poetry2nix/archive/e40e8ed0e8c11e709e4c8c7c20174facd265a021.tar.gz",
+        "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
+    },
+    "rcc": {
+        "branch": "v9.16.0",
+        "description": "RCC is a set of tooling that allows you to create, manage, and distribute Python-based self-contained automation packages - or 'robots' as we call them.",
+        "homepage": "https://robocorp.com/docs/product-manuals/robocorp-cli",
+        "owner": "robocorp",
+        "repo": "rcc",
+        "rev": "94546d47817347865ffeabbaf1f82bffae2b4f89",
+        "sha256": "1cygw4s9abqknbrggqy8n8rjkjhcanhc0k1qmm29pnw1b8mrx5ps",
+        "type": "tarball",
+        "url": "https://github.com/robocorp/rcc/archive/94546d47817347865ffeabbaf1f82bffae2b4f89.tar.gz",
+        "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
+    }
+}
