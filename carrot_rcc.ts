@@ -47,7 +47,7 @@ options:
   --max-tasks[=<cpus>]                     [env: CLIENT_MAX_TASKS] [default: ${
     os.cpus().length
   }]
-  --poll-interval[=<milliseconds>]         [env: CLIENT_POLL_INTERVAL] [default: 10000]
+  --poll-interval[=<milliseconds>]         [env: CLIENT_POLL_INTERVAL] [default: 30000]
   --log-level[=<debug|info|warn|error>]    [env: CLIENT_LOG_LEVEL] [default: info]
 
   --rcc-executable[=<path>]                [env: RCC_EXECUTABLE] [default: rcc]
@@ -76,10 +76,7 @@ const RCC_TELEMETRY = !!args["--rcc-telemetry"];
 // Disable telemetry by default
 if (!RCC_TELEMETRY) {
   spawnSync(RCC_EXECUTABLE, ["configuration", "identity", "-t"], {
-    env: {
-      HOME: process.env.HOME, // for RCC cache at $HOME/.robocloud
-      PATH: process.env.PATH,
-    },
+    env: process.env,
   });
 }
 
@@ -151,7 +148,7 @@ const client = new Client({
   maxTasks: CLIENT_MAX_TASKS,
   maxParallelExecutions: CLIENT_MAX_TASKS,
   interval: CLIENT_POLL_INTERVAL,
-  lockDuration: CLIENT_POLL_INTERVAL,
+  lockDuration: CLIENT_POLL_INTERVAL * 2,
   autoPoll: true,
   interceptors: [AuthorizationHeaderInterceptor],
   asyncResponseTimeout: CLIENT_POLL_INTERVAL,
@@ -249,10 +246,7 @@ const load = async (
       RCC_EXECUTABLE,
       ["robot", "unwrap", "-d", tasksDir, "-z", CAMUNDA_TOPICS[topic]],
       {
-        env: {
-          HOME: process.env.HOME, // for RCC cache at $HOME/.robocloud
-          PATH: process.env.PATH,
-        },
+        env: process.env,
       }
     );
     exec.stdout.on("data", (data) => stdout.push(data.toString()));
@@ -297,6 +291,16 @@ const load = async (
     fs.writeFile(
       path.join(itemsDir, "items.json"),
       JSON.stringify(items),
+      resolve
+    );
+  });
+  // Save env as secrets
+  await new Promise(async (resolve) => {
+    fs.writeFile(
+      path.join(itemsDir, "vault.json"),
+      JSON.stringify({
+        env: process.env,
+      }),
       resolve
     );
   });
@@ -449,7 +453,7 @@ const save = async (
 
     const itemsFiles = new FD().withFullPaths().crawl(itemsDir).sync();
     for (const file of itemsFiles as PathsOutput) {
-      if (path.basename(file) !== "items.json") {
+      if (!["items.json", "vault.json"].includes(path.basename(file))) {
         const fileBuffer = fs.readFileSync(file);
 
         // Skip unmodified files
@@ -593,12 +597,13 @@ for (const topic of Object.keys(CAMUNDA_TOPICS)) {
         const exec = spawn(RCC_EXECUTABLE, ["run", "--task", topic], {
           cwd: tasksDir,
           env: {
+            RPA_SECRET_MANAGER: "RPA.Robocloud.Secrets.FileSecrets",
+            RPA_SECRET_FILE: `${itemsDir}/vault.json`,
             RPA_WORKITEMS_ADAPTER: "RPA.Robocloud.Items.FileAdapter",
             RPA_WORKITEMS_PATH: `${itemsDir}/items.json`,
             RC_WORKSPACE_ID: "1",
             RC_WORKITEM_ID: "1",
-            HOME: process.env.HOME, // for RCC cache at $HOME/.robocloud
-            PATH: process.env.PATH,
+            ...process.env,
           },
         });
         exec.stdout.on("data", (data) => {
@@ -631,17 +636,28 @@ for (const topic of Object.keys(CAMUNDA_TOPICS)) {
             code = 255; // Unexpected error
           }
           if (code === 0) {
-            try {
-              await taskService.complete(task);
-            } catch (e) {
-              LOG.error(`${e}`);
-              stderr.push(`${e}`);
-              code = 255; // Unexpected error
-            }
-            if (task.id && completeError.has(task.id)) {
-              stderr.push(`${completeError.get(task.id)}`);
-              completeError.delete(task.id);
-              code = 255; // Unexpected error
+            let retries = 0;
+            while (retries < 3) {
+              code = 0;
+              retries++;
+              try {
+                await taskService.complete(task);
+              } catch (e) {
+                LOG.error(`${e}`);
+                stderr.push(`${e}`);
+                code = 255; // Unexpected error
+              }
+              if (task.id && completeError.has(task.id)) {
+                stderr.push(`${completeError.get(task.id)}`);
+                completeError.delete(task.id);
+                code = 255; // Unexpected error
+              } else {
+                break;
+              }
+              // Retry to work around optimistic locking exceptions
+              await new Promise((resolve) =>
+                setTimeout(resolve, 1000 * retries)
+              );
             }
           }
           return code === 0
