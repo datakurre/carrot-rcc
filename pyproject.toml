@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "carrot-rcc"
-version = "0.3.1"
+version = "0.3.2"
 description = "Camunda external task Robot Framework RCC client"
 homepage = "https://github.com/datakurre/carrot-rcc"
 authors = ["Asko Soukka <asko.soukka@iki.fi>"]
@@ -8,7 +8,7 @@ license = "MIT"
 packages = [
     { include = "carrot_rcc.py" },
 ]
-include = [ "CHANGELOG.md", "carrot-rcc" ]
+include = [ "carrot-rcc" ]
 readme = "README.md"
 
 [tool.poetry.scripts]
