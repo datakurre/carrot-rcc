@@ -47,7 +47,7 @@ options:
   --max-tasks[=<cpus>]                     [env: CLIENT_MAX_TASKS] [default: ${
     os.cpus().length
   }]
-  --poll-interval[=<milliseconds>]         [env: CLIENT_POLL_INTERVAL] [default: 30000]
+  --poll-interval[=<milliseconds>]         [env: CLIENT_POLL_INTERVAL] [default: 10000]
   --log-level[=<debug|info|warn|error>]    [env: CLIENT_LOG_LEVEL] [default: info]
 
   --rcc-executable[=<path>]                [env: RCC_EXECUTABLE] [default: rcc]
