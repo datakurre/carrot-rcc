@@ -55,6 +55,16 @@ options:
   --rcc-telemetry                          [env: RCC_TELEMETRY] (default: do not track)
 
   -h, --help
+
+examples:
+
+  $ carrot-rcc robot1.zip
+
+  $ carrot-rcc robot1.zip robot2.zip --log-level=debug
+
+  $ RCC_ROBOTS="robot1.zip,robot2.zip" LOG_LEVEL="debug" carrot-rcc
+
+  $ CAMUNDA_API_AUTHORIZATION="Bearer MY_TOKEN" carrot-rcc robot1.zip
 `);
 
 const RCC_ROBOTS = (args["<robots>"] || []).concat(
@@ -126,7 +136,7 @@ for (const candidate of RCC_ROBOTS) {
   }
 }
 if (Object.keys(CAMUNDA_TOPICS).length < 1) {
-  LOG.error("RCC_ROBOTS invalid of missing:", RCC_ROBOTS);
+  LOG.error("RCC_ROBOTS invalid or missing:", RCC_ROBOTS);
   process.exit(1);
 }
 
