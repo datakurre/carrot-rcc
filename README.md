@@ -5,7 +5,7 @@ Camunda external task Robot Framework RCC client
 
 `carrot-rcc` is an opinionated [Camunda external task](https://docs.camunda.org/manual/latest/user-guide/process-engine/external-tasks/) client for executing [Robot Framework](https://robotframework.org/rpa/) [RPA framework](https://rpaframework.org/) tasks. It is based on Robocorp [RCC toolchain](https://robocorp.com/docs/rcc/overview) and [Camunda external task client for Node JS](https://github.com/camunda/camunda-external-task-client-js).
 
-`carrot-rcc` executes robots build and wrapped into zip files as instructed by [Robocorp documentation](https://robocorp.com/docs/). Single `carrot-rcc` service can subscribe multiple topics, execute tasks concurrently, but only locally on the same computer. `carrot-rcc` works on Windows, Linux and most probably also on MacOS.
+`carrot-rcc` executes robots build and wrapped into zip files as instructed by [Robocorp documentation](https://robocorp.com/docs/). Single `carrot-rcc` service can subscribe multiple topics and execute tasks concurrently, although only locally on the same computer. `carrot-rcc` works on Windows, Linux and most probably also on MacOS.
 
 ```bash
 usage: carrot-rcc [<robots>...]
@@ -31,7 +31,16 @@ options:
   --rcc-telemetry                          [env: RCC_TELEMETRY] (default: do not track)
 
   -h, --help
-TODO
+
+examples:
+
+  $ carrot-rcc robot1.zip
+
+  $ carrot-rcc robot1.zip robot2.zip --log-level=debug
+
+  $ RCC_ROBOTS="robot1.zip,robot2.zip" LOG_LEVEL="debug" carrot-rcc
+
+  $ CAMUNDA_API_AUTHORIZATION="Bearer MY_TOKEN" carrot-rcc robot1.zip
 ```
 
 * On startup, every given robot.zip is examined for their task names `robot.yaml`.
