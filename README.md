@@ -3,7 +3,7 @@ Camunda external task Robot Framework RCC client
 
 **Technology preview.**
 
-`carrot-rcc` is an opinionated [Camunda external task](https://docs.camunda.automation org/manual/latest/user-guide/process-engine/external-tasks/) client for executing [Robot Framework](https://robotframework.org/rpa/) [RPA framework](https://rpaframework.org/) automation tasks. It is based on Robocorp [RCC toolchain](https://robocorp.com/docs/rcc/overview) and [Camunda external task client for Node JS](https://github.com/camunda/camunda-external-task-client-js).
+`carrot-rcc` is an opinionated [Camunda external task](https://docs.camunda.org/manual/latest/user-guide/process-engine/external-tasks/) client for executing [Robot Framework](https://robotframework.org/rpa/) [RPA framework](https://rpaframework.org/) automation tasks. It is based on Robocorp [RCC toolchain](https://robocorp.com/docs/rcc/overview) and [Camunda external task client for Node JS](https://github.com/camunda/camunda-external-task-client-js).
 
 `carrot-rcc` executes automation tasks built and wrapped into robot.zip packages as instructed by [Robocorp documentation](https://robocorp.com/docs/). Single `carrot-rcc` service can subscribe multiple topics and execute tasks from same or different robot-packages concurrently, although only locally on the same computer. `carrot-rcc` should work fine on Windows, Linux and on MacOS.
 
@@ -48,9 +48,9 @@ Design
 
 When `carrot-rcc` is started, it examines every given robot-package and examines available task names from their `robot.yaml`. Currently, `carrot-rcc` can only find packages preloaded onto local filesystem.
 
-Then `carrot-rcc` subscribes every found task name as they were Camunda external task topics, and starts listening for new task becoming available at Camunda.
+Then `carrot-rcc` subscribes every found task name as they were Camunda external task topics, and starts listening for new tasks for its topics to become available at Camunda.
 
-On a new task, `carrot-rcc` remembers, which topic was mapped to which task on which robot-package, and unpacks the correct robot-package into a temporary directory. Then it creates a temporary directory with all external task variables and files as a local [robot work item](https://robocorp.com/docs/libraries/rpa-framework/rpa-robocloud-items).
+On a new task, `carrot-rcc` remembers which topic was mapped to which task on which robot-package, and unpacks the correct robot-package into a new temporary directory. Then it creates another temporary directory with all external task variables and files as a local [robot work item](https://robocorp.com/docs/libraries/rpa-framework/rpa-robocloud-items).
 
 Similarly to work item, for convenience, all `carrot-rcc` process environment variables are made available as `env` secret to keep their use out of Robot Framework logs when used with [RPA framework's Secrets -library](https://robocorp.com/docs/libraries/rpa-framework/rpa-robocloud-secrets).
 
@@ -64,9 +64,9 @@ Finally, `carrot-rcc` saves all the changed and added variables from the saved w
 Usage
 =====
 
-`carrot-rcc` requires [NodeJS](https://nodejs.org/en/) 12 or later and expects [RCC](https://downloads.robocorp.com/rcc/releases/index.html) to be on its PATH (or configured using ``--rcc-executable`` argument).
+`carrot-rcc` requires only [NodeJS](https://nodejs.org/en/) 12 or later and expects [RCC](https://downloads.robocorp.com/rcc/releases/index.html) to be on the environment PATH. RCC location may also be configured manually with ``--rcc-executable`` argument.
 
-Yet, it is possible to bootstrap everything with just RCC:
+It is also possible to bootstrap everything with just using RCC:
 
 1. Create a directory for `carrot-rcc` and download [RCC](https://downloads.robocorp.com/rcc/releases/index.html) into that directory.
 
@@ -82,7 +82,7 @@ Yet, it is possible to bootstrap everything with just RCC:
    $ rcc.exe env new conda.yaml
    ```
 
-4. The hard part. Figure out from the logs where RCC did create the environment. Then copy a few files back and forth to give you access the environment and installed `carrot-rcc` and give `carrot-rcc` access to RCC with
+4. The hard part is to figure out from the logs where RCC did create the environment. When found, copy a few files back and forth to give you access the environment and `carrot-rcc`, and give `carrot-rcc` access to RCC:
 
    ```bash
    $ cp /home/user/.robocorp/live/850002f365eee60f/rcc_activate.sh .
@@ -95,7 +95,7 @@ Yet, it is possible to bootstrap everything with just RCC:
    $ copy rcc.exe C:\Users\User\AppData\Local\robocorp\live\850002f365eee60f
    ```
 
-5. Finally, activate environment with
+5. Finally, activate the environment:
 
    ```bash
    $ source rcc_activate.sh
@@ -105,7 +105,7 @@ Yet, it is possible to bootstrap everything with just RCC:
    $ rcc_activate.cmd
    ```
 
-Done, now `carrot-rcc` should be ready to be run, for example with:
+Done. Now `carrot-rcc` should be ready to be run, for example:
 
 ```bash
 $ carrot-rcc robot.zip --base-url=http://localhost:8080/engine-rest --log-level=debug
