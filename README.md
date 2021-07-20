@@ -5,7 +5,7 @@ Camunda external task Robot Framework RCC client
 
 `carrot-rcc` is an opinionated [Camunda external task](https://docs.camunda.org/manual/latest/user-guide/process-engine/external-tasks/) client for executing [Robot Framework](https://robotframework.org/rpa/) [RPA framework](https://rpaframework.org/) tasks. It is based on Robocorp [RCC toolchain](https://robocorp.com/docs/rcc/overview) and [Camunda external task client for Node JS](https://github.com/camunda/camunda-external-task-client-js).
 
-`carrot-rcc` executes robots build and wrapped into zip files following to [Robocorp documentation](https://robocorp.com/docs/). Single `carrot-rcc` service can subscribe multiple topics, execute tasks concurrently, but only locally on the same computer. `carrot-rcc` works on Windows, Linux and most probably also on MacOS.
+`carrot-rcc` executes robots build and wrapped into zip files as instructed by [Robocorp documentation](https://robocorp.com/docs/). Single `carrot-rcc` service can subscribe multiple topics, execute tasks concurrently, but only locally on the same computer. `carrot-rcc` works on Windows, Linux and most probably also on MacOS.
 
 ```bash
 usage: carrot-rcc [<robots>...]
@@ -31,21 +31,22 @@ options:
   --rcc-telemetry                          [env: RCC_TELEMETRY] (default: do not track)
 
   -h, --help
+TODO
 ```
 
-`carrot-rcc` in brief:
-
-* On startup, every given robot is examined for their task names `robot.yaml`.
+* On startup, every given robot.zip is examined for their task names `robot.yaml`.
 * Then `carrot-rcc` subscribes every task name as they were Camunda external task topics.
-* On a new task, its variables (also files) are saved as a [robot work item](https://robocorp.com/docs/libraries/rpa-framework/rpa-robocloud-items).
+* On a new task, its variables (also files) are saved as a local [robot work item](https://robocorp.com/docs/libraries/rpa-framework/rpa-robocloud-items).
 * Next [RCC](https://robocorp.com/docs/rcc/overview) is called to resolve robot's dependencies and execute the robot.
-* Finally, `carrot-rcc` saves changed and new variables from the robot's saved work item with robot execution logs back to Camunda (onto the task execution context) and either completes of fails the task at Camunda.
+* Finally, `carrot-rcc` saves execution logs and changed and added variables from the robot's saved work item back to Camunda (with task execution context) and either completes of fails the task at Camunda.
+
+![](https://github.com/datakurre/carrot-rcc/raw/main/example-process.gif)
 
 
-Installation
-============
+Usage
+=====
 
-`carrot-rcc` requires [NodeJS](https://nodejs.org/en/) 12 or later and [RCC](https://downloads.robocorp.com/rcc/releases/index.html) should be on its PATH (or passed with ``--rcc-executable`` argument).
+`carrot-rcc` requires [NodeJS](https://nodejs.org/en/) 12 or later and expects [RCC](https://downloads.robocorp.com/rcc/releases/index.html) to be on its PATH (or configured using ``--rcc-executable`` argument).
 
 Yet, it is possible to bootstrap everything with just RCC:
 
@@ -58,9 +59,7 @@ Yet, it is possible to bootstrap everything with just RCC:
    ```bash
    $ rcc env new conda.yaml
    ```
-
    or
-
    ```bash
    $ rcc.exe env new conda.yaml
    ```
@@ -71,9 +70,7 @@ Yet, it is possible to bootstrap everything with just RCC:
    $ cp /home/user/.robocorp/live/850002f365eee60f/rcc_activate.sh .
    $ cp rcc /home/user/.robocorp/live/850002f365eee60f/bin
    ```
-
    or
-
    ```bash
    $ copy C:\Users\User\AppData\Local\robocorp\live\850002f365eee60f\rcc_activate.cmd .
    $ copy C:\Users\User\AppData\Local\robocorp\live\850002f365eee60f\Scripts\carrot-rcc.exe .
@@ -85,9 +82,7 @@ Yet, it is possible to bootstrap everything with just RCC:
    ```bash
    $ source rcc_activate.sh
    ```
-
    or
-
    ```bash
    $ rcc_activate.cmd
    ```
@@ -97,11 +92,11 @@ Done, now `carrot-rcc` should be ready to be run, for example with:
 ```bash
 $ carrot-rcc robot.zip --base-url=http://localhost:8080/engine-rest --log-level=debug
 ```
-
 or
-
 ```bash
 $ carrot-rcc.exe robot.zip --base-url=http://192.168.86.156:8080/engine-rest --log-level=debug
 ```
 
-The project has an example Camunda process [Search XKCD comic](https://github.com/datakurre/carrot-executor/tree/main/camunda/deployment) with an [example robot](https://github.com/datakurre/carrot-rcc/blob/main/xkcd-bot/robot.zip?raw=true) available.
+The project's repository includes [an example Camunda process](https://github.com/datakurre/carrot-executor/tree/main/camunda/deployment) with an [an example RCC compatible robot](https://github.com/datakurre/carrot-rcc/blob/main/xkcd-bot/robot.zip?raw=true) available.
+
+![](https://github.com/datakurre/carrot-rcc/raw/main/example-process.png)
