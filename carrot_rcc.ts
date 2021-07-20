@@ -625,7 +625,6 @@ for (const topic of Object.keys(CAMUNDA_TOPICS)) {
           LOG.debug(data.toString());
         });
         exec.on("close", async (code) => {
-          LOG.debug("close");
           let errorMessage = "error";
           if (code !== null && code > 0 && code < 251) {
             errorMessage = await failReason(tasksDir);
