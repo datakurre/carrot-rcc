@@ -3,9 +3,9 @@ Camunda external task Robot Framework RCC client
 
 **Technology preview.**
 
-`carrot-rcc` is an opinionated [Camunda external task](https://docs.camunda.org/manual/latest/user-guide/process-engine/external-tasks/) client for executing [Robot Framework](https://robotframework.org/rpa/) [RPA framework](https://rpaframework.org/) tasks. It is based on Robocorp [RCC toolchain](https://robocorp.com/docs/rcc/overview) and [Camunda external task client for Node JS](https://github.com/camunda/camunda-external-task-client-js).
+`carrot-rcc` is an opinionated [Camunda external task](https://docs.camunda.automation org/manual/latest/user-guide/process-engine/external-tasks/) client for executing [Robot Framework](https://robotframework.org/rpa/) [RPA framework](https://rpaframework.org/) automation tasks. It is based on Robocorp [RCC toolchain](https://robocorp.com/docs/rcc/overview) and [Camunda external task client for Node JS](https://github.com/camunda/camunda-external-task-client-js).
 
-`carrot-rcc` executes robots build and wrapped into zip files as instructed by [Robocorp documentation](https://robocorp.com/docs/). Single `carrot-rcc` service can subscribe multiple topics and execute tasks concurrently, although only locally on the same computer. `carrot-rcc` works on Windows, Linux and most probably also on MacOS.
+`carrot-rcc` executes automation tasks built and wrapped into robot.zip packages as instructed by [Robocorp documentation](https://robocorp.com/docs/). Single `carrot-rcc` service can subscribe multiple topics and execute tasks from same or different robot-packages concurrently, although only locally on the same computer. `carrot-rcc` should work fine on Windows, Linux and on MacOS.
 
 ```bash
 usage: carrot-rcc [<robots>...]
@@ -43,13 +43,22 @@ examples:
   $ CAMUNDA_API_AUTHORIZATION="Bearer MY_TOKEN" carrot-rcc robot1.zip
 ```
 
-* On startup, every given robot.zip is examined for their task names `robot.yaml`.
-* Then `carrot-rcc` subscribes every task name as they were Camunda external task topics.
-* On a new task, its variables (also files) are saved as a local [robot work item](https://robocorp.com/docs/libraries/rpa-framework/rpa-robocloud-items).
-* Next [RCC](https://robocorp.com/docs/rcc/overview) is called to resolve robot's dependencies and execute the robot.
-* Finally, `carrot-rcc` saves execution logs and changed and added variables from the robot's saved work item back to Camunda (with task execution context) and either completes of fails the task at Camunda.
+Design
+======
 
-![](https://github.com/datakurre/carrot-rcc/raw/main/example-process.gif)
+When `carrot-rcc` is started, it examines every given robot-package and examines available task names from their `robot.yaml`. Currently, `carrot-rcc` can only find packages preloaded onto local filesystem.
+
+Then `carrot-rcc` subscribes every found task name as they were Camunda external task topics, and starts listening for new task becoming available at Camunda.
+
+On a new task, `carrot-rcc` remembers, which topic was mapped to which task on which robot-package, and unpacks the correct robot-package into a temporary directory. Then it creates a temporary directory with all external task variables and files as a local [robot work item](https://robocorp.com/docs/libraries/rpa-framework/rpa-robocloud-items).
+
+Similarly to work item, for convenience, all `carrot-rcc` process environment variables are made available as `env` secret to keep their use out of Robot Framework logs when used with [RPA framework's Secrets -library](https://robocorp.com/docs/libraries/rpa-framework/rpa-robocloud-secrets).
+
+Next [RCC](https://robocorp.com/docs/rcc/overview) is called to resolve robot's dependencies and execute the robot. Robot package may declare any available Conda or Pip package as its dependency. For example, this makes it possible to have [fully functional browser automation stack as a task dependency](https://github.com/datakurre/carrot-rcc/blob/main/xkcd-bot/conda.yaml) independently what the local machine actually has available. RCC caches the dependency environments on the machine to enable their fast re-use.
+
+Finally, `carrot-rcc` saves all the changed and added variables from the saved work item back to Camunda. In addition, it also saves full [Robot Framework execution logs](https://robotframework.org/robotframework/latest/RobotFrameworkUserGuide.html#log-file). All these are saved back into the task execution context, to leave their further use for the BPMN designer. At the end `carrot-rcc` either completes of fails the task at Camunda.
+
+[![Screencast of carrot-rcc in action](https://github.com/datakurre/carrot-rcc/raw/main/example-process.gif)](https://github.com/datakurre/carrot-rcc/raw/main/example-process.gif)
 
 
 Usage
