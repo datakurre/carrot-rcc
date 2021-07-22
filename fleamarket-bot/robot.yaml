@@ -1,5 +1,6 @@
 tasks:
-  Run all tasks:
+
+  Extract items from photo:
     robotTaskName:
       Extract items from photo
 
