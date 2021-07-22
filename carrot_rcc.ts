@@ -275,10 +275,21 @@ const load = async (
     for (const name of Object.keys(typed)) {
       if (typed[name].type === "file") {
         delete variables[name];
-        typed[
-          name
-        ].value.remotePath = `/execution/${task.executionId}/localVariables/${name}/data`;
-        const file = await typed[name].value.load();
+        const file = await (async () => {
+          // Try to load file first from local variable scope
+          typed[
+            name
+            ].value.remotePath = `/execution/${task.executionId}/localVariables/${name}/data`;
+          try {
+            return await typed[name].value.load();
+          } catch (e) {
+            // If the file is not on the local scope, try process scope
+            typed[
+              name
+              ].value.remotePath = `/process-instance/${task.processInstanceId}/variables/${name}/data`;
+            return await typed[name].value.load();
+          }
+        })();
         const filename = path.join(itemsDir, file.filename);
         await new Promise((resolve) => {
           fs.writeFile(filename, file.content, resolve);
