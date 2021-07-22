@@ -1,0 +1,13 @@
+tasks:
+  Run all tasks:
+    robotTaskName:
+      Extract items from photo
+
+PYTHONPATH:
+  - .
+
+condaConfigFile:
+  conda.yaml
+
+artifactsDir:
+  output
