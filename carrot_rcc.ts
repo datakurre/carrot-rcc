@@ -324,7 +324,7 @@ const load = async (
           }
         })();
         const filename = path.join(itemsDir, file.filename);
-        variables[name] = path.join(itemsDir, file.filename);
+        variables[name] = filename.replace(/\\/g, "\\\\");
         await new Promise((resolve) => {
           fs.writeFile(filename, file.content, resolve);
         });
