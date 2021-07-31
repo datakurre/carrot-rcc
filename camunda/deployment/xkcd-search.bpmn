@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" id="Definitions_09inx8l" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="4.8.1">
   <bpmn:process id="xkcd-search" name="XKCD comic search" isExecutable="true" camunda:historyTimeToLive="P1D">
-    <bpmn:startEvent id="Event_0vcrohg" name="Search term submitted">
+    <bpmn:startEvent id="Event_0vcrohg" name="Search term submitted" camunda:initiator="author">
       <bpmn:extensionElements>
         <camunda:formData>
           <camunda:formField id="query" label="Comic search term" type="string">
@@ -33,7 +33,7 @@
     </bpmn:exclusiveGateway>
     <bpmn:sequenceFlow id="Flow_18mj359" sourceRef="Gateway_00qq4t2" targetRef="robot_search" />
     <bpmn:sequenceFlow id="Flow_1i36hj7" sourceRef="Event_0w1ucqh" targetRef="Gateway_0tlcygr" />
-    <bpmn:userTask id="Activity_0tz8jfj" name="No results: ${query}">
+    <bpmn:userTask id="Activity_0tz8jfj" name="No results: ${query}" camunda:assignee="${author}">
       <bpmn:documentation>No results found.</bpmn:documentation>
       <bpmn:extensionElements>
         <camunda:formData>
@@ -84,6 +84,7 @@
         <camunda:in businessKey="#{execution.processBusinessKey}" />
         <camunda:in sourceExpression="${execution.getProcessInstanceId()}" target="callerId" />
         <camunda:in sourceExpression="${url.stringValue()}" target="url" />
+        <camunda:in source="author" target="author" />
       </bpmn:extensionElements>
       <bpmn:incoming>Flow_1g4wnik</bpmn:incoming>
       <bpmn:outgoing>Flow_0d4lgiv</bpmn:outgoing>

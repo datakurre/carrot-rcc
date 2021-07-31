@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" id="Definitions_09inx8l" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="4.7.0">
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" id="Definitions_09inx8l" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="4.8.1">
   <bpmn:process id="xkcd-fetch-review" name="XKCD comic fetch and review" isExecutable="true" camunda:historyTimeToLive="P1D" camunda:isStartableInTasklist="false">
     <bpmn:extensionElements>
       <camunda:properties>
@@ -14,7 +14,7 @@
       <bpmn:outgoing>Flow_0gt19ec</bpmn:outgoing>
       <bpmn:outgoing>Flow_1hs8p8m</bpmn:outgoing>
     </bpmn:exclusiveGateway>
-    <bpmn:userTask id="Activity_03sj9oq" name="Review: ${name}" camunda:formKey="embedded:deployment:xkcd-review.html">
+    <bpmn:userTask id="Activity_03sj9oq" name="Review: ${name}" camunda:formKey="embedded:deployment:xkcd-review.html" camunda:assignee="${author}">
       <bpmn:documentation>${description}</bpmn:documentation>
       <bpmn:incoming>Flow_06mlb8o</bpmn:incoming>
       <bpmn:outgoing>Flow_0n7yvtn</bpmn:outgoing>
@@ -28,16 +28,16 @@
           <camunda:outputParameter name="comic">${execution.getVariableTyped("comic.png")}</camunda:outputParameter>
         </camunda:inputOutput>
       </bpmn:extensionElements>
-      <bpmn:incoming>Flow_1jl2vsi</bpmn:incoming>
+      <bpmn:incoming>Flow_0z47gg9</bpmn:incoming>
       <bpmn:outgoing>Flow_06mlb8o</bpmn:outgoing>
     </bpmn:serviceTask>
-    <bpmn:sequenceFlow id="Flow_0z47gg9" sourceRef="Event_0vcrohg" targetRef="Activity_1ebcpzu" />
+    <bpmn:sequenceFlow id="Flow_0z47gg9" sourceRef="Event_0vcrohg" targetRef="robot_fetch" />
     <bpmn:sequenceFlow id="Flow_06mlb8o" sourceRef="robot_fetch" targetRef="Activity_03sj9oq" />
     <bpmn:endEvent id="Event_060h7uc" name="Rejected">
       <bpmn:incoming>Flow_0gt19ec</bpmn:incoming>
     </bpmn:endEvent>
     <bpmn:sequenceFlow id="Flow_0gt19ec" sourceRef="Gateway_1d23t3u" targetRef="Event_060h7uc" />
-    <bpmn:startEvent id="Event_0vcrohg" name="Comic URL submitted">
+    <bpmn:startEvent id="Event_0vcrohg" name="Comic URL submitted" camunda:initiator="author">
       <bpmn:outgoing>Flow_0z47gg9</bpmn:outgoing>
     </bpmn:startEvent>
     <bpmn:boundaryEvent id="Event_1g5xg35" name="Invalid URL" attachedToRef="robot_fetch">
@@ -48,17 +48,6 @@
       <bpmn:incoming>Flow_0n92i0a</bpmn:incoming>
     </bpmn:endEvent>
     <bpmn:sequenceFlow id="Flow_0n92i0a" sourceRef="Event_1g5xg35" targetRef="Event_0zxwc5n" />
-    <bpmn:task id="Activity_1ebcpzu" name="Set variables">
-      <bpmn:extensionElements>
-        <camunda:inputOutput>
-          <camunda:outputParameter name="callerId">${callerId}</camunda:outputParameter>
-          <camunda:outputParameter name="url">${url}</camunda:outputParameter>
-        </camunda:inputOutput>
-      </bpmn:extensionElements>
-      <bpmn:incoming>Flow_0z47gg9</bpmn:incoming>
-      <bpmn:outgoing>Flow_1jl2vsi</bpmn:outgoing>
-    </bpmn:task>
-    <bpmn:sequenceFlow id="Flow_1jl2vsi" sourceRef="Activity_1ebcpzu" targetRef="robot_fetch" />
     <bpmn:intermediateThrowEvent id="Event_17mcw5y" name="Submit result">
       <bpmn:documentation />
       <bpmn:incoming>Flow_1hs8p8m</bpmn:incoming>
@@ -70,71 +59,82 @@
       <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${accepted == true}</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
     <bpmn:textAnnotation id="TextAnnotation_0r4r2i1">
-      <bpmn:text>Result to the super process is send as a message to collect parallel instantance output.</bpmn:text>
+      <bpmn:text>Results to the super process are send as messages for better control on the results.</bpmn:text>
     </bpmn:textAnnotation>
     <bpmn:association id="Association_12jvvxu" sourceRef="Event_17mcw5y" targetRef="TextAnnotation_0r4r2i1" />
   </bpmn:process>
   <bpmndi:BPMNDiagram id="BPMNDiagram_1">
     <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="xkcd-fetch-review">
+      <bpmndi:BPMNShape id="TextAnnotation_0r4r2i1_di" bpmnElement="TextAnnotation_0r4r2i1">
+        <dc:Bounds x="675" y="110" width="174.99920654296875" height="53.99359893798828" />
+      </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="Flow_1hs8p8m_di" bpmnElement="Flow_1hs8p8m">
-        <di:waypoint x="826" y="200" />
-        <di:waypoint x="897" y="200" />
+        <di:waypoint x="656" y="200" />
+        <di:waypoint x="727" y="200" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="852" y="183" width="19" height="14" />
+          <dc:Bounds x="682" y="183" width="19" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_12x9een_di" bpmnElement="Flow_12x9een">
-        <di:waypoint x="933" y="200" />
-        <di:waypoint x="1002" y="200" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_1jl2vsi_di" bpmnElement="Flow_1jl2vsi">
-        <di:waypoint x="360" y="200" />
-        <di:waypoint x="434" y="200" />
+        <di:waypoint x="763" y="200" />
+        <di:waypoint x="832" y="200" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_0n92i0a_di" bpmnElement="Flow_0n92i0a">
-        <di:waypoint x="482" y="258" />
-        <di:waypoint x="482" y="400" />
-        <di:waypoint x="1002" y="400" />
+        <di:waypoint x="312" y="258" />
+        <di:waypoint x="312" y="400" />
+        <di:waypoint x="832" y="400" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_0gt19ec_di" bpmnElement="Flow_0gt19ec">
-        <di:waypoint x="801" y="225" />
-        <di:waypoint x="801" y="300" />
-        <di:waypoint x="1002" y="300" />
+        <di:waypoint x="631" y="225" />
+        <di:waypoint x="631" y="300" />
+        <di:waypoint x="832" y="300" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_06mlb8o_di" bpmnElement="Flow_06mlb8o">
-        <di:waypoint x="534" y="200" />
-        <di:waypoint x="605" y="200" />
+        <di:waypoint x="364" y="200" />
+        <di:waypoint x="435" y="200" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_0z47gg9_di" bpmnElement="Flow_0z47gg9">
         <di:waypoint x="198" y="200" />
-        <di:waypoint x="260" y="200" />
+        <di:waypoint x="264" y="200" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_0n7yvtn_di" bpmnElement="Flow_0n7yvtn">
-        <di:waypoint x="705" y="200" />
-        <di:waypoint x="776" y="200" />
+        <di:waypoint x="535" y="200" />
+        <di:waypoint x="606" y="200" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNShape id="Event_1il4m3d_di" bpmnElement="Event_1il4m3d">
-        <dc:Bounds x="1002" y="182" width="36" height="36" />
+        <dc:Bounds x="832" y="182" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="999" y="225" width="45" height="14" />
+          <dc:Bounds x="829" y="225" width="45" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Gateway_1d23t3u_di" bpmnElement="Gateway_1d23t3u" isMarkerVisible="true">
-        <dc:Bounds x="776" y="175" width="50" height="50" />
+        <dc:Bounds x="606" y="175" width="50" height="50" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="775" y="153" width="51" height="14" />
+          <dc:Bounds x="605" y="153" width="51" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Activity_1c5u44i_di" bpmnElement="Activity_03sj9oq">
-        <dc:Bounds x="605" y="160" width="100" height="80" />
+        <dc:Bounds x="435" y="160" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Activity_0rvl3f0_di" bpmnElement="robot_fetch">
-        <dc:Bounds x="434" y="160" width="100" height="80" />
+        <dc:Bounds x="264" y="160" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Event_060h7uc_di" bpmnElement="Event_060h7uc">
-        <dc:Bounds x="1002" y="282" width="36" height="36" />
+        <dc:Bounds x="832" y="282" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="998" y="325" width="44" height="14" />
+          <dc:Bounds x="828" y="325" width="44" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_0zxwc5n_di" bpmnElement="Event_0zxwc5n">
+        <dc:Bounds x="832" y="382" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="830" y="425" width="40" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_0h8f6aw_di" bpmnElement="Event_17mcw5y">
+        <dc:Bounds x="727" y="182" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="713" y="225" width="65" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Event_0z9ror5_di" bpmnElement="Event_0vcrohg">
@@ -143,34 +143,16 @@
           <dc:Bounds x="153" y="225" width="57" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Event_0zxwc5n_di" bpmnElement="Event_0zxwc5n">
-        <dc:Bounds x="1002" y="382" width="36" height="36" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="1000" y="425" width="40" height="14" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Activity_1ebcpzu_di" bpmnElement="Activity_1ebcpzu">
-        <dc:Bounds x="260" y="160" width="100" height="80" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Event_0h8f6aw_di" bpmnElement="Event_17mcw5y">
-        <dc:Bounds x="897" y="182" width="36" height="36" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="883" y="225" width="65" height="14" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="TextAnnotation_0r4r2i1_di" bpmnElement="TextAnnotation_0r4r2i1">
-        <dc:Bounds x="845" y="110" width="175" height="54" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Event_1d49ndp_di" bpmnElement="Event_1g5xg35">
-        <dc:Bounds x="464" y="222" width="36" height="36" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="413" y="253" width="58" height="14" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="Association_12jvvxu_di" bpmnElement="Association_12jvvxu">
-        <di:waypoint x="915" y="182" />
-        <di:waypoint x="915" y="164" />
+        <di:waypoint x="745" y="182" />
+        <di:waypoint x="745" y="164" />
       </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="Event_1d49ndp_di" bpmnElement="Event_1g5xg35">
+        <dc:Bounds x="294" y="222" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="244" y="253" width="57" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>
 </bpmn:definitions>

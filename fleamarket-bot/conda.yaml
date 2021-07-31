@@ -5,4 +5,4 @@ dependencies:
   # https://anaconda.org/search
   - python>=3.8,<3.10
   - rpaframework=9.6.0
-  - py-opencv
+  - py-opencv=4.2.0
