@@ -117,6 +117,6 @@ or
 $ carrot-rcc.exe robot.zip --base-url=http://192.168.86.156:8080/engine-rest --log-level=debug
 ```
 
-The project's repository includes [an example Camunda process](https://github.com/datakurre/carrot-executor/tree/main/camunda/deployment) with an [an example RCC compatible robot](https://github.com/datakurre/carrot-rcc/blob/main/xkcd-bot/robot.zip?raw=true) available.
+The project's repository includes [example Camunda processes](https://github.com/datakurre/carrot-rcc/tree/main/camunda/deployment) with [example RCC compatible](https://github.com/datakurre/carrot-rcc/blob/main/xkcd-bot/robot.zip?raw=true) [robots](https://github.com/datakurre/carrot-rcc/blob/main/fleamarket-bot/robot.zip?raw=true) available.
 
 ![](https://github.com/datakurre/carrot-rcc/raw/main/example-process.png)
