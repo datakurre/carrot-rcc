@@ -1,0 +1,225 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" id="Definitions_09inx8l" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="4.8.1">
+  <bpmn:process id="fleamarket-review" name="Fleamarket submission review" isExecutable="true" camunda:historyTimeToLive="P1D" camunda:isStartableInTasklist="false">
+    <bpmn:extensionElements>
+      <camunda:properties>
+        <camunda:property />
+      </camunda:properties>
+    </bpmn:extensionElements>
+    <bpmn:endEvent id="Event_1il4m3d" name="Accepted">
+      <bpmn:incoming>Flow_12x9een</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:exclusiveGateway id="Gateway_1d23t3u" name="Accepted?" default="Flow_0gt19ec">
+      <bpmn:incoming>Flow_09prpq7</bpmn:incoming>
+      <bpmn:outgoing>Flow_0gt19ec</bpmn:outgoing>
+      <bpmn:outgoing>Flow_1hs8p8m</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:userTask id="Activity_03sj9oq" name="Review: ${name}" camunda:asyncAfter="true" camunda:formKey="embedded:deployment:fleamarket-review.html" camunda:assignee="${author}">
+      <bpmn:extensionElements>
+        <camunda:inputOutput>
+          <camunda:inputParameter name="accepted">${true}</camunda:inputParameter>
+          <camunda:inputParameter name="name">${item.prop("name").stringValue()}</camunda:inputParameter>
+          <camunda:inputParameter name="price">${price}</camunda:inputParameter>
+          <camunda:outputParameter name="accepted">${accepted}</camunda:outputParameter>
+          <camunda:outputParameter name="name">${name}</camunda:outputParameter>
+          <camunda:outputParameter name="price">${price}</camunda:outputParameter>
+        </camunda:inputOutput>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_1cm140y</bpmn:incoming>
+      <bpmn:outgoing>Flow_09prpq7</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:serviceTask id="robot_crop" name="Crop image" camunda:type="external" camunda:topic="Crop image">
+      <bpmn:extensionElements>
+        <camunda:inputOutput>
+          <camunda:inputParameter name="input">${execution.getVariableTyped("submission")}</camunda:inputParameter>
+          <camunda:inputParameter name="name">${item.prop("name").stringValue()}-${loopCounter}</camunda:inputParameter>
+          <camunda:inputParameter name="x">${item.prop("x").numberValue()}</camunda:inputParameter>
+          <camunda:inputParameter name="y">${item.prop("y").numberValue()}</camunda:inputParameter>
+          <camunda:inputParameter name="width">${item.prop("width").numberValue()}</camunda:inputParameter>
+          <camunda:inputParameter name="height">${item.prop("height").numberValue()}</camunda:inputParameter>
+          <camunda:outputParameter name="image">${execution.getVariableTyped(output)}</camunda:outputParameter>
+        </camunda:inputOutput>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_1n1ls3f</bpmn:incoming>
+      <bpmn:outgoing>Flow_06mlb8o</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:sequenceFlow id="Flow_0z47gg9" sourceRef="Event_0vcrohg" targetRef="Gateway_0mqogtl" />
+    <bpmn:sequenceFlow id="Flow_06mlb8o" sourceRef="robot_crop" targetRef="Gateway_0nrjpn1" />
+    <bpmn:endEvent id="Event_060h7uc" name="Rejected">
+      <bpmn:incoming>Flow_0gt19ec</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="Flow_0gt19ec" name="No" sourceRef="Gateway_1d23t3u" targetRef="Event_060h7uc" />
+    <bpmn:startEvent id="Event_0vcrohg" name="Item recognized" camunda:initiator="author">
+      <bpmn:outgoing>Flow_0z47gg9</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:intermediateThrowEvent id="Event_17mcw5y" name="Submit result">
+      <bpmn:documentation />
+      <bpmn:incoming>Flow_0rxhl60</bpmn:incoming>
+      <bpmn:outgoing>Flow_12x9een</bpmn:outgoing>
+      <bpmn:messageEventDefinition id="MessageEventDefinition_139puug" camunda:expression="${execution.getProcessEngineServices().getRuntimeService().createMessageCorrelation(&#34;fleamarket.review.result&#34;).processInstanceId(callerId).setVariableLocal(&#34;item&#34;, item).setVariable(execution.getVariableTyped(&#34;image&#34;).getFilename(),execution.getVariableTyped(&#34;image&#34;)).correlate()}" />
+    </bpmn:intermediateThrowEvent>
+    <bpmn:sequenceFlow id="Flow_12x9een" sourceRef="Event_17mcw5y" targetRef="Event_1il4m3d" />
+    <bpmn:sequenceFlow id="Flow_1hs8p8m" name="Yes" sourceRef="Gateway_1d23t3u" targetRef="robot_update_item">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${accepted == true}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_1n1ls3f" sourceRef="Gateway_0mqogtl" targetRef="robot_crop" />
+    <bpmn:parallelGateway id="Gateway_0mqogtl">
+      <bpmn:incoming>Flow_0z47gg9</bpmn:incoming>
+      <bpmn:outgoing>Flow_1n1ls3f</bpmn:outgoing>
+      <bpmn:outgoing>Flow_04lcfd9</bpmn:outgoing>
+    </bpmn:parallelGateway>
+    <bpmn:parallelGateway id="Gateway_0nrjpn1">
+      <bpmn:incoming>Flow_06mlb8o</bpmn:incoming>
+      <bpmn:incoming>Flow_1rqmtnz</bpmn:incoming>
+      <bpmn:outgoing>Flow_1cm140y</bpmn:outgoing>
+    </bpmn:parallelGateway>
+    <bpmn:sequenceFlow id="Flow_04lcfd9" sourceRef="Gateway_0mqogtl" targetRef="Activity_06t5n5y" />
+    <bpmn:businessRuleTask id="Activity_06t5n5y" name="Get price" camunda:resultVariable="price" camunda:decisionRef="fleamarket-pricing" camunda:mapDecisionResult="singleEntry">
+      <bpmn:extensionElements>
+        <camunda:inputOutput>
+          <camunda:inputParameter name="category">${item.prop("name").stringValue()}</camunda:inputParameter>
+          <camunda:inputParameter name="quality">n/a</camunda:inputParameter>
+        </camunda:inputOutput>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_04lcfd9</bpmn:incoming>
+      <bpmn:outgoing>Flow_1rqmtnz</bpmn:outgoing>
+    </bpmn:businessRuleTask>
+    <bpmn:sequenceFlow id="Flow_1rqmtnz" sourceRef="Activity_06t5n5y" targetRef="Gateway_0nrjpn1" />
+    <bpmn:serviceTask id="robot_update_item" name="Update item" camunda:type="external" camunda:topic="Update JSON object">
+      <bpmn:extensionElements>
+        <camunda:inputOutput>
+          <camunda:inputParameter name="a">${item}</camunda:inputParameter>
+          <camunda:inputParameter name="b">
+            <camunda:map>
+              <camunda:entry key="name">${name}</camunda:entry>
+              <camunda:entry key="price">${price}</camunda:entry>
+              <camunda:entry key="filename">${execution.getVariableTyped("image").getFilename()}</camunda:entry>
+            </camunda:map>
+          </camunda:inputParameter>
+          <camunda:outputParameter name="item">${a}</camunda:outputParameter>
+        </camunda:inputOutput>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_1hs8p8m</bpmn:incoming>
+      <bpmn:outgoing>Flow_0rxhl60</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:sequenceFlow id="Flow_09prpq7" sourceRef="Activity_03sj9oq" targetRef="Gateway_1d23t3u" />
+    <bpmn:sequenceFlow id="Flow_1cm140y" sourceRef="Gateway_0nrjpn1" targetRef="Activity_03sj9oq" />
+    <bpmn:sequenceFlow id="Flow_0rxhl60" sourceRef="robot_update_item" targetRef="Event_17mcw5y" />
+    <bpmn:textAnnotation id="TextAnnotation_0r4r2i1">
+      <bpmn:text>Results to the super process are send as messages for better control on the results.</bpmn:text>
+    </bpmn:textAnnotation>
+    <bpmn:association id="Association_12jvvxu" sourceRef="Event_17mcw5y" targetRef="TextAnnotation_0r4r2i1" />
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="fleamarket-review">
+      <bpmndi:BPMNShape id="TextAnnotation_0r4r2i1_di" bpmnElement="TextAnnotation_0r4r2i1">
+        <dc:Bounds x="1041" y="80" width="169" height="54" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_1rqmtnz_di" bpmnElement="Flow_1rqmtnz">
+        <di:waypoint x="479" y="310" />
+        <di:waypoint x="567" y="310" />
+        <di:waypoint x="567" y="225" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_04lcfd9_di" bpmnElement="Flow_04lcfd9">
+        <di:waypoint x="291" y="225" />
+        <di:waypoint x="291" y="310" />
+        <di:waypoint x="379" y="310" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1n1ls3f_di" bpmnElement="Flow_1n1ls3f">
+        <di:waypoint x="316" y="200" />
+        <di:waypoint x="379" y="200" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1hs8p8m_di" bpmnElement="Flow_1hs8p8m">
+        <di:waypoint x="868" y="200" />
+        <di:waypoint x="931" y="200" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="880" y="183" width="19" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_12x9een_di" bpmnElement="Flow_12x9een">
+        <di:waypoint x="1130" y="200" />
+        <di:waypoint x="1192" y="200" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0gt19ec_di" bpmnElement="Flow_0gt19ec">
+        <di:waypoint x="843" y="225" />
+        <di:waypoint x="843" y="300" />
+        <di:waypoint x="1192" y="300" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="812" y="243" width="15" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_06mlb8o_di" bpmnElement="Flow_06mlb8o">
+        <di:waypoint x="479" y="200" />
+        <di:waypoint x="542" y="200" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0z47gg9_di" bpmnElement="Flow_0z47gg9">
+        <di:waypoint x="208" y="200" />
+        <di:waypoint x="266" y="200" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_09prpq7_di" bpmnElement="Flow_09prpq7">
+        <di:waypoint x="755" y="200" />
+        <di:waypoint x="818" y="200" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1cm140y_di" bpmnElement="Flow_1cm140y">
+        <di:waypoint x="592" y="200" />
+        <di:waypoint x="655" y="200" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0rxhl60_di" bpmnElement="Flow_0rxhl60">
+        <di:waypoint x="1031" y="200" />
+        <di:waypoint x="1094" y="200" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="Event_1il4m3d_di" bpmnElement="Event_1il4m3d">
+        <dc:Bounds x="1192" y="182" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1189" y="225" width="45" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_060h7uc_di" bpmnElement="Event_060h7uc">
+        <dc:Bounds x="1192" y="282" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1188" y="325" width="44" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_0z9ror5_di" bpmnElement="Event_0vcrohg">
+        <dc:Bounds x="172" y="182" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="152" y="225" width="79" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_1omt4nx_di" bpmnElement="Gateway_0mqogtl">
+        <dc:Bounds x="266" y="175" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0rvl3f0_di" bpmnElement="robot_crop">
+        <dc:Bounds x="379" y="160" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1uoeg0z_di" bpmnElement="Activity_06t5n5y">
+        <dc:Bounds x="379" y="270" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_0al4aii_di" bpmnElement="Gateway_0nrjpn1">
+        <dc:Bounds x="542" y="175" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_0h8f6aw_di" bpmnElement="Event_17mcw5y">
+        <dc:Bounds x="1094" y="182" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1080" y="225" width="65" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1c5u44i_di" bpmnElement="Activity_03sj9oq">
+        <dc:Bounds x="655" y="160" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_1d23t3u_di" bpmnElement="Gateway_1d23t3u" isMarkerVisible="true">
+        <dc:Bounds x="818" y="175" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="817" y="153" width="51" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0wpufm4_di" bpmnElement="robot_update_item">
+        <dc:Bounds x="931" y="160" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Association_12jvvxu_di" bpmnElement="Association_12jvvxu">
+        <di:waypoint x="1112" y="182" />
+        <di:waypoint x="1112" y="134" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

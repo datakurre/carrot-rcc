@@ -19,6 +19,9 @@ python = "^3.8"
 
 [tool.poetry.dev-dependencies]
 black = "^21.6b0"
+robotframework = "^4.1"
+robotframework-lsp = "^0.20.0"
+robotframework-robocop = "^1.8.1"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]

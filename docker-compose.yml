@@ -8,5 +8,5 @@ services:
     restart: unless-stopped
   deployment:
     build: ./camunda
-    command: "/usr/bin/curl -X POST http://camunda:8080/engine-rest/deployment/create -F \"deployment-name=Demo\" -F \"deploy-changed-only=true\" -F \"deployment-source=Demo\" -F \"a=@/tmp/deployment/xkcd-fetch-review.bpmn\" -F \"b=@/tmp/deployment/xkcd-search.bpmn\" -F \"c=@/tmp/deployment/review.html\""
+    command: "/usr/bin/curl -X POST http://camunda:8080/engine-rest/deployment/create -F \"deployment-name=Demo\" -F \"deploy-changed-only=true\" -F \"deployment-source=Demo\" -F \"a=@/tmp/deployment/xkcd-fetch-review.bpmn\" -F \"b=@/tmp/deployment/xkcd-search.bpmn\" -F \"c=@/tmp/deployment/xkcd-review.html\" -F \"d=@/tmp/deployment/fleamarket-submission.bpmn\" -F \"e=@/tmp/deployment/fleamarket-submit.html\" -F \"f=@/tmp/deployment/fleamarket-review.bpmn\" -F \"g=@/tmp/deployment/fleamarket-review.html\""
     restart: on-failure

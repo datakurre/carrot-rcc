@@ -72,6 +72,40 @@ optional = false
 python-versions = "*"
 
 [[package]]
+name = "robotframework"
+version = "4.1"
+description = "Generic automation framework for acceptance testing and robotic process automation (RPA)"
+category = "dev"
+optional = false
+python-versions = "*"
+
+[[package]]
+name = "robotframework-lsp"
+version = "0.20.0"
+description = "Language Server Protocol implementation for Robot Framework"
+category = "dev"
+optional = false
+python-versions = ">=3.7"
+
+[package.dependencies]
+robotframework = ">=3.2"
+
+[package.extras]
+selenium = ["robotframework-seleniumlibrary (>=4.4)"]
+test = ["mock", "pytest", "pytest-regressions (==1.0.6)", "pytest-xdist", "pytest-timeout"]
+
+[[package]]
+name = "robotframework-robocop"
+version = "1.8.1"
+description = "Static code analysis tool (linter) for Robot Framework"
+category = "dev"
+optional = false
+python-versions = "*"
+
+[package.dependencies]
+robotframework = ">=3.2.2"
+
+[[package]]
 name = "tomli"
 version = "1.0.4"
 description = "A lil' TOML parser"
@@ -82,7 +116,7 @@ python-versions = ">=3.6"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8"
-content-hash = "ad5d87d736580d5969d332f6293d5167ac9ee7f8be95761cd478e3b267da6d91"
+content-hash = "5357bb0dc8d5beb25e877808b3d26d48c1dcaabcfca9aa0fa0dccc5b29e36d3c"
 
 [metadata.files]
 appdirs = [
@@ -151,6 +185,18 @@ regex = [
     {file = "regex-2021.7.6-cp39-cp39-win32.whl", hash = "sha256:eaf58b9e30e0e546cdc3ac06cf9165a1ca5b3de8221e9df679416ca667972035"},
     {file = "regex-2021.7.6-cp39-cp39-win_amd64.whl", hash = "sha256:4c9c3155fe74269f61e27617529b7f09552fbb12e44b1189cebbdb24294e6e1c"},
     {file = "regex-2021.7.6.tar.gz", hash = "sha256:8394e266005f2d8c6f0bc6780001f7afa3ef81a7a2111fa35058ded6fce79e4d"},
+]
+robotframework = [
+    {file = "robotframework-4.1-py2.py3-none-any.whl", hash = "sha256:dd57b66ee4f059cfb72596b19016e37f40c0fd3f1e45f53726ae7ed07e05e4a3"},
+    {file = "robotframework-4.1.zip", hash = "sha256:567f2a21f0906635e21d45fe3cb84a4809a12980c9f2706a8a5f65f40f6b4ccd"},
+]
+robotframework-lsp = [
+    {file = "robotframework-lsp-0.20.0.tar.gz", hash = "sha256:758a1c096104c54b5a32558eb3d794b0a260745107e4cad71eda3e37e54186ba"},
+    {file = "robotframework_lsp-0.20.0-py2.py3-none-any.whl", hash = "sha256:fe606be6267bb2616199315f352a039f9f871dd3a8071e41c1f240f4a8998135"},
+]
+robotframework-robocop = [
+    {file = "robotframework-robocop-1.8.1.tar.gz", hash = "sha256:388ab75cc1ea6dd5931866a1a13602f2ed6ef3553b9adf21fc20adefb4072709"},
+    {file = "robotframework_robocop-1.8.1-py3-none-any.whl", hash = "sha256:2c9f530919395d08477d1d3c6ddc1c46b0ac03e5e281cbdd1d14b685597bbbd3"},
 ]
 tomli = [
     {file = "tomli-1.0.4-py3-none-any.whl", hash = "sha256:0713b16ff91df8638a6a694e295c8159ab35ba93e3424a626dd5226d386057be"},

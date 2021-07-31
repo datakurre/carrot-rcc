@@ -14,7 +14,7 @@
       <bpmn:outgoing>Flow_0gt19ec</bpmn:outgoing>
       <bpmn:outgoing>Flow_1hs8p8m</bpmn:outgoing>
     </bpmn:exclusiveGateway>
-    <bpmn:userTask id="Activity_03sj9oq" name="Review: ${name}" camunda:formKey="embedded:deployment:review.html">
+    <bpmn:userTask id="Activity_03sj9oq" name="Review: ${name}" camunda:formKey="embedded:deployment:xkcd-review.html">
       <bpmn:documentation>${description}</bpmn:documentation>
       <bpmn:incoming>Flow_06mlb8o</bpmn:incoming>
       <bpmn:outgoing>Flow_0n7yvtn</bpmn:outgoing>
