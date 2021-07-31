@@ -4,6 +4,22 @@ tasks:
     robotTaskName:
       Extract items from photo
 
+  Crop image:
+    robotTaskName:
+      Crop image
+
+  Create JSON array:
+    robotTaskName:
+      Create JSON array
+
+  Update JSON object:
+    robotTaskName:
+      Update JSON object
+
+  Save items to spreadsheet:
+    robotTaskName:
+      Save items to spreadsheet
+
 PYTHONPATH:
   - .
 

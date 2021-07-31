@@ -1,0 +1,32 @@
+<form role="form">
+
+  <p>
+  <img src="{{ camForm.variableManager.variable('image').contentUrl }}" alt="" />
+  <br/><br/>
+  <label for="name">Description</label><br/>
+  <input type="text"
+         id="name"
+         cam-variable-name="name"
+         cam-variable-type="String" />
+  </p>
+  <p>
+  <label for="name">Price</label><br/>
+  <input type="text"
+         id="price"
+         cam-variable-name="price"
+         cam-variable-type="Double" />
+  </p>
+  <p>
+  <label for="accepted">Accept item?</label><br/>
+  <input type="checkbox"
+         id="accepted"
+         cam-variable-name="accepted"
+         cam-variable-type="Boolean" />
+  </p>
+
+  <input type="hidden" disabled="disabled"
+         id="image"
+         cam-variable-name="image"
+         cam-variable-type="File" />
+
+</form>

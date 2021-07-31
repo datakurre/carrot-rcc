@@ -138,10 +138,8 @@ def classify_outputs(img, outputs, conf):
     return objects
 
 
-class YOLO3:
-    def identify_objects(self, filename, confidence=0.2, output=None):
-        output = output or os.path.dirname(__file__)
-        base, ext = os.path.splitext(os.path.basename(filename))
+class YOLO:
+    def identify_objects(self, filename, confidence=0.2):
         img = cv.imread(filename)
         outputs = [
             (o, YOLOV3_CLASSES) for o in get_outputs(img, YOLOV3_CFG, YOLOV3_WEIGHTS)
@@ -154,18 +152,14 @@ class YOLO3:
         for idx in range(len(results)):
             result = results[idx]
             x, y, w, h, name, conf = result
-            x = max(x - 10, 0)
-            y = max(y - 10, 0)
-            w = max(w + 20, 1)
-            h = max(h + 20, 1)
-            safe = name.lower().replace(" ", "_")
-            path = os.path.join(output, f"{base}-{(idx + 1):03d}-{safe}{ext}")
-            cv.imwrite(path, img[y : y + h, x : x + w])
             final.append(
                 {
-                    "filename": path,
-                    "basename": os.path.basename(path),
                     "name": name.lower(),
+                    "x": max(x, 0),
+                    "y": max(y, 0),
+                    "width": max(w, 1),
+                    "height": max(h, 1),
+                    "confidence": conf,
                 }
             )
         return final

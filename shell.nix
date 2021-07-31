@@ -19,6 +19,7 @@ pkgs.mkShell {
         firefox
         geckodriver
         unstable.micromamba
+        libGL
       ]);
       runScript = "rcc";
     })

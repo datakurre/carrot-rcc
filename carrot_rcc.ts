@@ -26,6 +26,7 @@ import * as api from "./Camunda";
 const crypto = require("crypto");
 
 type PatchVariablesDto = api.components["schemas"]["PatchVariablesDto"];
+type VariableValueDto = api.components["schemas"]["VariableValueDto"];
 
 dotenv.config();
 
@@ -187,7 +188,10 @@ const inferType = async (
   old: TypedValue | undefined,
   current: any
 ): Promise<string> => {
-  if (old?.type) {
+  if (old?.type === 'object') {
+    // We can only save deserialized objects back as JSON
+    return 'Json';
+  } else if (old?.type) {
     return old.type[0].toUpperCase() + old.type.substr(1);
   } else if (typeof current === "boolean") {
     return "Boolean";
@@ -247,6 +251,23 @@ const load = async (
   itemsDir: string,
   topic: string
 ): Promise<Record<string, File>> => {
+  const client = new rest.RestClient(
+    "carrot-executor",
+    CAMUNDA_API_BASE_URL,
+    []
+  );
+  const options: IRequestOptions = {
+    additionalHeaders: CAMUNDA_API_AUTHORIZATION
+      ? {
+          Authorization: CAMUNDA_API_AUTHORIZATION,
+        }
+      : {},
+    queryParameters: {
+      params: {
+        deserializeValue: "true",
+      },
+    },
+  };
   const files: Record<string, File> = {};
   // Fetch and prepare robot
   await new Promise((resolve, reject) => {
@@ -271,26 +292,39 @@ const load = async (
   await new Promise(async (resolve) => {
     const variables = task.variables.getAll();
     const typed = task.variables.getAllTyped();
-    // TODO: This could be optimized to make parallel file variable fetch
+    // TODO: This could be optimized to make parallel variable fetch
     for (const name of Object.keys(typed)) {
-      if (typed[name].type === "file") {
-        delete variables[name];
+      if (typed[name].type === "object") {
+        // fixes camunda-external-task-client-js not deserializing lists / maps
+        let variable =
+          (await client.get<VariableValueDto>(
+            `execution/${task.executionId}/localVariables/${name}`,
+            options
+          )) ||
+          (await client.get<VariableValueDto>(
+            `/process-instance/${task.processInstanceId}/variables/${name}`,
+            options
+          ));
+        variables[name] = variable.result?.value;
+      } else if (typed[name].type === "file") {
+        // fixes camunda-external-task-client-js not supporting local scope files
         const file = await (async () => {
           // Try to load file first from local variable scope
           typed[
             name
-            ].value.remotePath = `/execution/${task.executionId}/localVariables/${name}/data`;
+          ].value.remotePath = `/execution/${task.executionId}/localVariables/${name}/data`;
           try {
             return await typed[name].value.load();
           } catch (e) {
             // If the file is not on the local scope, try process scope
             typed[
               name
-              ].value.remotePath = `/process-instance/${task.processInstanceId}/variables/${name}/data`;
+            ].value.remotePath = `/process-instance/${task.processInstanceId}/variables/${name}/data`;
             return await typed[name].value.load();
           }
         })();
         const filename = path.join(itemsDir, file.filename);
+        variables[name] = path.join(itemsDir, file.filename);
         await new Promise((resolve) => {
           fs.writeFile(filename, file.content, resolve);
         });
@@ -466,8 +500,7 @@ const save = async (
         default:
           patch.modifications[name] = {
             value: current[name],
-            type: old?.[name]?.type || "String",
-            valueInfo: old?.[name]?.valueInfo || {},
+            type: old?.[name]?.type ? old[name].type[0].toUpperCase() + old[name].type.substr(1) : 'String',
           };
       }
     }
