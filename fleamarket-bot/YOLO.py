@@ -2,26 +2,102 @@
 
 import hashlib
 import os
-import tempfile
 import urllib.request
 
 import cv2 as cv
 import numpy as np
 
+from robot.api import logger
+from appdirs import user_cache_dir
+
+
+INITIALIZED = False
+
+USER_CACHE_DIR = user_cache_dir("YOLOv3", "Shared")
 
 COCO_NAMES = os.path.join(os.path.dirname(__file__), "coco.names")
-YOLO_V3_CFG = os.path.join(os.path.dirname(__file__), "yolov3.cfg")
-YOLO_V3_WEIGHTS = os.path.join(tempfile.gettempdir(), "yolov3.weights")
-YOLO_V3_WEIGHTS_SHA = "523e4e69e1d015393a1b0a441cef1d9c7659e3eb2d7e15f793f060a21b32f297"
-YOLO_V3_WEIGHTS_URL = "https://pjreddie.com/media/files/yolov3.weights"
+YOLO_CC_CFG = os.path.join(os.path.dirname(__file__), "yolov3.cfg")
+YOLO_CC_WEIGHTS = os.path.join(USER_CACHE_DIR, "yolov3.weights")
+YOLO_CC_WEIGHTS_SHA = "523e4e69e1d015393a1b0a441cef1d9c7659e3eb2d7e15f793f060a21b32f297"
+YOLO_CC_WEIGHTS_URL = "https://pjreddie.com/media/files/yolov3.weights"
+YOLO_CC_CLASSES = []
 
-YOLO_V3_OI_NAMES = os.path.join(os.path.dirname(__file__), "openimages.names")
-YOLO_V3_OI_CFG = os.path.join(os.path.dirname(__file__), "yolov3-openimages.cfg")
-YOLO_V3_OI_WEIGHTS = os.path.join(tempfile.gettempdir(), "yolov3-openimages.weights")
-YOLO_V3_OI_WEIGHTS_SHA = (
-    "be129d792d8c7cc19b17bcb9d40ced71cdf079bfd246cbd1cfca40568ac74ee1"
-)
-YOLO_V3_OI_WEIGHTS_URL = "https://pjreddie.com/media/files/yolov3-openimages.weights"
+YOLO_OI_NAMES = os.path.join(os.path.dirname(__file__), "openimages.names")
+YOLO_OI_CFG = os.path.join(os.path.dirname(__file__), "yolov3-openimages.cfg")
+YOLO_OI_WEIGHTS = os.path.join(USER_CACHE_DIR, "yolov3-openimages.weights")
+YOLO_OI_WEIGHTS_SHA = "be129d792d8c7cc19b17bcb9d40ced71cdf079bfd246cbd1cfca40568ac74ee1"
+YOLO_OI_WEIGHTS_URL = "https://pjreddie.com/media/files/yolov3-openimages.weights"
+YOLO_OI_CLASSES = []
+
+
+def init():
+    if not os.path.exists(USER_CACHE_DIR):
+        os.makedirs(USER_CACHE_DIR)
+
+    if os.path.exists(YOLO_CC_WEIGHTS):
+        logger.info(f"{YOLO_CC_WEIGHTS}: verifying")
+        sha256 = hashlib.sha256()
+        with open(YOLO_CC_WEIGHTS, "rb") as fp:
+            while True:
+                data = fp.read(2 ** 20)
+                if not data:
+                    break
+                sha256.update(data)
+        if sha256.hexdigest() == YOLO_CC_WEIGHTS_SHA:
+            logger.info(f"{YOLO_CC_WEIGHTS}: verified")
+        else:
+            logger.info(f"{YOLO_CC_WEIGHTS}: invalid")
+            os.remove(YOLO_CC_WEIGHTS)
+
+    if not os.path.exists(YOLO_CC_WEIGHTS):
+        logger.info(f"{YOLO_CC_WEIGHTS}: downloading")
+        response = urllib.request.urlopen(YOLO_CC_WEIGHTS_URL)
+        with open(YOLO_CC_WEIGHTS, "wb") as fp:
+            while True:
+                chunk = response.read(2 ** 16)
+                if not chunk:
+                    break
+                else:
+                    fp.write(chunk)
+        logger.info(f"{YOLO_CC_WEIGHTS}: downloaded")
+
+    if os.path.exists(YOLO_OI_WEIGHTS):
+        logger.info(f"{YOLO_OI_WEIGHTS}: verifying")
+        sha256 = hashlib.sha256()
+        with open(YOLO_OI_WEIGHTS, "rb") as fp:
+            while True:
+                data = fp.read(2 ** 20)
+                if not data:
+                    break
+                sha256.update(data)
+        if sha256.hexdigest() == YOLO_OI_WEIGHTS_SHA:
+            logger.info(f"{YOLO_OI_WEIGHTS}: verified")
+        else:
+            logger.info(f"{YOLO_OI_WEIGHTS}: invalid")
+            os.remove(YOLO_CC_WEIGHTS)
+
+    if not os.path.exists(YOLO_OI_WEIGHTS):
+        logger.info(f"{YOLO_OI_WEIGHTS}: downloading")
+        response = urllib.request.urlopen(YOLO_OI_WEIGHTS_URL)
+        with open(YOLO_OI_WEIGHTS, "wb") as fp:
+            while True:
+                chunk = response.read(2 ** 16)
+                if not chunk:
+                    break
+                else:
+                    fp.write(chunk)
+        logger.info(f"{YOLO_OI_WEIGHTS}: downloaded")
+
+    with open(COCO_NAMES) as fp:
+        global YOLO_CC_CLASSES
+        YOLO_CC_CLASSES = fp.read().strip().split("\n")
+
+    with open(YOLO_OI_NAMES) as fp:
+        global YOLO_OI_CLASSES
+        YOLO_OI_CLASSES = fp.read().strip().split("\n")
+
+    global INITIALIZED
+    INITIALIZED = True
 
 
 def get_outputs(img, cfg, weights):
@@ -76,91 +152,31 @@ def classify_outputs(img, outputs, conf):
     return objects
 
 
+def identify_objects(filename, confidence=0.2):
+    if not INITIALIZED:
+        init()
+    img = cv.imread(filename)
+    outputs = [
+        (o, YOLO_CC_CLASSES) for o in get_outputs(img, YOLO_CC_CFG, YOLO_CC_WEIGHTS)
+    ] + [(o, YOLO_OI_CLASSES) for o in get_outputs(img, YOLO_OI_CFG, YOLO_OI_WEIGHTS)]
+    results = classify_outputs(img, outputs, confidence)
+    final = []
+    for idx in range(len(results)):
+        result = results[idx]
+        x, y, w, h, name, conf = result
+        final.append(
+            {
+                "name": name.lower(),
+                "x": max(x, 0),
+                "y": max(y, 0),
+                "width": max(w, 1),
+                "height": max(h, 1),
+                "confidence": conf,
+            }
+        )
+    return final
+
+
 class YOLO:
-    def __init__(self):
-
-        yolo_v3_weights_downloaded = False
-
-        if os.path.exists(YOLO_V3_WEIGHTS):
-            print(f"{YOLO_V3_WEIGHTS}: verifying")
-            sha256 = hashlib.sha256()
-            with open(YOLO_V3_WEIGHTS, "rb") as fp:
-                while True:
-                    data = fp.read(2 ** 20)
-                    if not data:
-                        break
-                    sha256.update(data)
-            if sha256.hexdigest() == YOLO_V3_WEIGHTS_SHA:
-                yolo_v3_weights_downloaded = True
-                print(f"{YOLO_V3_WEIGHTS}: verified")
-
-        if not yolo_v3_weights_downloaded:
-            print(f"{YOLO_V3_WEIGHTS}: loading")
-            response = urllib.request.urlopen(YOLO_V3_WEIGHTS_URL)
-            with open(YOLO_V3_WEIGHTS, "wb") as fp:
-                while True:
-                    chunk = response.read(2 ** 16)
-                    if not chunk:
-                        break
-                    else:
-                        fp.write(chunk)
-            print(f"{YOLO_V3_WEIGHTS}: loaded")
-
-        yolo_v3_oi_weights_downloaded = False
-
-        if os.path.exists(YOLO_V3_OI_WEIGHTS):
-            print(f"{YOLO_V3_OI_WEIGHTS}: verifying")
-            sha256 = hashlib.sha256()
-            with open(YOLO_V3_OI_WEIGHTS, "rb") as fp:
-                while True:
-                    data = fp.read(2 ** 20)
-                    if not data:
-                        break
-                    sha256.update(data)
-            if sha256.hexdigest() == YOLO_V3_OI_WEIGHTS_SHA:
-                yolo_v3_oi_weights_downloaded = True
-                print(f"{YOLO_V3_OI_WEIGHTS}: verified")
-
-        if not yolo_v3_oi_weights_downloaded:
-            print(f"{YOLO_V3_OI_WEIGHTS}: loading")
-            response = urllib.request.urlopen(YOLO_V3_OI_WEIGHTS_URL)
-            with open(YOLO_V3_OI_WEIGHTS, "wb") as fp:
-                while True:
-                    chunk = response.read(2 ** 16)
-                    if not chunk:
-                        break
-                    else:
-                        fp.write(chunk)
-            print(f"{YOLO_V3_OI_WEIGHTS}: loaded")
-
-        with open(COCO_NAMES) as fp:
-            self.YOLO_V3_CLASSES = fp.read().strip().split("\n")
-
-        with open(YOLO_V3_OI_NAMES) as fp:
-            self.YOLO_V3_OI_CLASSES = fp.read().strip().split("\n")
-
     def identify_objects(self, filename, confidence=0.2):
-        img = cv.imread(filename)
-        outputs = [
-            (o, self.YOLO_V3_CLASSES)
-            for o in get_outputs(img, YOLO_V3_CFG, YOLO_V3_WEIGHTS)
-        ] + [
-            (o, self.YOLO_V3_OI_CLASSES)
-            for o in get_outputs(img, YOLO_V3_OI_CFG, YOLO_V3_OI_WEIGHTS)
-        ]
-        results = classify_outputs(img, outputs, confidence)
-        final = []
-        for idx in range(len(results)):
-            result = results[idx]
-            x, y, w, h, name, conf = result
-            final.append(
-                {
-                    "name": name.lower(),
-                    "x": max(x, 0),
-                    "y": max(y, 0),
-                    "width": max(w, 1),
-                    "height": max(h, 1),
-                    "confidence": conf,
-                }
-            )
-        return final
+        return identify_objects(filename, confidence)

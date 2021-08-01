@@ -22,6 +22,7 @@ black = "^21.6b0"
 robotframework = "^4.1"
 robotframework-lsp = "^0.20.0"
 robotframework-robocop = "^1.8.1"
+appdirs = "^1.4.4"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
