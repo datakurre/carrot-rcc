@@ -628,7 +628,7 @@ for (const topic of Object.keys(CAMUNDA_TOPICS)) {
 
       // On error, stop extending lock expiration
       if (task.id && !extendLockError.has(task.id)) {
-        extendLockTimeout = setTimeout(extendLock, lockExpiration / 2);
+        extendLockTimeout = setTimeout(extendLock, lockExpiration / 3.0);
       } else if (task.id) {
         extendLockError.delete(task.id);
       }
