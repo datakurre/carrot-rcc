@@ -188,9 +188,9 @@ const inferType = async (
   old: TypedValue | undefined,
   current: any
 ): Promise<string> => {
-  if (old?.type === 'object') {
+  if (old?.type === "object") {
     // We can only save deserialized objects back as JSON
-    return 'Json';
+    return "Json";
   } else if (old?.type) {
     return old.type[0].toUpperCase() + old.type.substr(1);
   } else if (typeof current === "boolean") {
@@ -500,7 +500,9 @@ const save = async (
         default:
           patch.modifications[name] = {
             value: current[name],
-            type: old?.[name]?.type ? old[name].type[0].toUpperCase() + old[name].type.substr(1) : 'String',
+            type: old?.[name]?.type
+              ? old[name].type[0].toUpperCase() + old[name].type.substr(1)
+              : "String",
           };
       }
     }
@@ -753,3 +755,5 @@ for (const topic of Object.keys(CAMUNDA_TOPICS)) {
     }
   });
 }
+
+client.start();
