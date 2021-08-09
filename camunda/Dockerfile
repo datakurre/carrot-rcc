@@ -9,4 +9,5 @@ RUN set -xe && \
     wget -P /camunda/webapps/camunda/app/cockpit/scripts/ https://raw.githubusercontent.com/datakurre/camunda-modeler-robot-plugin/master/dist/module.js
 COPY --chown=camunda:camunda cockpit/config.js /camunda/webapps/camunda/app/cockpit/scripts/.
 COPY --chown=camunda:camunda deployment /tmp/deployment
+COPY --chown=camunda:camunda web.xml /camunda/conf/web.xml
 
