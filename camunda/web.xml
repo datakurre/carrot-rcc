@@ -28,6 +28,7 @@
       <param-name>cors.allowed.origins</param-name>
       <param-value>*</param-value>
     </init-param>
+    <async-supported>true</async-supported>
   </filter>
 
   <filter-mapping>
