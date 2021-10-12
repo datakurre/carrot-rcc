@@ -1,4 +1,5 @@
 { pkgs ? import ./nix { nixpkgs = sources."nixpkgs-21.05"; }
+, unstable ? import ./nix { nixpkgs = sources."nixpkgs-unstable"; }
 , sources ? import ./nix/sources.nix
 }:
 
@@ -9,6 +10,7 @@ let
       (baseNameOf path) == "package.json" ||
       (baseNameOf path) == "package-lock.json" ) ./.;
     preRebuild = ''
+      sed -i 's|"bin": "./carrot-rcc",||' package.json
     '';
     postInstall = ''
       mv $out/lib/node_modules/*/node_modules /tmp/_; rm -rf $out; mv /tmp/_ $out
@@ -20,11 +22,24 @@ let
       (baseNameOf path) == "package.json" ||
       (baseNameOf path) == "package-lock.json" ) ./.;
     preRebuild = ''
+      sed -i 's|"bin": "./carrot-rcc",||' package.json
     '';
     postInstall = ''
       mv $out/lib/node_modules/*/node_modules /tmp/_; rm -rf $out; mv /tmp/_ $out
     '';
   };
+
+  rccWrapped  = (pkgs.buildFHSUserEnv {
+    name = "rcc";
+    targetPkgs = pkgs: (with pkgs; [
+      rcc
+      firefox
+      geckodriver
+      unstable.micromamba
+      libGL
+    ]);
+    runScript = "rcc";
+  });
 
 in
 
@@ -34,27 +49,23 @@ pkgs.stdenv.mkDerivation rec {
   buildPhase = ''
     source $stdenv/setup;
     cp -a ${dev_node_modules} node_modules
-    node_modules/.bin/tsc
+    node_modules/.bin/rollup -c rollup.config.js
   '';
   installPhase = ''
     source $stdenv/setup;
-    mkdir -p $out/bin $out/var/lib/carrot-executor
-    cp -a dist/* $out/var/lib/carrot-executor
-    cat > $out/bin/carrot-executor << EOF
-    #!/usr/bin/env sh
-    cd $out/var/lib/carrot-executor && node .
-    EOF
-    chmod u+x $out/bin/carrot-executor
+    mkdir -p $out/bin
+    cp -a carrot-rcc $out/bin/carrot-rcc
   '';
   postFixup = ''
-    wrapProgram $out/bin/carrot-executor \
-      --prefix PATH : ${pkgs.lib.makeBinPath propagatedBuildInputs} \
-      --suffix NODE_ENV : production \
-      --suffix NODE_PATH : ${run_node_modules}
+    mkdir -p $out/bin
+    install carrot-rcc $out/bin/carrot-rcc
+    wrapProgram $out/bin/carrot-rcc \
+      --prefix PATH : ${pkgs.lib.makeBinPath propagatedBuildInputs}
   '';
   buildInputs = with pkgs; [ makeWrapper bindfs ];
   propagatedBuildInputs = with pkgs; [
-    coreutils findutils gnused nodejs-14_x dev_node_modules
+    nodejs-14_x
+    rccWrapped
   ];
   shellHook = ''
     fusermount -qu node_modules
