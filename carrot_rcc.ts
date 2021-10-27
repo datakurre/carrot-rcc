@@ -137,8 +137,7 @@ for (const candidate of RCC_ROBOTS) {
   }
 }
 if (Object.keys(CAMUNDA_TOPICS).length < 1) {
-  LOG.error("RCC_ROBOTS invalid or missing:", RCC_ROBOTS);
-  process.exit(1);
+  LOG.warn("RCC_ROBOTS invalid or missing:", RCC_ROBOTS);
 }
 
 const AuthorizationHeaderInterceptor: Interceptor = (config: any): any => {
