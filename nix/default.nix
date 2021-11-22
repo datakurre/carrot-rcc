@@ -17,18 +17,8 @@ let
         poetry = (import sources."nixpkgs-21.05" {}).poetry;
     };
 
-    rcc = pkgs.buildGoPackage rec {
-      name = "rcc-${version}";
-      version = "v9.16.0";
-      goPackagePath = "github.com/robocorp/rcc";
-      src = sources.rcc;
-      nativeBuildInputs = with pkgs; [ go-bindata rake zip ];
-      goDeps = ./rcc.nix;
-      postPatch = ''
-        source $stdenv/setup
-        substituteInPlace Rakefile --replace "\$HOME/go/bin/" ""
-        rake assets
-      '';
+    rcc = pkgs.callPackage ./pkgs/rcc {
+      micromamba = (import sources."nixpkgs-unstable" {}).micromamba;
     };
 
     # node2nix with nodejs 14 support

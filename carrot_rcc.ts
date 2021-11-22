@@ -323,25 +323,26 @@ const load = async (
           }
         })();
         const filename = path.join(itemsDir, file.filename);
-        variables[name] = filename.replace(/\\/g, "\\\\");
+        delete variables[name];
         await new Promise((resolve) => {
           fs.writeFile(filename, file.content, resolve);
         });
         const hashSum = crypto.createHash("sha256");
         hashSum.update(file.content);
-        files[filename] = {
-          name,
+        files[name] = {
+          name: filename.replace(/\\/g, "\\\\"),
           hex: hashSum.digest("hex"),
         };
       }
     }
-    const items = {
-      1: {
-        1: {
-          variables,
-        },
+    const items = [
+      {
+        payload: variables,
+        files: Object.fromEntries(
+          Object.entries<File>(files).map(([name, file]) => [name, file.name])
+        ),
       },
-    };
+    ];
     fs.writeFile(
       path.join(itemsDir, "items.json"),
       JSON.stringify(items),
@@ -440,9 +441,13 @@ const save = async (
   };
 
   const old = task.variables.getAllTyped();
-  const current = JSON.parse(
-    fs.readFileSync(path.join(itemsDir, "items.json")) as unknown as string
-  )[1][1].variables;
+  const { payload: current, files: filenames } = JSON.parse(
+    fs.readFileSync(
+      fs.existsSync(path.join(itemsDir, "items.output.json"))
+        ? path.join(itemsDir, "items.output.json")
+        : path.join(itemsDir, "items.json")
+    ) as unknown as string
+  )[0];
   const patch: PatchVariablesDto = {
     modifications: {},
   };
@@ -506,25 +511,30 @@ const save = async (
       }
     }
 
-    const itemsFiles = new FD().withFullPaths().crawl(itemsDir).sync();
-    for (const file of itemsFiles as PathsOutput) {
-      if (!["items.json", "vault.json"].includes(path.basename(file))) {
-        const fileBuffer = fs.readFileSync(file);
+    for (const [name, file] of Object.entries<string>(filenames)) {
+      const filename = fs.existsSync(path.join(itemsDir, file))
+        ? path.join(itemsDir, file)
+        : fs.existsSync(path.join(tasksDir, file))
+        ? path.join(tasksDir, file)
+        : fs.existsSync(file)
+        ? toAbsolute(file)
+        : null;
+
+      if (filename !== null) {
+        const fileBuffer = fs.readFileSync(filename);
 
         // Skip unmodified files
-        if (files[file]) {
+        if (files[name]) {
           const hashSum = crypto.createHash("sha256");
           hashSum.update(fileBuffer);
-          if (files[file].hex === hashSum.digest("hex")) {
+          if (files[name].hex === hashSum.digest("hex")) {
             continue;
           }
         }
 
         // Set to new and changed file variables
         const type = mime.lookup(file) || "application/octet-stream";
-        patch.modifications[
-          files[file] ? files[file].name : path.basename(file)
-        ] = {
+        patch.modifications[name] = {
           value: fileBuffer.toString("base64"),
           type: "File",
           valueInfo: {
@@ -655,7 +665,8 @@ for (const topic of Object.keys(CAMUNDA_TOPICS)) {
             RPA_SECRET_MANAGER: "RPA.Robocloud.Secrets.FileSecrets",
             RPA_SECRET_FILE: `${itemsDir}/vault.json`,
             RPA_WORKITEMS_ADAPTER: "RPA.Robocloud.Items.FileAdapter",
-            RPA_WORKITEMS_PATH: `${itemsDir}/items.json`,
+            RPA_INPUT_WORKITEM_PATH: `${itemsDir}/items.json`,
+            RPA_OUTPUT_WORKITEM_PATH: `${itemsDir}/items.output.json`,
             RC_WORKSPACE_ID: "1",
             RC_WORKITEM_ID: "1",
             ...process.env,
