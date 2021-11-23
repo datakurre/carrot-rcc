@@ -17,9 +17,9 @@ let
         poetry = (import sources."nixpkgs-21.05" {}).poetry;
     };
 
-    rcc = pkgs.callPackage ./pkgs/rcc {
-      micromamba = (import sources."nixpkgs-unstable" {}).micromamba;
-    };
+    rcc = pkgs.callPackage ./pkgs/rcc {};
+
+    micromamba = (import sources."nixpkgs-unstable" {}).micromamba;
 
     # node2nix with nodejs 14 support
     node2nix = builtins.getAttr builtins.currentSystem(

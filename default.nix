@@ -1,6 +1,6 @@
 { pkgs ? import ./nix { nixpkgs = sources."nixpkgs-21.05"; }
-, unstable ? import ./nix { nixpkgs = sources."nixpkgs-unstable"; }
 , sources ? import ./nix/sources.nix
+, extraPkgs ? with pkgs; [ firefox geckodriver libGL ]
 }:
 
 let
@@ -33,11 +33,8 @@ let
     name = "rcc";
     targetPkgs = pkgs: (with pkgs; [
       rcc
-      firefox
-      geckodriver
-      unstable.micromamba
-      libGL
-    ]);
+      micromamba
+    ]) ++ extraPkgs;
     runScript = "rcc";
   });
 
@@ -54,11 +51,9 @@ pkgs.stdenv.mkDerivation rec {
   installPhase = ''
     source $stdenv/setup;
     mkdir -p $out/bin
-    cp -a carrot-rcc $out/bin/carrot-rcc
+    install carrot-rcc $out/bin/carrot-rcc
   '';
   postFixup = ''
-    mkdir -p $out/bin
-    install carrot-rcc $out/bin/carrot-rcc
     wrapProgram $out/bin/carrot-rcc \
       --prefix PATH : ${pkgs.lib.makeBinPath propagatedBuildInputs}
   '';
