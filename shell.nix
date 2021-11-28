@@ -1,5 +1,4 @@
 { pkgs ? import ./nix { nixpkgs = sources."nixpkgs-21.05"; }
-, unstable ? import ./nix { nixpkgs = sources."nixpkgs-unstable"; }
 , sources ? import ./nix/sources.nix
 }:
 
@@ -11,17 +10,16 @@ pkgs.mkShell {
     nodejs-14_x
     poetry
     poetry2nix.cli
-    unstable.micromamba
     (buildFHSUserEnv {
       name = "rcc";
       targetPkgs = pkgs: (with pkgs; [
         rcc
-        firefox
-        geckodriver
-        unstable.micromamba
-        libGL
+        micromamba
       ]);
       runScript = "rcc";
+      profile = ''
+        export LD_LIBRARY_PATH="${pkgs.dbus-glib}/lib:${pkgs.libGL}/lib"
+      '';
     })
   ];
   shellHook = ''

@@ -14,7 +14,7 @@ def crop_image(
     w = max(w + 20, 1)
     h = max(h + 20, 1)
     safe = name.lower().replace(" ", "_")
-    path = os.path.join(output, f"{safe}{ext}")
+    path = os.path.join(output, f"{safe}{ext or '.jpg'}")
     cv.imwrite(path, img[y : y + h, x : x + w])
     return os.path.basename(path)
 

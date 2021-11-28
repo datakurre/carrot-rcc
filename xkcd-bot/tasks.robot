@@ -1,16 +1,21 @@
 *** Settings ***
 
 Library  DateTime
-Library  RPA.Robocloud.Items
+Library  RPA.Robocorp.WorkItems
 Library  SeleniumLibrary  timeout=5s
 ...      plugins=SeleniumTestability;True;5s;True
 Library  Collections
 Library  OperatingSystem
 Library  requests
 
+Suite setup  Set environment
 Suite teardown  Close all browsers
 
 *** Keywords ***
+
+Set environment
+    Set environment variable  LD_LIBRARY_PATH  %{CONDA_PREFIX}/lib:%{LD_LIBRARY_PATH}
+    Log  %{LD_LIBRARY_PATH}
 
 Run Selenium keyword and return status
     [Documentation]

@@ -1,21 +1,24 @@
 *** Settings ***
 
-Library  RPA.Robocloud.Items
+Library  RPA.Robocorp.WorkItems
 Library  RPA.Excel.Files
 Library  Collections
 Library  Image
 Library  YOLO
+Library  OperatingSystem
 
 *** Tasks ***
 
 Extract items from photo
     Set task variables from work item
+    ${input}=  Get work item file  input
     ${items}=  Identify objects  ${input}
     Set work item variable  items  ${items}
     Save work item
 
 Crop image
     Set task variables from work item
+    ${input}=  Get work item file  input
     ${filename}=  Crop image
     ...  ${input}  ${name}  ${x}  ${y}  ${width}  ${height}
     ...  output=${OUTPUT_DIR}
@@ -47,7 +50,8 @@ Save items to spreadsheet
     FOR  ${item}  IN  @{input}
       Set worksheet value  ${row}  A  ${item}[name]
       Set worksheet value  ${row}  B  ${item}[price]
-      Insert image to worksheet  ${row}  C  ${${item}[filename]}  0.5
+      ${filename}=  Get work item file  ${item}[filename]
+      Insert image to worksheet  ${row}  C  ${filename}  0.5
       ${row}=  Evaluate  ${row} + 1
     END
     Save workbook  ${OUTPUT_DIR}${/}items.xslx
