@@ -12,6 +12,7 @@ usage: carrot-rcc [<robots>...]
                   [--base-url] [--authorization]
                   [--worker-id] [--max-tasks] [--poll-interval] [--log-level]
                   [--rcc-executable] [--rcc-encoding] [--rcc-telemetry]
+                  [--vault-addr] [--vault-token]
                   [-h] [--help]
 
 <robots> could also be passed as a comma separated env RCC_ROBOTS
@@ -29,6 +30,9 @@ options:
   --rcc-executable[=<path>]                [env: RCC_EXECUTABLE] [default: rcc]
   --rcc-encoding[=<encoding>]              [env: RCC_ENCODING] [default: utf-8]
   --rcc-telemetry                          [env: RCC_TELEMETRY] (default: do not track)
+
+  --vault-addr[=<addr>]                    [env: VAULT_ADDR] [default: http://127.0.0.1:8200]
+  --vault-token[=<token>]                  [env: VAULT_TOKEN] [default: token]
 
   -h, --help
 
@@ -120,3 +124,29 @@ $ carrot-rcc.exe robot.zip --base-url=http://192.168.86.156:8080/engine-rest --l
 The project's repository includes [example Camunda processes](https://github.com/datakurre/carrot-rcc/tree/main/camunda/deployment) with example RCC compatible robots ([1](https://github.com/datakurre/carrot-rcc/blob/main/xkcd-bot/robot.zip?raw=true), [2](https://github.com/datakurre/carrot-rcc/blob/main/fleamarket-bot/robot.zip?raw=true)) available.
 
 ![](https://github.com/datakurre/carrot-rcc/raw/main/example-process.png)
+
+Vault support
+=============
+
+`carrot-rcc` has some support for [HashiCorp Vault KV secrets engine](https://www.vaultproject.io/docs/secrets/kv). When working `VAULT_ADDR` and `VAULT_TOKEN` set, `carrot_rcc` will resolve secrets defined in each robots' `robot.yaml` each time before a robot execution. 
+
+An example `robot.yaml` with secrets:
+
+```yaml
+tasks:
+
+  Camunda Topic:
+    robotTaskName:
+      My Robot Task
+
+vault:
+  my-secret: /secret-engine-path/my-secret
+
+condaConfigFile:
+  conda.yaml
+
+artifactsDir:
+  output
+```
+
+Note: `carrot-rcc` does NOT manage renewal for the given `VAULT_TOKEN`.
