@@ -4,6 +4,8 @@ channels:
 dependencies:
   # https://anaconda.org/search
   - python>=3.8,<3.10
-  - rpaframework=9.6.0
-  - appdirs=1.4.4
   - py-opencv=4.2.0
+  - pip=21.3.1
+  - pip:
+      - rpaframework==11.6.4
+      - appdirs==1.4.4

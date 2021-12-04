@@ -28,6 +28,14 @@ const crypto = require("crypto");
 type PatchVariablesDto = api.components["schemas"]["PatchVariablesDto"];
 type VariableValueDto = api.components["schemas"]["VariableValueDto"];
 
+interface VaultSecretResponseData {
+  data: Record<string, string>;
+}
+
+interface VaultSecretResponse {
+  data: VaultSecretResponseData;
+}
+
 dotenv.config();
 
 const args = neodoc.run(`
@@ -35,6 +43,7 @@ usage: carrot-rcc [<robots>...]
                   [--base-url] [--authorization]
                   [--worker-id] [--max-tasks] [--poll-interval] [--log-level]
                   [--rcc-executable] [--rcc-encoding] [--rcc-telemetry]
+                  [--vault-addr] [--vault-token]
                   [-h] [--help]
 
 <robots> could also be passed as a comma separated env RCC_ROBOTS
@@ -48,12 +57,15 @@ options:
   --max-tasks[=<cpus>]                     [env: CLIENT_MAX_TASKS] [default: ${
     os.cpus().length
   }]
-  --poll-interval[=<milliseconds>]         [env: CLIENT_POLL_INTERVAL] [default: 30000]
+  --poll-interval[=<milliseconds>]         [env: CLIENT_POLL_INTERVAL] [default: 1000]
   --log-level[=<debug|info|warn|error>]    [env: CLIENT_LOG_LEVEL] [default: info]
 
   --rcc-executable[=<path>]                [env: RCC_EXECUTABLE] [default: rcc]
   --rcc-encoding[=<encoding>]              [env: RCC_ENCODING] [default: utf-8]
   --rcc-telemetry                          [env: RCC_TELEMETRY] (default: do not track)
+
+  --vault-addr[=<addr>]                    [env: VAULT_ADDR] [default: http://127.0.0.1:8200]
+  --vault-token[=<token>]                  [env: VAULT_TOKEN] [default: token]
 
   -h, --help
 
@@ -83,6 +95,9 @@ const CLIENT_WORKER_ID = args["--worker-id"];
 const RCC_EXECUTABLE = args["--rcc-executable"];
 const RCC_ENCODING = args["--rcc-encoding"];
 const RCC_TELEMETRY = !!args["--rcc-telemetry"];
+
+const VAULT_ADDR = args["--vault-addr"];
+const VAULT_TOKEN = args["--vault-token"];
 
 // Disable telemetry by default
 if (!RCC_TELEMETRY) {
@@ -119,6 +134,7 @@ const toAbsolute = (p: string): string =>
   fs.existsSync(p) && !path.isAbsolute(p) ? path.join(process.cwd(), p) : p;
 
 const CAMUNDA_TOPICS: Record<string, string> = {};
+const CAMUNDA_TOPICS_VAULT: Record<string, Record<string, string>> = {};
 
 for (const candidate of RCC_ROBOTS) {
   const robot = toAbsolute(candidate);
@@ -129,8 +145,10 @@ for (const candidate of RCC_ROBOTS) {
       if (entry.entryName == "robot.yaml") {
         const data = entry.getData().toString(RCC_ENCODING as BufferEncoding);
         const yaml = YAML.parse(data);
+        const secrets = yaml.vault || {};
         for (const task of Object.keys(yaml.tasks || {})) {
           CAMUNDA_TOPICS[task] = robot;
+          CAMUNDA_TOPICS_VAULT[task] = secrets;
         }
       }
     });
@@ -157,16 +175,19 @@ const client = new Client({
   workerId: CLIENT_WORKER_ID,
   maxTasks: CLIENT_MAX_TASKS,
   maxParallelExecutions: CLIENT_MAX_TASKS,
-  interval: CLIENT_POLL_INTERVAL,
-  lockDuration: CLIENT_POLL_INTERVAL * 2,
+  // interval: 0, would fill server logs on connection errors due to
+  // camunda-external-task-client-js not allowing to modify interval
+  interval: Math.max(1000, CLIENT_POLL_INTERVAL),
+  lockDuration: CLIENT_POLL_INTERVAL * 20,
   autoPoll: true,
   interceptors: [AuthorizationHeaderInterceptor],
-  asyncResponseTimeout: CLIENT_POLL_INTERVAL,
+  asyncResponseTimeout: CLIENT_POLL_INTERVAL * 10,
   use: (logger as any).level(CLIENT_LOG_LEVEL),
 });
 
 LOG.debug((client as any).options);
 LOG.debug(CAMUNDA_TOPICS);
+LOG.debug(CAMUNDA_TOPICS_VAULT);
 
 const isEqual = async (
   old: TypedValue | undefined,
@@ -250,11 +271,7 @@ const load = async (
   itemsDir: string,
   topic: string
 ): Promise<Record<string, File>> => {
-  const client = new rest.RestClient(
-    "carrot-executor",
-    CAMUNDA_API_BASE_URL,
-    []
-  );
+  const camunda = new rest.RestClient("carrot-rcc", CAMUNDA_API_BASE_URL, []);
   const options: IRequestOptions = {
     additionalHeaders: CAMUNDA_API_AUTHORIZATION
       ? {
@@ -265,6 +282,12 @@ const load = async (
       params: {
         deserializeValue: "true",
       },
+    },
+  };
+  const vault = new rest.RestClient("carrot-rcc", `${VAULT_ADDR}/v1/`, []);
+  const vaultOptions: IRequestOptions = {
+    additionalHeaders: {
+      "X-Vault-Token": VAULT_TOKEN,
     },
   };
   const files: Record<string, File> = {};
@@ -296,12 +319,12 @@ const load = async (
       if (typed[name].type === "object") {
         // fixes camunda-external-task-client-js not deserializing lists / maps
         let variable =
-          (await client.get<VariableValueDto>(
+          (await camunda.get<VariableValueDto>(
             `execution/${task.executionId}/localVariables/${name}`,
             options
           )) ||
-          (await client.get<VariableValueDto>(
-            `/process-instance/${task.processInstanceId}/variables/${name}`,
+          (await camunda.get<VariableValueDto>(
+            `process-instance/${task.processInstanceId}/variables/${name}`,
             options
           ));
         variables[name] = variable.result?.value;
@@ -323,36 +346,64 @@ const load = async (
           }
         })();
         const filename = path.join(itemsDir, file.filename);
-        variables[name] = filename.replace(/\\/g, "\\\\");
+        delete variables[name];
         await new Promise((resolve) => {
           fs.writeFile(filename, file.content, resolve);
         });
         const hashSum = crypto.createHash("sha256");
         hashSum.update(file.content);
-        files[filename] = {
-          name,
+        files[name] = {
+          name: filename.replace(/\\/g, "\\\\"),
           hex: hashSum.digest("hex"),
         };
       }
     }
-    const items = {
-      1: {
-        1: {
-          variables,
-        },
+    const items = [
+      {
+        payload: variables,
+        files: Object.fromEntries(
+          Object.entries<File>(files).map(([name, file]) => [name, file.name])
+        ),
       },
-    };
+    ];
     fs.writeFile(
       path.join(itemsDir, "items.json"),
       JSON.stringify(items),
       resolve
     );
   });
-  // Save env as secrets
+  // Save secrets
   await new Promise(async (resolve) => {
+    const secrets: Record<string, Record<string, string>> = {};
+    // Try to resolve Vault secrets
+    for (const [key, path] of Object.entries(
+      CAMUNDA_TOPICS_VAULT[topic] || {}
+    )) {
+      const apiPath = path
+        .split("/")
+        .slice(0, -1)
+        .concat(["data"])
+        .concat(path.split("/").slice(-1))
+        .join("/")
+        .replace(/^\//, "");
+      try {
+        const response = await vault.get<VaultSecretResponse>(
+          apiPath,
+          vaultOptions
+        );
+        secrets[key] = response.result?.data?.data || {};
+        if (!response.result?.data?.data) {
+          LOG.warn(`Vault secret "${path}" was not resolved.`);
+        }
+      } catch (e) {
+        LOG.warn(`Vault secret "${path}" was not resolved. ${e}`);
+      }
+    }
+    // Save resolved secrets with env as extra secrets
     fs.writeFile(
       path.join(itemsDir, "vault.json"),
       JSON.stringify({
+        ...secrets,
         env: process.env,
       }),
       resolve
@@ -425,7 +476,7 @@ const save = async (
   stderr: string,
   code: number
 ): Promise<void> => {
-  const client = new rest.RestClient(
+  const camunda = new rest.RestClient(
     "carrot-executor",
     CAMUNDA_API_BASE_URL,
     []
@@ -440,9 +491,13 @@ const save = async (
   };
 
   const old = task.variables.getAllTyped();
-  const current = JSON.parse(
-    fs.readFileSync(path.join(itemsDir, "items.json")) as unknown as string
-  )[1][1].variables;
+  const { payload: current, files: filenames } = JSON.parse(
+    fs.readFileSync(
+      fs.existsSync(path.join(itemsDir, "items.output.json"))
+        ? path.join(itemsDir, "items.output.json")
+        : path.join(itemsDir, "items.json")
+    ) as unknown as string
+  )[0];
   const patch: PatchVariablesDto = {
     modifications: {},
   };
@@ -506,25 +561,30 @@ const save = async (
       }
     }
 
-    const itemsFiles = new FD().withFullPaths().crawl(itemsDir).sync();
-    for (const file of itemsFiles as PathsOutput) {
-      if (!["items.json", "vault.json"].includes(path.basename(file))) {
-        const fileBuffer = fs.readFileSync(file);
+    for (const [name, file] of Object.entries<string>(filenames)) {
+      const filename = fs.existsSync(path.join(itemsDir, file))
+        ? path.join(itemsDir, file)
+        : fs.existsSync(path.join(tasksDir, file))
+        ? path.join(tasksDir, file)
+        : fs.existsSync(file)
+        ? toAbsolute(file)
+        : null;
+
+      if (filename !== null) {
+        const fileBuffer = fs.readFileSync(filename);
 
         // Skip unmodified files
-        if (files[file]) {
+        if (files[name]) {
           const hashSum = crypto.createHash("sha256");
           hashSum.update(fileBuffer);
-          if (files[file].hex === hashSum.digest("hex")) {
+          if (files[name].hex === hashSum.digest("hex")) {
             continue;
           }
         }
 
         // Set to new and changed file variables
         const type = mime.lookup(file) || "application/octet-stream";
-        patch.modifications[
-          files[file] ? files[file].name : path.basename(file)
-        ] = {
+        patch.modifications[name] = {
           value: fileBuffer.toString("base64"),
           type: "File",
           valueInfo: {
@@ -583,7 +643,7 @@ const save = async (
     }
 
     if (Object.keys(patch.modifications).length > 0) {
-      await client.create<never>(
+      await camunda.create<never>(
         `execution/${task.executionId}/localVariables`,
         patch,
         options
@@ -655,7 +715,8 @@ for (const topic of Object.keys(CAMUNDA_TOPICS)) {
             RPA_SECRET_MANAGER: "RPA.Robocloud.Secrets.FileSecrets",
             RPA_SECRET_FILE: `${itemsDir}/vault.json`,
             RPA_WORKITEMS_ADAPTER: "RPA.Robocloud.Items.FileAdapter",
-            RPA_WORKITEMS_PATH: `${itemsDir}/items.json`,
+            RPA_INPUT_WORKITEM_PATH: `${itemsDir}/items.json`,
+            RPA_OUTPUT_WORKITEM_PATH: `${itemsDir}/items.output.json`,
             RC_WORKSPACE_ID: "1",
             RC_WORKITEM_ID: "1",
             ...process.env,

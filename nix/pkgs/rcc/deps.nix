@@ -1505,8 +1505,18 @@
     fetch = {
       type = "git";
       url = "https://go.googlesource.com/sys";
-      rev = "d4d67f95c62d";
-      sha256 = "1a6n9hwrhp1jbs865sszrg25afy8y10cx4d5h7n2h27zcql1jgm1";
+      rev = "59db8d763f22";
+      sha256 = "0pbqyjcv66k6k25m8lkc6szz81k9172h45w9sbdmbsqhnk0an5v8";
+      moduleDir = "";
+    };
+  }
+  {
+    goPackagePath = "golang.org/x/term";
+    fetch = {
+      type = "git";
+      url = "https://go.googlesource.com/term";
+      rev = "6886f2dfbf5b";
+      sha256 = "0661w7dp2ak1k4ii90v6chw2x8a6g4sc5j0ba58qlplaj4k5l0xs";
       moduleDir = "";
     };
   }
