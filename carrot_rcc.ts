@@ -2,6 +2,7 @@
 
 import { spawn, spawnSync } from "child_process";
 import fs from "fs";
+import { IncomingMessage, ServerResponse, createServer } from "http";
 import os from "os";
 import path from "path";
 
@@ -27,6 +28,7 @@ const crypto = require("crypto");
 
 type PatchVariablesDto = api.components["schemas"]["PatchVariablesDto"];
 type VariableValueDto = api.components["schemas"]["VariableValueDto"];
+type ProcessEngineDto = api.components["schemas"]["ProcessDefinitionDto"];
 
 interface VaultSecretResponseData {
   data: Record<string, string>;
@@ -44,6 +46,7 @@ usage: carrot-rcc [<robots>...]
                   [--worker-id] [--max-tasks] [--poll-interval] [--log-level]
                   [--rcc-executable] [--rcc-encoding] [--rcc-telemetry]
                   [--vault-addr] [--vault-token]
+                  [--healthz-host] [--healthz-port]
                   [-h] [--help]
 
 <robots> could also be passed as a comma separated env RCC_ROBOTS
@@ -66,6 +69,9 @@ options:
 
   --vault-addr[=<addr>]                    [env: VAULT_ADDR] [default: http://127.0.0.1:8200]
   --vault-token[=<token>]                  [env: VAULT_TOKEN] [default: token]
+
+  --healthz-host[=<host>]                  [env: HEALTHZ_HOST] [default: localhost]
+  --healthz-port[=<port>]                  [env: HEALTHZ_PORT] (default: disabled)
 
   -h, --help
 
@@ -98,6 +104,11 @@ const RCC_TELEMETRY = !!args["--rcc-telemetry"];
 
 const VAULT_ADDR = args["--vault-addr"];
 const VAULT_TOKEN = args["--vault-token"];
+
+const HEALTHZ_HOST = args["--healthz-host"];
+const HEALTHZ_PORT = !isNaN(parseInt(args["--healthz-port"]))
+  ? parseInt(args["--healthz-port"])
+  : 0;
 
 // Disable telemetry by default
 if (!RCC_TELEMETRY) {
@@ -814,6 +825,31 @@ for (const topic of Object.keys(CAMUNDA_TOPICS)) {
       LOG.debug("Completed task", task.topicName, task.id);
     }
   });
+}
+
+if (HEALTHZ_HOST && HEALTHZ_PORT) {
+  (async () => {
+    const camunda = new rest.RestClient("carrot-rcc", CAMUNDA_API_BASE_URL, []);
+    const options: IRequestOptions = {
+      additionalHeaders: CAMUNDA_API_AUTHORIZATION
+        ? {
+            Authorization: CAMUNDA_API_AUTHORIZATION,
+          }
+        : {},
+    };
+    const healthz = async (req: IncomingMessage, res: ServerResponse) => {
+      try {
+        await camunda.get<ProcessEngineDto[]>("engine", options);
+        res.writeHead(200);
+        res.end(JSON.stringify({ status: "ok" }));
+      } catch (e) {
+        res.writeHead(500);
+        res.end(JSON.stringify({ status: `${e}` }));
+      }
+    };
+    LOG.info(`Healthz: http://${HEALTHZ_HOST}:${HEALTHZ_PORT}/healthz`);
+    createServer(healthz).listen(HEALTHZ_PORT, HEALTHZ_HOST);
+  })();
 }
 
 client.start();
