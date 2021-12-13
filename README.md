@@ -140,7 +140,7 @@ tasks:
       My Robot Task
 
 vault:
-  my-secret: /secret-engine-path/my-secret
+  my-secret: /secret-engine-path/data/my-secret-path
 
 condaConfigFile:
   conda.yaml

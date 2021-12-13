@@ -390,13 +390,7 @@ const load = async (
     for (const [key, path] of Object.entries(
       CAMUNDA_TOPICS_VAULT[topic] || {}
     )) {
-      const apiPath = path
-        .split("/")
-        .slice(0, -1)
-        .concat(["data"])
-        .concat(path.split("/").slice(-1))
-        .join("/")
-        .replace(/^\//, "");
+      const apiPath = path.replace(/^\//, "");
       try {
         const response = await vault.get<VaultSecretResponse>(
           apiPath,
