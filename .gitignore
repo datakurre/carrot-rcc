@@ -8,3 +8,4 @@ node_modules
 result
 __pycache__
 carrot-rcc
+carrot_rcc.js
