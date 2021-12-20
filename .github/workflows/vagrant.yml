@@ -18,4 +18,5 @@ jobs:
         # If you chose API tokens for write access OR if you have a private cache
         authToken: '${{ secrets.CACHIX_AUTH_TOKEN }}'
     - run: nix-build -E "(let sources = import ./nix/sources.nix; in import (sources.\"nixpkgs\" + \"/nixos\") { configuration = $(pwd)/vagrant/configuration-libvirt.nix; }).system" --max-jobs 1
+    - run: nix-build -E "(let sources = import ./nix/sources.nix; in import (sources.\"nixpkgs\" + \"/nixos\") { configuration = $(pwd)/vagrant/configuration-virtualbox.nix; }).system" --max-jobs 1
     - run: nix-shell --run "echo OK"
