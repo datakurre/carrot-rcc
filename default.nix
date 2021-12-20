@@ -7,6 +7,8 @@
 
 let
 
+  gitignoreSource = pkgs.callPackage ./nix/pkgs/gitignore-source {};
+
   dev_node_modules = (import ./nix/node-dev-composition.nix { inherit pkgs; }).package.override {
     src = builtins.filterSource (path: type:
       (baseNameOf path) == "package.json" ||
@@ -35,7 +37,7 @@ in
 
 pkgs.stdenv.mkDerivation rec {
   name = "carrot-rcc";
-  src = pkgs.gitignoreSource ./.;
+  src = gitignoreSource ./.;
   buildPhase = ''
     source $stdenv/setup;
     cp -a ${dev_node_modules} node_modules
