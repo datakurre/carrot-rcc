@@ -131,6 +131,8 @@
     ];
     environment = {
       CLIENT_LOG_LEVEL = "debug";
+      SMTP_HOST = "localhost";
+      SMTP_PORT = "${toString config.services.mailhog.smtpPort}";
       VAULT_ADDR = "http://${config.services.vault.address}";
       VAULT_TOKEN = "secret";
     };
