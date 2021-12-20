@@ -1,6 +1,7 @@
 .cache/
 .direnv/
 .idea/
+.vagrant/
 env
 dist/
 result

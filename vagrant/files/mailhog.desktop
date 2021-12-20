@@ -1,0 +1,6 @@
+[Desktop Entry]
+Version=1.0
+Type=Link
+Name=MailHog
+Icon=/home/vagrant/.config/vagrant/mailhog.png
+URL=http://localhost:8025/

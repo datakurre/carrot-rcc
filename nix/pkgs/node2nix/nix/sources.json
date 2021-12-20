@@ -1,0 +1,14 @@
+{
+    "node2nix": {
+        "branch": "master",
+        "description": "Generate Nix expressions to build NPM packages",
+        "homepage": "",
+        "owner": "svanderburg",
+        "repo": "node2nix",
+        "rev": "0c94281ea98f1b17532176106f90f909aa133704",
+        "sha256": "1r677r7sqjp5hg7rs7wall6nipka3pnrglnjdaj098v1xhswzjbx",
+        "type": "tarball",
+        "url": "https://github.com/svanderburg/node2nix/archive/0c94281ea98f1b17532176106f90f909aa133704.tar.gz",
+        "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
+    }
+}

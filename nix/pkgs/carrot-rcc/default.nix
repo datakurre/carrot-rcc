@@ -1,0 +1,3 @@
+{ pkgs }:
+
+import (../../../.) { inherit pkgs; }

@@ -1,0 +1,6 @@
+applicationType: default
+defaultPackage: fi.jyu.vasara
+testFramework: junit
+sourceLanguage: java
+buildTool: maven
+features: [annotation-api, app-name, assertj, camunda, http-client, java, java-application, jdbc-hikari, junit, liquibase, logback, maven, netty-server, postgres, readme, shade, testcontainers, yaml]

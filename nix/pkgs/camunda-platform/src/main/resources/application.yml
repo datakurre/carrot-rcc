@@ -1,0 +1,65 @@
+camunda:
+
+  admin-user:
+    id: admin
+    password: admin
+    firstname: Camunda
+    lastname: Admin
+    email: admin@example.com
+
+  rest:
+    enabled: true
+    context-path: /engine-rest
+    basic-auth-enabled: false
+
+  webapps:
+    enabled: true
+    context-path: /camunda
+    index-redirect-enabled: true
+
+  # https://docs.camunda.org/manual/latest/reference/deployment-descriptors/tags/process-engine/#configuration-properties
+  generic-properties:
+    properties:
+
+      default-number-of-retries: 3
+      job-executor-deployment-aware: false
+
+      deserialization-type-validation-enabled: true
+      enable-exceptions-after-unhandled-bpmn-error: true
+
+      authorization-enabled: false
+      enable-historic-instance-permissions: false
+      enforce-specific-variable-permission: false
+
+      history: full
+      history-removal-time-strategy: end
+      history-cleanup-strategy: removalTimeBased
+      history-cleanup-enabled: true
+      history-cleanup-batch-size: 100
+      # history-cleanup-batch-window-start-time: "22:00"
+      history-cleanup-batch-window-end-time: "06:00"
+      history-cleanup-degree-of-parallelism: 1
+      history-time-to-live: P7D
+
+      initialize-telemetry: false
+
+# https://docs.micronaut.io/latest/guide/configurationreference.html
+micronaut:
+  application:
+    name: camunda
+  session:
+    http:
+      cookie-secure: true
+  server:
+    host: localhost
+    port: 8080
+    max-request-size: 10MB
+    cors:
+      enabled: true
+
+datasources:
+  default:
+    url: jdbc:postgresql://localhost:5432/postgres
+    driverClassName: org.postgresql.Driver
+    username: postgres
+    password: postgres

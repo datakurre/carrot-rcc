@@ -1,38 +1,35 @@
 # https://github.com/nmattia/niv
 { sources ? import ./sources.nix
-, nixpkgs ? sources."nixpkgs-21.05"
+, nixpkgs ? sources."nixpkgs-21.11"
 }:
 
 let
 
   overlay = _: pkgs: {
-
-    gitignoreSource = (import sources.gitignore {
-      inherit (pkgs) lib;
-    }).gitignoreSource;
-
-    poetry2nix =
-      import (sources.poetry2nix + "/default.nix") {
-        pkgs = import sources."nixpkgs-21.05" {};
-        poetry = (import sources."nixpkgs-21.05" {}).poetry;
-    };
-
-    rcc = pkgs.callPackage ./pkgs/rcc {};
-
-    micromamba = (import sources."nixpkgs-unstable" {}).micromamba;
-
-    # node2nix with nodejs 14 support
-    node2nix = builtins.getAttr builtins.currentSystem(
-      import (sources.node2nix + "/release.nix") {
-        nixpkgs = sources."nixpkgs-20.09";
-        systems = [ builtins.currentSystem ];
-    }).package;
-
+    carrot-rcc = pkgs.callPackage ./pkgs/carrot-rcc {};
+    buildMavenRepositoryFromLockFile = (pkgs.callPackage ./pkgs/mvn2nix { inherit nixpkgs; }).buildMavenRepositoryFromLockFile;
+    gitignoreSource = pkgs.callPackage ./pkgs/gitignore-source {};
+    micromamba = (import sources."nixpkgs-21.11" {}).micromamba;
+    mvn2nix = (pkgs.callPackage ./pkgs/mvn2nix { inherit nixpkgs; }).mvn2nix;
+    node2nix = pkgs.callPackage ./pkgs/node2nix { inherit nixpkgs; };
+    poetry2nix = pkgs.callPackage ./pkgs/poetry2nix { inherit nixpkgs; };
+    rcc = pkgs.callPackage ./pkgs/rcc/rcc.nix {};
+    rccFHSUserEnv = pkgs.callPackage ./pkgs/rcc {};
+    camunda-modeler = pkgs.callPackage ./pkgs/camunda-modeler {};
+    camunda-platform = pkgs.callPackage ./pkgs/camunda-platform {};
   };
 
   pkgs = import nixpkgs {
     overlays = [ overlay ];
-    config = {};
+    config = {
+      allowUnfreePredicate = pkg: builtins.elem (pkgs.lib.getName pkg) [
+        "code"
+        "font-bh-100dpi"
+        "font-bh-lucidatypewriter-100dpi"
+        "font-bh-lucidatypewriter-75dpi"
+        "vscode"
+      ];
+    };
   };
 
 in pkgs

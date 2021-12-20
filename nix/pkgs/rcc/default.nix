@@ -1,24 +1,19 @@
-{ buildFHSUserEnv, buildGoPackage, go-bindata, rake, zip, micromamba }:
+{ callPackage, buildFHSUserEnv, buildGoPackage, go-bindata, rake, zip, micromamba
+, which, cacert, dbus-glib, libGL }:
 
-let rcc = buildGoPackage rec {
-  name = "rcc-${version}";
-  version = "v11.4.3";
-  goPackagePath = "github.com/robocorp/rcc";
-  src = (import ./nix/sources.nix).rcc;
-  nativeBuildInputs = [ go-bindata rake zip ];
-  goDeps = ./deps.nix;
-  postPatch = ''
-    source $stdenv/setup
-    substituteInPlace Rakefile --replace "\$HOME/go/bin/" ""
-    rake assets
-  '';
+let rcc = callPackage ./rcc.nix {
+  inherit buildGoPackage go-bindata rake zip;
 };
 
 in buildFHSUserEnv {
   name = "rcc";
   targetPkgs = pkgs: (with pkgs; [
-    rcc
     micromamba
+    rcc
   ]);
   runScript = "rcc";
+  # these are not easily available at Conda
+  profile = ''
+    export LD_LIBRARY_PATH="${dbus-glib}/lib:${libGL}/lib"
+  '';
 }
