@@ -1,4 +1,4 @@
-{ pkgs ? import ./nix { nixpkgs = sources."nixpkgs-21.05"; }
+{ pkgs ? import ./nix {}
 , sources ? import ./nix/sources.nix
 , extraPkgs ? with pkgs; []
 , profile ? ""     # left for backwards compat
