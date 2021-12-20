@@ -1,0 +1,14 @@
+{
+    "mvn2nix": {
+        "branch": "master",
+        "description": "Easily package your Maven Java application with the Nix package manager.",
+        "homepage": "",
+        "owner": "fzakaria",
+        "repo": "mvn2nix",
+        "rev": "ea21cfe97069feee55fa307ca9b125616c1fa84f",
+        "sha256": "0bs6j59i5c2lc7jnvifnvc5igp77cbhs78svkyia2gg4miifzwdz",
+        "type": "tarball",
+        "url": "https://github.com/fzakaria/mvn2nix/archive/ea21cfe97069feee55fa307ca9b125616c1fa84f.tar.gz",
+        "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
+    }
+}

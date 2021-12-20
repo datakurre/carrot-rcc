@@ -1,0 +1,74 @@
+{
+  "name": "jupyterlab-dmn",
+  "version": "0.1.3",
+  "description": "A JupyterLab extension for rendering BPMN files",
+  "keywords": [
+    "jupyter",
+    "jupyterlab",
+    "jupyterlab-extension"
+  ],
+  "homepage": "https://github.com/datakurre/jupyterlab-dmn",
+  "bugs": {
+    "url": "https://github.com/datakurre/jupyterlab-dmn/issues"
+  },
+  "license": "BSD-3-Clause",
+  "author": "Asko Soukka",
+  "files": [
+    "lib/**/*.{d.ts,eot,gif,html,jpg,js,js.map,json,png,svg,woff2,ttf}",
+    "style/**/*.{css,eot,gif,html,jpg,json,png,svg,woff2,ttf}"
+  ],
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "style": "style/index.css",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/datakurre/jupyterlab-dmn.git"
+  },
+  "scripts": {
+    "build": "npm run build:lib && npm run build:labextension:dev",
+    "build:prod": "npm run clean && npm run build:lib && npm run build:labextension",
+    "build:labextension": "jupyter labextension build .",
+    "build:labextension:dev": "jupyter labextension build --development True .",
+    "build:lib": "tsc",
+    "clean": "npm run clean:lib",
+    "clean:lib": "rimraf lib tsconfig.tsbuildinfo",
+    "clean:labextension": "rimraf jupyterlab_dmn/labextension",
+    "clean:all": "npm run clean:lib && npm run clean:labextension",
+    "eslint": "eslint . --ext .ts,.tsx --fix",
+    "eslint:check": "eslint . --ext .ts,.tsx",
+    "install:extension": "jupyter labextension develop --overwrite .",
+    "prepare": "npm run clean && npm run build:prod",
+    "watch": "run-p watch:src watch:labextension",
+    "watch:src": "tsc -w",
+    "watch:labextension": "jupyter labextension watch ."
+  },
+  "dependencies": {
+    "@jupyterlab/rendermime-interfaces": "^3.0.0",
+    "@lumino/widgets": "^1.5.0",
+    "dmn-js": "^11.0.1"
+  },
+  "devDependencies": {
+    "@jupyterlab/builder": "^3.0.0",
+    "@typescript-eslint/eslint-plugin": "^4.8.1",
+    "@typescript-eslint/parser": "^4.8.1",
+    "eslint": "^7.14.0",
+    "eslint-config-prettier": "^6.15.0",
+    "eslint-plugin-prettier": "^3.1.4",
+    "npm-run-all": "^4.1.5",
+    "prettier": "^2.1.1",
+    "rimraf": "^3.0.2",
+    "typescript": "~4.1.3"
+  },
+  "sideEffects": [
+    "style/*.css"
+  ],
+  "jupyterlab": {
+    "mimeExtension": true,
+    "outputDir": "jupyterlab_dmn/labextension",
+    "_build": {
+      "load": "static/remoteEntry.0d9afae254077022069f.js",
+      "mimeExtension": "./mimeExtension",
+      "style": "./style"
+    }
+  }
+}

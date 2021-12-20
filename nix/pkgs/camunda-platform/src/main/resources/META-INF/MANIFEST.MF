@@ -1,0 +1,10 @@
+Manifest-Version: 1.0
+Archiver-Version: Plexus Archiver
+Created-By: Apache Maven 3.2.5
+Built-By: camunda
+Build-Jdk: 11
+Implementation-Title: Camunda Platform - webapp - webjar
+Implementation-Version: 7.16.0
+Implementation-Vendor-Id: org.camunda.bpm.webapp
+Implementation-Vendor: camunda services GmbH
+

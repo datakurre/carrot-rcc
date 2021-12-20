@@ -1,0 +1,37 @@
+{
+  "content": [
+    {
+      "content": null,
+      "created": "2021-09-15T19:00:44.751919Z",
+      "format": null,
+      "last_modified": "2021-08-12T22:25:05.961344Z",
+      "mimetype": null,
+      "name": "Plotly.ipynb",
+      "path": "Plotly.ipynb",
+      "size": 8034,
+      "type": "notebook",
+      "writable": true
+    },
+    {
+      "content": null,
+      "created": "2021-09-15T19:00:44.752918Z",
+      "format": null,
+      "last_modified": "2021-08-12T22:29:49.965502Z",
+      "mimetype": null,
+      "name": "RobotFramework.ipynb",
+      "path": "RobotFramework.ipynb",
+      "size": 2838,
+      "type": "notebook",
+      "writable": true
+    }
+  ],
+  "created": "2021-09-15T19:00:44.752918Z",
+  "format": "json",
+  "last_modified": "2021-09-15T19:00:44.752918Z",
+  "mimetype": null,
+  "name": "",
+  "path": "",
+  "size": null,
+  "type": "directory",
+  "writable": true
+}

@@ -1,6 +1,7 @@
 .cache/
 .direnv/
 .idea/
+.vagrant/
 env
 dist/
 result
@@ -8,3 +9,4 @@ node_modules
 result
 __pycache__
 carrot-rcc
+carrot_rcc.js

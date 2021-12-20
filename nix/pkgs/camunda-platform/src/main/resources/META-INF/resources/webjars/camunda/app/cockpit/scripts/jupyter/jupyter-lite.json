@@ -1,0 +1,52 @@
+{
+  "jupyter-config-data": {
+    "appName": "JupyterLite",
+    "collaborative": true,
+    "appUrl": "./lab",
+    "appVersion": "0.1.0-alpha.6",
+    "baseUrl": "./",
+    "faviconUrl": "./lab/favicon.ico",
+    "federated_extensions": [
+      {
+        "extension": "./extension",
+        "load": "static/remoteEntry.ca1efc27dc965162ca86.js",
+        "name": "@jupyter-widgets/jupyterlab-manager"
+      },
+      {
+        "extension": "./extension",
+        "load": "static/remoteEntry.09511d7e294e827882b9.js",
+        "name": "@marketsquare/jupyterlab_robotmode"
+      },
+      {
+        "extension": "./extension",
+        "load": "static/remoteEntry.a458e80b4361f068e82d.js",
+        "name": "jupyter-matplotlib"
+      },
+      {
+        "load": "static/remoteEntry.31cc5d9f6c96596a73c4.js",
+        "mimeExtension": "./mimeExtension",
+        "name": "jupyterlab-bpmn",
+        "style": "./style"
+      },
+      {
+        "load": "static/remoteEntry.0d9afae254077022069f.js",
+        "mimeExtension": "./mimeExtension",
+        "name": "jupyterlab-dmn",
+        "style": "./style"
+      },
+      {
+        "extension": "./extension",
+        "load": "static/remoteEntry.7b0dfd91a418a1e7eb37.js",
+        "mimeExtension": "./mimeExtension",
+        "name": "jupyterlab-plotly"
+      }
+    ],
+    "fullLabextensionsUrl": "./lab/extensions",
+    "fullMathjaxUrl": "https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js",
+    "fullStaticUrl": "./lab/build",
+    "mathjaxConfig": "TeX-AMS_CHTML-full,Safe",
+    "settingsUrl": "./lab/build/schemas",
+    "themesUrl": "./lab/build/themes"
+  },
+  "jupyter-lite-schema-version": 0
+}
