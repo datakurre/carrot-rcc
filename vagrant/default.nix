@@ -46,7 +46,7 @@ in
         virtualbox = {
            vmDerivationName = "nixos-ova-${config.system.nixos.label}-${pkgs.stdenv.hostPlatform.system}";
            vmFileName = "carrot-rcc-nixos-${config.system.nixos.label}-${pkgs.stdenv.hostPlatform.system}.ova";
-           vmName = "Vasara (NixOS ${config.system.nixos.label} ${pkgs.stdenv.hostPlatform.system})";
+           vmName = "carrot-rcc (NixOS ${config.system.nixos.label} ${pkgs.stdenv.hostPlatform.system})";
            memorySize = 4 * 1024;
            params = { usbehci = "off"; };
         };
@@ -71,7 +71,7 @@ in
         libvirt = {
            vmDerivationName = "nixos-qcow2-${config.system.nixos.label}-${pkgs.stdenv.hostPlatform.system}";
            vmFileName = "carrot-rcc-nixos-${config.system.nixos.label}-${pkgs.stdenv.hostPlatform.system}.qcow2";
-           vmName = "Vasara (NixOS ${config.system.nixos.label} ${pkgs.stdenv.hostPlatform.system})";
+           vmName = "carrot-rcc (NixOS ${config.system.nixos.label} ${pkgs.stdenv.hostPlatform.system})";
         };
         boot.postBootCommands = ''
           # Provide a mount point for nixos-install.

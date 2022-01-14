@@ -14,7 +14,7 @@ Vagrant.configure("2") do |config|
 
   config.vm.provider "virtualbox" do |vb, override|
     vb.gui = true
-    vb.memory = 6144
+    vb.memory = 4096
     vb.cpus = 2
     override.vm.provision "remount", type: "shell",
       inline: "sudo mount -t vboxsf vagrant /vagrant -o umask=0022,gid=1000,uid=1000"

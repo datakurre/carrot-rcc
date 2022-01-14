@@ -1,23 +1,21 @@
 { config, pkgs, ... }:
 
-let constants = import ./constants.nix {};
-
-in {
-  systemd.paths.vasara-carrot-rcc-watcher = {
+{
+  systemd.paths.carrot-rcc-watcher = {
     wantedBy = [ "multi-user.target" ];
     pathConfig = {
       PathChanged = "/var/lib/carrot-rcc";
       PathModified = "/var/lib/carrot-rcc";
     };
   };
-  systemd.services.vasara-carrot-rcc-watcher = {
+  systemd.services.carrot-rcc-watcher = {
     wantedBy = [ "multi-user.target" ];
     serviceConfig = {
       Type = "oneshot";
-      ExecStart = "systemctl restart vasara-carrot-rcc.service";
+      ExecStart = "systemctl restart carrot-rcc.service";
     };
   };
-  systemd.services.vasara-carrot-rcc = {
+  systemd.services.carrot-rcc = {
     wantedBy = [ "multi-user.target" ];
     path = with pkgs; [
       findutils
@@ -26,7 +24,7 @@ in {
       rccFHSUserEnv
     ];
     environment = {
-      CAMUNDA_API_AUTHORIZATION = "Bearer ${constants.vasara_rest_secret}";
+      CAMUNDA_API_AUTHORIZATION = "";
       CLIENT_LOG_LEVEL = "debug";
       VAULT_ADDR = "http://${config.services.vault.address}";
       VAULT_TOKEN = "${constants.vault_root_token_id}";
