@@ -45,6 +45,7 @@ usage: carrot-rcc [<robots>...]
                   [--base-url] [--authorization]
                   [--worker-id] [--max-tasks] [--poll-interval] [--log-level]
                   [--rcc-executable] [--rcc-encoding] [--rcc-telemetry]
+                  [--rcc-controller] [--rcc-fixed-spaces]
                   [--vault-addr] [--vault-token]
                   [--healthz-host] [--healthz-port]
                   [-h] [--help]
@@ -56,7 +57,7 @@ options:
   --base-url[=<url>]                       [env: CAMUNDA_API_BASE_URL] [default: http://localhost:8080/engine-rest]
   --authorization[=<header>]               [env: CAMUNDA_API_AUTHORIZATION] [example: Basic ZGVtbzpkZW1v]
 
-  --worker-id[=<string>]                   [env: CLIENT_WORKER_ID] [default: carrot-rcc]
+  --worker-id[=<string>]                   [env: CLIENT_WORKER_ID] [default: rcc.carrot]
   --max-tasks[=<cpus>]                     [env: CLIENT_MAX_TASKS] [default: ${
     os.cpus().length
   }]
@@ -64,8 +65,10 @@ options:
   --log-level[=<debug|info|warn|error>]    [env: CLIENT_LOG_LEVEL] [default: info]
 
   --rcc-executable[=<path>]                [env: RCC_EXECUTABLE] [default: rcc]
+  --rcc-controller[=<controller>]          [env: RCC_CONTROLLER] [default: carrot]
   --rcc-encoding[=<encoding>]              [env: RCC_ENCODING] [default: utf-8]
   --rcc-telemetry                          [env: RCC_TELEMETRY] (default: do not track)
+  --rcc-fixed-spaces                       [env: RCC_FIXED_SPACES] (default: circulate spaces)
 
   --vault-addr[=<addr>]                    [env: VAULT_ADDR] [default: http://127.0.0.1:8200]
   --vault-token[=<token>]                  [env: VAULT_TOKEN] [default: token]
@@ -99,8 +102,10 @@ const CLIENT_POLL_INTERVAL = args["--poll-interval"];
 const CLIENT_WORKER_ID = args["--worker-id"];
 
 const RCC_EXECUTABLE = args["--rcc-executable"];
+const RCC_CONTROLLER = args["--rcc-controller"];
 const RCC_ENCODING = args["--rcc-encoding"];
 const RCC_TELEMETRY = !!args["--rcc-telemetry"];
+const RCC_FIXED_SPACES = !!args["--rcc-fixed-spaces"];
 
 const VAULT_ADDR = args["--vault-addr"];
 const VAULT_TOKEN = args["--vault-token"];
@@ -679,9 +684,21 @@ client.on("complete:error", ({ id }, e) => {
   }
 });
 
+let counter = 0;
+
 for (const topic of Object.keys(CAMUNDA_TOPICS)) {
   client.subscribe(topic, async ({ task, taskService }) => {
+    counter += 1;
     LOG.debug("Received task", task.topicName, task.id);
+
+    let space = "carrot-" + ("0000" + counter).slice(-4);
+    if (RCC_FIXED_SPACES && CAMUNDA_TOPICS[topic]) {
+      space =
+        "carrot-" +
+        (CAMUNDA_TOPICS[topic].replace(/\W+/g, "-").match(/\w/g) || ["0000"])
+          .join("")
+          .replace(/^-*/g, "");
+    }
 
     // Resolve lock expiration
     const lockExpiration =
@@ -714,19 +731,31 @@ for (const topic of Object.keys(CAMUNDA_TOPICS)) {
       await new Promise((resolve, reject) => {
         const stdout: string[] = [];
         const stderr: string[] = [];
-        const exec = spawn(RCC_EXECUTABLE, ["run", "--task", topic], {
-          cwd: tasksDir,
-          env: {
-            RPA_SECRET_MANAGER: "RPA.Robocloud.Secrets.FileSecrets",
-            RPA_SECRET_FILE: `${itemsDir}/vault.json`,
-            RPA_WORKITEMS_ADAPTER: "RPA.Robocloud.Items.FileAdapter",
-            RPA_INPUT_WORKITEM_PATH: `${itemsDir}/items.json`,
-            RPA_OUTPUT_WORKITEM_PATH: `${itemsDir}/items.output.json`,
-            RC_WORKSPACE_ID: "1",
-            RC_WORKITEM_ID: "1",
-            ...process.env,
-          },
-        });
+        const exec = spawn(
+          RCC_EXECUTABLE,
+          [
+            "run",
+            "--controller",
+            RCC_CONTROLLER,
+            "--space",
+            space,
+            "--task",
+            topic,
+          ],
+          {
+            cwd: tasksDir,
+            env: {
+              RPA_SECRET_MANAGER: "RPA.Robocloud.Secrets.FileSecrets",
+              RPA_SECRET_FILE: `${itemsDir}/vault.json`,
+              RPA_WORKITEMS_ADAPTER: "RPA.Robocloud.Items.FileAdapter",
+              RPA_INPUT_WORKITEM_PATH: `${itemsDir}/items.json`,
+              RPA_OUTPUT_WORKITEM_PATH: `${itemsDir}/items.output.json`,
+              RC_WORKSPACE_ID: "1",
+              RC_WORKITEM_ID: "1",
+              ...process.env,
+            },
+          }
+        );
         exec.stdout.on("data", (data) => {
           stdout.push(data.toString());
           LOG.debug(data.toString());
@@ -816,6 +845,7 @@ for (const topic of Object.keys(CAMUNDA_TOPICS)) {
         extendLockError.delete(task.id);
       }
 
+      counter -= 1;
       LOG.debug("Completed task", task.topicName, task.id);
     }
   });

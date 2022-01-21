@@ -80,7 +80,7 @@
 
         # 2. create a default Vagrantfile config
         cat <<VAGRANTFILE > Vagrantfile
-          Vagrant.configure("2") do |config|
+        Vagrant.configure("2") do |config|
           config.vm.base_mac = "0800275F0936"
         end
         VAGRANTFILE
@@ -115,8 +115,6 @@
        size = 4096;
     }];
 
-    nixpkgs.pkgs = import ../nix {};
-
     sound.enable = false;
 
     services.xserver.videoDrivers = [ "qxl" "cirrus" "vesa" ];
@@ -125,5 +123,7 @@
 
     documentation.man.enable = false;
     documentation.nixos.enable = false;
+
+    nixpkgs.pkgs = import ../nix {};
   };
 }

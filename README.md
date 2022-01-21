@@ -12,6 +12,7 @@ usage: carrot-rcc [<robots>...]
                   [--base-url] [--authorization]
                   [--worker-id] [--max-tasks] [--poll-interval] [--log-level]
                   [--rcc-executable] [--rcc-encoding] [--rcc-telemetry]
+                  [--rcc-controller] [--rcc-fixed-spaces]
                   [--vault-addr] [--vault-token]
                   [-h] [--help]
 
@@ -28,8 +29,10 @@ options:
   --log-level[=<debug|info|warn|error>]    [env: CLIENT_LOG_LEVEL] [default: info]
 
   --rcc-executable[=<path>]                [env: RCC_EXECUTABLE] [default: rcc]
+  --rcc-controller[=<controller>]          [env: RCC_CONTROLLER] [default: carrot]
   --rcc-encoding[=<encoding>]              [env: RCC_ENCODING] [default: utf-8]
   --rcc-telemetry                          [env: RCC_TELEMETRY] (default: do not track)
+  --rcc-fixed-spaces                       [env: RCC_FIXED_SPACES] (default: circulate spaces)
 
   --vault-addr[=<addr>]                    [env: VAULT_ADDR] [default: http://127.0.0.1:8200]
   --vault-token[=<token>]                  [env: VAULT_TOKEN] [default: token]

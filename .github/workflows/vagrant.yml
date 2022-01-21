@@ -20,4 +20,5 @@ jobs:
     - run: nix-build
     - run: nix-build -E "(let sources = import ./nix/sources.nix; in import (sources.\"nixpkgs\" + \"/nixos\") { configuration = $(pwd)/vagrant/configuration-libvirt.nix; }).system" --max-jobs 1
     - run: nix-build -E "(let sources = import ./nix/sources.nix; in import (sources.\"nixpkgs\" + \"/nixos\") { configuration = $(pwd)/vagrant/configuration-virtualbox.nix; }).system" --max-jobs 1
+    - run: nix-build -E "(let sources = import ./nix/sources.nix; in import (sources.\"nixpkgs\" + \"/nixos\") { configuration = $(pwd)/vagrant/configuration-hyperv.nix; }).system" --max-jobs 1
     - run: nix-shell --run "echo OK"

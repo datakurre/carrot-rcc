@@ -14,7 +14,7 @@ Vagrant.configure("2") do |config|
 
   config.vm.provider "virtualbox" do |vb, override|
     vb.gui = true
-    vb.memory = 6144
+    vb.memory = 4096
     vb.cpus = 2
     override.vm.provision "remount", type: "shell",
       inline: "sudo mount -t vboxsf vagrant /vagrant -o umask=0022,gid=1000,uid=1000"
@@ -26,7 +26,7 @@ Vagrant.configure("2") do |config|
     libvirt.graphics_port = 5634
     libvirt.memory = 4096
     libvirt.cpus = 2
-    libvirt.keymap = "fi"
+#   libvirt.keymap = "fi"
 
     override.vm.synced_folder "./", "/vagrant",
       type: "9p", disabled: false,
