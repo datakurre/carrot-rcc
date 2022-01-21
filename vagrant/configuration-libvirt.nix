@@ -80,7 +80,7 @@
 
         # 2. create a default Vagrantfile config
         cat <<VAGRANTFILE > Vagrantfile
-          Vagrant.configure("2") do |config|
+        Vagrant.configure("2") do |config|
           config.vm.base_mac = "0800275F0936"
         end
         VAGRANTFILE
@@ -114,8 +114,6 @@
       device = "/var/swap";
        size = 4096;
     }];
-
-    nixpkgs.pkgs = import ../nix {};
 
     sound.enable = false;
 

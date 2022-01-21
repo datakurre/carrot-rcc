@@ -1,4 +1,4 @@
-{ pkgs ? import ../nix {}}:
+{ pkgs ? import ../nix {} }:
 
 let
 
@@ -105,6 +105,7 @@ in
             cp ${configHyperV} /etc/nixos/configuration.nix
           fi
         '';
+        nixpkgs.overlays = [];
       })
     ];
   }).config.system.build.vagrantHyperV;

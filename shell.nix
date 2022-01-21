@@ -11,7 +11,7 @@ pkgs.mkShell {
     nodejs-14_x
     poetry
     poetry2nix.cli
-#   rccFHSUserEnv
+    rccFHSUserEnv
   ];
   shellHook = ''
     export SSL_CERT_FILE=${pkgs.cacert}/etc/ssl/certs/ca-bundle.crt

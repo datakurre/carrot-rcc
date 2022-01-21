@@ -12,8 +12,6 @@
     size = 4096;
   }];
 
-  nixpkgs.pkgs = import ../nix {};
-
   services.xserver.videoDrivers = [ "virtualbox" "vmware" "cirrus" "vesa" ];
   users.extraUsers.vagrant.extraGroups = [ "vboxsf" ];
   virtualisation.virtualbox.guest.enable = true;

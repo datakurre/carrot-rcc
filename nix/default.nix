@@ -11,7 +11,7 @@ let
     camunda-platform = pkgs.callPackage ./pkgs/camunda-platform {};
     carrot-rcc = import ../. { inherit pkgs; };
     gitignoreSource = pkgs.callPackage ./pkgs/gitignore-source {};
-    micromamba = (import sources."nixpkgs-21.11" {}).micromamba;
+    micromamba = (import sources."nixpkgs-21.11" { overlays = []; }).micromamba;
     mvn2nix = (pkgs.callPackage ./pkgs/mvn2nix { inherit nixpkgs; }).mvn2nix;
     node2nix = pkgs.callPackage ./pkgs/node2nix { inherit nixpkgs; };
     poetry2nix = pkgs.callPackage ./pkgs/poetry2nix { inherit nixpkgs; };
@@ -22,6 +22,9 @@ let
   pkgs = import nixpkgs {
     overlays = [ overlay ];
     config = {
+      permittedInsecurePackages = [
+        "electron-12.0.7"  # EOL
+      ];
       allowUnfreePredicate = pkg: builtins.elem (pkgs.lib.getName pkg) [
         "code"
         "font-bh-100dpi"
