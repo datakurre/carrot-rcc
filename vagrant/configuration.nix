@@ -210,12 +210,12 @@
     programs.vscode.package = (pkgs.vscode-fhsWithPackages (ps: with ps; [
       (ps.python3Full.withPackages(ps: [
         (ps.robotframework.overridePythonAttrs(old: rec {
-          version = "4.1.1";
+          version = "4.1.3";
           src = ps.fetchPypi {
             pname = "robotframework";
             extension = "zip";
             inherit version;
-            sha256 = "0ddd9dzrn9gi29w0caab78zs6mx06wbf6f99g0xrpymjfz0q8gv6";
+            sha256 = "d2675cbe3e5a4c90be3ddb61be3b88cc0d6ff503c298ad8f8a78aad14e71e886";
           };
           doCheck = false;
         }))
@@ -229,16 +229,16 @@
         mktplcRef = {
           name = "robotframework-lsp";
           publisher = "robocorp";
-          version = "0.33.0";
-          sha256 = "1hb2ij4lkgii2h0pc7nmfhyhnhlkq39rsqg3hp2ps06bxnld2hpa";
+          version = "0.37.0";
+          sha256 = "0nw977k99y98wm3878lag37y2wbb8z0gbkyq02f89pkv2xfy7r44";
         };
       })
       (pkgs.vscode-utils.buildVscodeMarketplaceExtension rec {
         mktplcRef = {
           name = "robocorp-code";
           publisher = "robocorp";
-          version = "0.21.0";
-          sha256 = "16ya9f0zb5pc9kzv67pnsjgwm44pb2yzh4g2wb157nxzn9qxwk1l";
+          version = "0.25.0";
+          sha256 = "11pzshx3nv6dmdip7n3wdlqjzzf9y09pfxmfzh7r4pb0s8s0qg25";
         };
         postInstall = ''
           mkdir -p $out/share/vscode/extensions/robocorp.robocorp-code/bin
