@@ -45,6 +45,7 @@ usage: carrot-rcc [<robots>...]
                   [--base-url] [--authorization]
                   [--worker-id] [--max-tasks] [--poll-interval] [--log-level]
                   [--rcc-executable] [--rcc-encoding] [--rcc-telemetry]
+                  [--rcc-controller] [--rcc-fixed-spaces]
                   [--vault-addr] [--vault-token]
                   [--healthz-host] [--healthz-port]
                   [-h] [--help]
@@ -64,7 +65,7 @@ options:
   --log-level[=<debug|info|warn|error>]    [env: CLIENT_LOG_LEVEL] [default: info]
 
   --rcc-executable[=<path>]                [env: RCC_EXECUTABLE] [default: rcc]
-  --rcc-controller[=<controller>]          [env: RCC_CONTROLLER] [default: carrot-rcc]
+  --rcc-controller[=<controller>]          [env: RCC_CONTROLLER] [default: carrot]
   --rcc-encoding[=<encoding>]              [env: RCC_ENCODING] [default: utf-8]
   --rcc-telemetry                          [env: RCC_TELEMETRY] (default: do not track)
   --rcc-fixed-spaces                       [env: RCC_FIXED_SPACES] (default: circulate spaces)
@@ -691,10 +692,12 @@ for (const topic of Object.keys(CAMUNDA_TOPICS)) {
     LOG.debug("Received task", task.topicName, task.id);
 
     let space = "carrot-" + ("0000" + counter).slice(-4);
-    if (RCC_FIXED_SPACES) {
+    if (RCC_FIXED_SPACES && CAMUNDA_TOPICS[topic]) {
       space =
         "carrot-" +
-        CAMUNDA_TOPICS[topic].replace(/\W+/g, "-").match(/\w/g).join("");
+        (CAMUNDA_TOPICS[topic].replace(/\W+/g, "-").match(/\w/g) || ["0000"])
+          .join("")
+          .replace(/^-*/g, "");
     }
 
     // Resolve lock expiration

@@ -26,7 +26,7 @@ Vagrant.configure("2") do |config|
     libvirt.graphics_port = 5634
     libvirt.memory = 4096
     libvirt.cpus = 2
-    libvirt.keymap = "fi"
+#   libvirt.keymap = "fi"
 
     override.vm.synced_folder "./", "/vagrant",
       type: "9p", disabled: false,
