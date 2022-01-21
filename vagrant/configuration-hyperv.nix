@@ -35,8 +35,10 @@
       # 4. generate vhdx manifest file
       touch box.mf
       for fname in *; do
-        checksum=$(sha256sum "$fname" | cut -d' ' -f 1)
-        echo "SHA256($fname)= $checksum" >> box.mf
+        if [ ! -d "$fname" ]; then
+          checksum=$(sha256sum "$fname" | cut -d' ' -f 1)
+          echo "SHA256($fname)= $checksum" >> box.mf
+        fi
       done
 
       # 5. compress everything back together
@@ -51,4 +53,17 @@
   services.xserver.videoDrivers = [ "virtualbox" "vmware" "cirrus" "vesa" ];
   users.extraUsers.vagrant.extraGroups = [ "vboxsf" ];
   virtualisation.hypervGuest.enable = true;
+
+  nixpkgs.config = {
+    permittedInsecurePackages = [
+      "electron-12.0.7"  # EOL
+    ];
+    allowUnfreePredicate = pkg: builtins.elem (pkgs.lib.getName pkg) [
+      "code"
+      "font-bh-100dpi"
+      "font-bh-lucidatypewriter-100dpi"
+      "font-bh-lucidatypewriter-75dpi"
+      "vscode"
+    ];
+  };
 }
