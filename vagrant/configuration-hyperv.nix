@@ -54,16 +54,5 @@
   users.extraUsers.vagrant.extraGroups = [ "vboxsf" ];
   virtualisation.hypervGuest.enable = true;
 
-  nixpkgs.config = {
-    permittedInsecurePackages = [
-      "electron-12.0.7"  # EOL
-    ];
-    allowUnfreePredicate = pkg: builtins.elem (pkgs.lib.getName pkg) [
-      "code"
-      "font-bh-100dpi"
-      "font-bh-lucidatypewriter-100dpi"
-      "font-bh-lucidatypewriter-75dpi"
-      "vscode"
-    ];
-  };
+  nixpkgs.pkgs = import ../nix {};
 }
