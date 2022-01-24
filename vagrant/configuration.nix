@@ -2,12 +2,12 @@
 
 let
 
-  cfg = config.default;
+  cfg = config.options;
 
 in {
 
   options = {
-    default.vscode-with-vim = lib.mkOption { default = false; };
+    options.vscode-with-vim = lib.mkOption { default = false; };
   };
 
   imports = let nixpkgs = (import ../nix/sources.nix).nixpkgs;
@@ -270,7 +270,7 @@ in {
             ln -s ${pkgs.rcc}/bin/rcc $out/share/vscode/extensions/robocorp.robocorp-code/bin
           '';
           })
-      ] ++ (if config.default.vscode-with-vim then [ vscodevim.vim ] else []));
+      ] ++ (if config.options.vscode-with-vim then [ vscodevim.vim ] else []));
     };
   };
 }
