@@ -31,6 +31,7 @@ let
         "font-bh-lucidatypewriter-100dpi"
         "font-bh-lucidatypewriter-75dpi"
         "vscode"
+        "vscode-extension-ms-vsliveshare-vsliveshare"
       ];
     };
   };

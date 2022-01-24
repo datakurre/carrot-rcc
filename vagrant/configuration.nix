@@ -158,6 +158,18 @@
     rcc
     vim
     xfce.xfdesktop
+    python3Full.withPackages(ps: [
+      (ps.robotframework.overridePythonAttrs(old: rec {
+        version = "4.1.3";
+        src = ps.fetchPypi {
+          pname = "robotframework";
+          extension = "zip";
+          inherit version;
+          sha256 = "d2675cbe3e5a4c90be3ddb61be3b88cc0d6ff503c298ad8f8a78aad14e71e886";
+        };
+        doCheck = false;
+      }))
+    ])
   ];
 
   users.extraUsers.vagrant.extraGroups = [ "vagrant" ];
@@ -224,6 +236,7 @@
     ]));
     programs.vscode.extensions = (with pkgs.vscode-extensions; [
       ms-python.python
+      ms-vsliveshare.vsliveshare
       # vscodevim.vim
       (pkgs.vscode-utils.buildVscodeMarketplaceExtension rec {
         mktplcRef = {
