@@ -144,6 +144,7 @@ in {
       ];
       environment = {
         CLIENT_LOG_LEVEL = "debug";
+        CLIENT_POLL_INTERVAL = "60000";
         SMTP_HOST = "localhost";
         SMTP_PORT = "${toString config.services.mailhog.smtpPort}";
         VAULT_ADDR = "http://${config.services.vault.address}";
