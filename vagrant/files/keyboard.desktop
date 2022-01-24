@@ -1,0 +1,7 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Exec=/run/current-system/sw/bin/xfce4-keyboard-settings
+Name=Keyboard
+Icon=input-keyboard
+URL=http://localhost:8080/camunda/
