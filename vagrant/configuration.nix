@@ -167,6 +167,7 @@ in {
       chromium
       git
       gnumake
+      mockoon
       rcc
       vim
       xfce.xfdesktop
@@ -200,6 +201,8 @@ in {
       home.file.".config/vagrant/keybaord.desktop".source = ./files/keyboard.desktop;
       home.file.".config/vagrant/mailhog.desktop".source = ./files/mailhog.desktop;
       home.file.".config/vagrant/mailhog.png".source = ./files/mailhog.png;
+      home.file.".config/vagrant/mockoon.desktop".source = ./files/mockoon.desktop;
+      home.file.".config/vagrant/mockoon.png".source = ./files/mockoon.png;
       home.file.".config/vagrant/robocorp-code.desktop".source = ./files/robocorp-code.desktop;
       home.file.".config/vagrant/robocorp-code.png".source = ./files/robocorp-code.png;
       home.file.".config/vagrant/vault.desktop".source = ./files/vault.desktop;
