@@ -12,6 +12,7 @@ let
     carrot-rcc = import ../. { inherit pkgs; };
     gitignoreSource = pkgs.callPackage ./pkgs/gitignore-source {};
     micromamba = (import sources."nixpkgs-21.11" { overlays = []; }).micromamba;
+    mockoon = pkgs.callPackage ./pkgs/mockoon {};
     mvn2nix = (pkgs.callPackage ./pkgs/mvn2nix { inherit nixpkgs; }).mvn2nix;
     node2nix = pkgs.callPackage ./pkgs/node2nix { inherit nixpkgs; };
     poetry2nix = pkgs.callPackage ./pkgs/poetry2nix { inherit nixpkgs; };
