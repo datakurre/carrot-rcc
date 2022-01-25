@@ -94,7 +94,7 @@ in
         hyperv = {
            vmDerivationName = "nixos-vhdx-${config.system.nixos.label}-${pkgs.stdenv.hostPlatform.system}";
            vmFileName = "carrot-rcc-nixos-${config.system.nixos.label}-${pkgs.stdenv.hostPlatform.system}.vhdx";
-           baseImageSize = 8192;
+           baseImageSize = 9216;
         };
         boot.postBootCommands = ''
           # Provide a mount point for nixos-install.
