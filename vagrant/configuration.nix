@@ -93,12 +93,29 @@ in {
       '';
     };
 
+    systemd.paths.camunda-watcher = {
+      wantedBy = [ "multi-user.target" ];
+      pathConfig = {
+        PathChanged = "/var/lib/camunda";
+        PathModified = "/var/lib/camunda";
+      };
+    };
+
+    systemd.services.camunda-watcher = {
+      wantedBy = [ "multi-user.target" ];
+      serviceConfig = {
+        Type = "oneshot";
+        ExecStart = "systemctl restart camunda.service";
+      };
+    };
+
     systemd.services.camunda = {
       after = [ "camunda-init.service" "postgresql.service" ];
       bindsTo = [ "camunda-init.service" "postgresql.service" ];
       wantedBy = [ "multi-user.target" ];
       path = [ pkgs.camunda-platform ];
       environment = {
+        CAMUNDA_LOCATIONS = "file:/var/lib/camunda";
         MICRONAUT_SERVER_HOST = "localhost";
         MICRONAUT_SERVER_PORT = "8080";
         DATASOURCES_DEFAULT_URL = "jdbc:postgresql://localhost/camunda";
@@ -107,12 +124,13 @@ in {
         JVM_OPTS = "-Dfile.encoding=UTF-8";
       };
       serviceConfig = {
-        User = "camunda";
-        Group = "camunda";
-        DynamicUser = true;
+        User = "vagrant";
+        Group = "users";
         Restart = "on-failure";
+        StateDirectory = "camunda";
       };
       script = ''
+        rm -f $STATE_DIRECTORY/camunda
         export $(systemctl show camunda -p NRestarts)
         exec camunda
       '';
@@ -226,6 +244,7 @@ in {
           rm -f $XDG_DESKTOP_DIR/Shared
           ln -s /vagrant $XDG_DESKTOP_DIR/Shared
           ln -s /var/lib/carrot-rcc $XDG_DESKTOP_DIR/Robots
+          ln -s /var/lib/camunda $XDG_DESKTOP_DIR/BPMN
         '';
         initExtra= ''
           setxkbmap -layout us
