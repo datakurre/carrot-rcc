@@ -105,8 +105,11 @@ in {
       wantedBy = [ "multi-user.target" ];
       serviceConfig = {
         Type = "oneshot";
-        ExecStart = "systemctl restart camunda.service";
       };
+      script = ''
+        systemctl reset-failed camunda.service
+        systemctl restart camunda.service
+      '';
     };
 
     systemd.services.camunda = {
@@ -148,8 +151,11 @@ in {
       wantedBy = [ "multi-user.target" ];
       serviceConfig = {
         Type = "oneshot";
-        ExecStart = "systemctl restart carrot-rcc.service";
       };
+      script = ''
+        systemctl reset-failed carrot-rcc.service
+        systemctl restart carrot-rcc.service
+      '';
     };
 
     systemd.services.carrot-rcc = {
@@ -162,7 +168,7 @@ in {
       ];
       environment = {
         CLIENT_LOG_LEVEL = "debug";
-        CLIENT_POLL_INTERVAL = "60000";
+        CLIENT_POLL_INTERVAL = "5000";
         SMTP_HOST = "localhost";
         SMTP_PORT = "${toString config.services.mailhog.smtpPort}";
         VAULT_ADDR = "http://${config.services.vault.address}";
