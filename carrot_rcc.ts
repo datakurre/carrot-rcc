@@ -29,6 +29,7 @@ const crypto = require("crypto");
 type PatchVariablesDto = api.components["schemas"]["PatchVariablesDto"];
 type VariableValueDto = api.components["schemas"]["VariableValueDto"];
 type ProcessEngineDto = api.components["schemas"]["ProcessDefinitionDto"];
+type ExternalTaskDto = api.components["schemas"]["ExternalTaskDto"];
 
 interface VaultSecretResponseData {
   data: Record<string, string>;
@@ -686,7 +687,7 @@ client.on("complete:error", ({ id }, e) => {
 
 let counter = 0;
 
-for (const topic of Object.keys(CAMUNDA_TOPICS)) {
+const subscribe = (topic: string) => {
   client.subscribe(topic, async ({ task, taskService }) => {
     counter += 1;
     LOG.debug("Received task", task.topicName, task.id);
@@ -849,7 +850,7 @@ for (const topic of Object.keys(CAMUNDA_TOPICS)) {
       LOG.debug("Completed task", task.topicName, task.id);
     }
   });
-}
+};
 
 if (HEALTHZ_HOST && HEALTHZ_PORT) {
   (async () => {
@@ -876,4 +877,45 @@ if (HEALTHZ_HOST && HEALTHZ_PORT) {
   })();
 }
 
-client.start();
+const start = async (client: Client) => {
+  // Unlock locked tasks for this worker id before subscribing new tasks
+  const camunda = new rest.RestClient("carrot-rcc", CAMUNDA_API_BASE_URL, []);
+  try {
+    const response = await camunda.get<ExternalTaskDto[]>(`external-task`, {
+      additionalHeaders: CAMUNDA_API_AUTHORIZATION
+        ? {
+            Authorization: CAMUNDA_API_AUTHORIZATION,
+          }
+        : {},
+      queryParameters: {
+        params: {
+          workerId: CLIENT_WORKER_ID,
+        },
+      },
+    });
+    for (const task of response?.result || []) {
+      try {
+        await camunda.create<any>(`external-task/${task.id}/unlock`, {
+          additionalHeaders: CAMUNDA_API_AUTHORIZATION
+            ? {
+                Authorization: CAMUNDA_API_AUTHORIZATION,
+              }
+            : {},
+        });
+        LOG.debug("Unlocked task", task.topicName, task.id);
+      } catch (e) {
+        LOG.debug("Failed to unlock task", task.topicName, task.id, e);
+      }
+    }
+  } catch (e) {
+    LOG.info("Unable to fetch tasks to unlock", e);
+  }
+  // Subscribe
+  for (const topic of Object.keys(CAMUNDA_TOPICS)) {
+    subscribe(topic);
+  }
+  // Start client
+  client.start();
+};
+
+setTimeout(async () => await start(client));
