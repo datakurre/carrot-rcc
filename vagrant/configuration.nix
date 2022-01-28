@@ -168,9 +168,15 @@ in {
         VAULT_ADDR = "http://${config.services.vault.address}";
         VAULT_TOKEN = "secret";
       };
+      unitConfig = {
+        StartLimitInterval = 300;
+        StartLimitBurst = 15;
+      };
       serviceConfig = {
         User = "vagrant";
         Group = "users";
+        Restart = "on-failure";
+        RestartSec = 1;
         StateDirectory = "carrot-rcc";
       };
       script = ''
