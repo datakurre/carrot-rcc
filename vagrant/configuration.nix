@@ -278,16 +278,16 @@ in {
           mktplcRef = {
             name = "robotframework-lsp";
             publisher = "robocorp";
-            version = "0.37.0";
-            sha256 = "0nw977k99y98wm3878lag37y2wbb8z0gbkyq02f89pkv2xfy7r44";
+            version = "0.38.1";
+            sha256 = "13d2amcwncwjs3mmc4smp2rrdf4jra9sflmwhl7z5w5h8ilxml4r";
           };
         })
         (pkgs.vscode-utils.buildVscodeMarketplaceExtension rec {
           mktplcRef = {
             name = "robocorp-code";
             publisher = "robocorp";
-            version = "0.25.0";
-            sha256 = "11pzshx3nv6dmdip7n3wdlqjzzf9y09pfxmfzh7r4pb0s8s0qg25";
+            version = "0.26.0";
+            sha256 = "16jv1242pgzsq75c1yilgxi0ffh96m9fsq9flqb4mxj52kjjx5m3";
           };
           postInstall = ''
             mkdir -p $out/share/vscode/extensions/robocorp.robocorp-code/bin
