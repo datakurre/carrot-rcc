@@ -24,7 +24,7 @@ let
     overlays = [ overlay ];
     config = {
       permittedInsecurePackages = [
-        "electron-12.0.7"  # EOL
+        "electron-12.1.2"  # EOL
       ];
       allowUnfreePredicate = pkg: builtins.elem (pkgs.lib.getName pkg) [
         "code"

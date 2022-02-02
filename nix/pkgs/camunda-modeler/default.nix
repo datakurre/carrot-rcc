@@ -5,9 +5,8 @@ let
   sources = import ../../../nix/sources.nix;
 
   mkElectron = import "${sources."nixpkgs"}/pkgs/development/tools/electron/generic.nix" { inherit stdenv libXScrnSaver makeWrapper fetchurl wrapGAppsHook glib gtk3 unzip atomEnv libuuid at-spi2-atk at-spi2-core libdrm mesa libxkbcommon libxshmfence lib libappindicator-gtk3; };
-  electron = mkElectron "12.0.7" {
-    x86_64-linux = "335b77b35361fac4e2df1b7e8de5cf055e0a1a2065759cb2dd4508e8a77949fa";
-    x86_64-darwin = "c3238c9962c5ad0f9de23c9314f07e03410d096d7e9f9d91016dab2856606a9e";
+  electron = mkElectron "12.1.2" {
+    x86_64-linux = "0gc739hk959rh5zscb6iq643bb2ar3cksmrmz3s16qlm7qi1xvg0";
   };
 
   camunda-modeler-plugins = fetchurl {
@@ -54,10 +53,10 @@ in
 
 stdenv.mkDerivation rec {
   name = "camunda-modeler-${version}";
-  version = "4.12.0";
+  version = "5.0.0-alpha.0";
   src = fetchurl {
     url = "https://github.com/camunda/camunda-modeler/releases/download/v${version}/camunda-modeler-${version}-linux-x64.tar.gz";
-    sha256 = "10rkv6yqdpaxwlrbzp02chdpa8d2jkg2vh5z6lnn3lg7kfwasz86";
+    sha256 = "1awljg7nz27ijxdxbfp3903b7r0vg4gnnqbl8ivqps9b8xsbgnsh";
   };
 
   nativeBuildInputs = [ electron makeWrapper nodePackages.asar autoPatchelfHook gcc-unwrapped ];
@@ -69,8 +68,7 @@ stdenv.mkDerivation rec {
     substituteInPlace ./lib/index.js \
       --replace "let resourcesPaths = [" \
                 "let resourcesPaths = [\"$out/var/lib/camunda/resources\","
-    find . -name "grpc_node.node"
-    autoPatchelf node_modules/grpc/src/node/extension_binary/electron-v12.0-linux-x64-glibc/grpc_node.node;
+    autoPatchelf node_modules/grpc/src/node/extension_binary/*/grpc_node.node
     asar pack . ../app.asar
     cd ..
     mkdir -p $out/var/lib/camunda/resources/plugins $out/bin
