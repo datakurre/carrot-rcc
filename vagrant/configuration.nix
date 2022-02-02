@@ -4,6 +4,18 @@ let
 
   cfg = config.options;
 
+  robotframework = ps:
+    ps.robotframework.overridePythonAttrs(old: rec {
+      version = "5.0a1";
+      src = ps.fetchPypi {
+        pname = "robotframework";
+        extension = "zip";
+        inherit version;
+        sha256 = "1gpji4wsn3rx6pdjz7cfzwm1z6k1bsjpmbsv88iv13m49x79smrs";
+      };
+      doCheck = false;
+    });
+
 in {
 
   options = {
@@ -201,18 +213,7 @@ in {
       rcc
       vim
       xfce.xfdesktop
-      (python3Full.withPackages(ps: [
-        (ps.robotframework.overridePythonAttrs(old: rec {
-          version = "4.1.3";
-          src = ps.fetchPypi {
-            pname = "robotframework";
-            extension = "zip";
-            inherit version;
-            sha256 = "d2675cbe3e5a4c90be3ddb61be3b88cc0d6ff503c298ad8f8a78aad14e71e886";
-          };
-          doCheck = false;
-        }))
-      ]))
+      (python3Full.withPackages(ps: [(robotframework ps)]))
     ];
 
     users.extraUsers.vagrant.extraGroups = [ "vagrant" ];
@@ -267,18 +268,7 @@ in {
         "python.experiments.enabled" = false;
       };
       programs.vscode.package = (pkgs.vscode-fhsWithPackages (ps: with ps; [
-        (ps.python3Full.withPackages(ps: [
-          (ps.robotframework.overridePythonAttrs(old: rec {
-            version = "4.1.3";
-            src = ps.fetchPypi {
-              pname = "robotframework";
-              extension = "zip";
-              inherit version;
-              sha256 = "d2675cbe3e5a4c90be3ddb61be3b88cc0d6ff503c298ad8f8a78aad14e71e886";
-            };
-            doCheck = false;
-          }))
-        ]))
+        (ps.python3Full.withPackages(ps: [(robotframework ps)]))
         pkgs.rcc
       ]));
       programs.vscode.extensions = (with pkgs.vscode-extensions; [
