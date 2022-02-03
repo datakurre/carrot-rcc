@@ -229,7 +229,8 @@ in {
       home.file.".config/vagrant/camunda.desktop".source = ./files/camunda.desktop;
       home.file.".config/vagrant/camunda.png".source = ./files/camunda.png;
       home.file.".config/vagrant/chromium-browser.desktop".source = ./files/chromium-browser.desktop;
-      home.file.".config/vagrant/keybaord.desktop".source = ./files/keyboard.desktop;
+      home.file.".config/vagrant/journal.desktop".source = ./files/journal.desktop;
+      home.file.".config/vagrant/keyboard.desktop".source = ./files/keyboard.desktop;
       home.file.".config/vagrant/mailhog.desktop".source = ./files/mailhog.desktop;
       home.file.".config/vagrant/mailhog.png".source = ./files/mailhog.png;
       home.file.".config/vagrant/mockoon.desktop".source = ./files/mockoon.desktop;
@@ -258,6 +259,10 @@ in {
           ln -s /vagrant $XDG_DESKTOP_DIR/Shared
           ln -s /var/lib/carrot-rcc $XDG_DESKTOP_DIR/Robots
           ln -s /var/lib/camunda $XDG_DESKTOP_DIR/BPMN
+          # configure desktop
+          xfconf-query -c xfwm4 -p /general/workspace_count -t int -s 1 --create
+          # migrations
+          rm -f $XDG_DESKTOP_DIR/keybaord.desktop
         '';
         initExtra= ''
           setxkbmap -layout us

@@ -1,0 +1,9 @@
+[Desktop Entry]
+StartupWMClass=ksystemlog
+Version=1.0
+Name=Journal
+Exec=nix-shell -p ksystemlog --run ksystemlog
+StartupNotify=false
+Terminal=false
+Icon=system-search
+Type=Application
