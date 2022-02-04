@@ -92,6 +92,9 @@ in {
         User = "postgres";
         Group = "postgres";
       };
+      unitConfig = {
+        StartLimitIntervalSec = 0;
+      };
       script = ''
         set -o errexit -o pipefail -o nounset -o errtrace
         shopt -s inherit_errexit
@@ -111,6 +114,9 @@ in {
         PathChanged = "/var/lib/camunda";
         PathModified = "/var/lib/camunda";
       };
+      unitConfig = {
+        StartLimitIntervalSec = 0;
+      };
     };
 
     systemd.services.camunda-watcher = {
@@ -118,7 +124,12 @@ in {
       serviceConfig = {
         Type = "oneshot";
       };
+      unitConfig = {
+        StartLimitIntervalSec = 0;
+      };
       script = ''
+        systemctl reset-failed camunda-watcher.path
+        systemctl reset-failed camunda-watcher.service
         systemctl reset-failed camunda.service
         systemctl restart camunda.service
       '';
@@ -144,6 +155,9 @@ in {
         Restart = "on-failure";
         StateDirectory = "camunda";
       };
+      unitConfig = {
+        StartLimitIntervalSec = 0;
+      };
       script = ''
         rm -f $STATE_DIRECTORY/camunda
         export $(systemctl show camunda -p NRestarts)
@@ -157,6 +171,9 @@ in {
         PathChanged = "/var/lib/carrot-rcc";
         PathModified = "/var/lib/carrot-rcc";
       };
+      unitConfig = {
+        StartLimitIntervalSec = 0;
+      };
     };
 
     systemd.services.carrot-rcc-watcher = {
@@ -164,7 +181,12 @@ in {
       serviceConfig = {
         Type = "oneshot";
       };
+      unitConfig = {
+        StartLimitIntervalSec = 0;
+      };
       script = ''
+        systemctl reset-failed carrot-rcc-watcher.path
+        systemctl reset-failed carrot-rcc-watcher.service
         systemctl reset-failed carrot-rcc.service
         systemctl restart carrot-rcc.service
       '';
@@ -186,16 +208,15 @@ in {
         VAULT_ADDR = "http://${config.services.vault.address}";
         VAULT_TOKEN = "secret";
       };
-      unitConfig = {
-        StartLimitInterval = 300;
-        StartLimitBurst = 15;
-      };
       serviceConfig = {
         User = "vagrant";
         Group = "users";
         Restart = "on-failure";
         RestartSec = 1;
         StateDirectory = "carrot-rcc";
+      };
+      unitConfig = {
+        StartLimitIntervalSec = 0;
       };
       script = ''
         rm -f $STATE_DIRECTORY/carrot-rcc
