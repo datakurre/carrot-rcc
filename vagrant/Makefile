@@ -1,5 +1,5 @@
 BOX_NAME ?= datakurre/carrot-rcc
-BOX_VERSION ?= 0.6.2
+BOX_VERSION ?= 0.7.0
 
 NIX_BUILD ?= nix-build --no-out-link
 
