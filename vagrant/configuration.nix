@@ -221,7 +221,8 @@ in {
       script = ''
         rm -f $STATE_DIRECTORY/carrot-rcc
         cd $STATE_DIRECTORY
-        HOME=/home/vagrant carrot-rcc $(find . -name "*.zip")
+        export HOME=/home/vagrant
+        exec carrot-rcc $(find . -name "*.zip")
       '';
     };
 
