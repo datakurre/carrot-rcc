@@ -880,6 +880,7 @@ if (HEALTHZ_HOST && HEALTHZ_PORT) {
 const start = async (client: Client) => {
   // Unlock locked tasks for this worker id before subscribing new tasks
   const camunda = new rest.RestClient("carrot-rcc", CAMUNDA_API_BASE_URL, []);
+  let sleep = 0;
   try {
     const response = await camunda.get<ExternalTaskDto[]>(`external-task`, {
       additionalHeaders: CAMUNDA_API_AUTHORIZATION
@@ -907,15 +908,18 @@ const start = async (client: Client) => {
         LOG.debug("Failed to unlock task", task.topicName, task.id, e);
       }
     }
+    sleep = (response?.result || []).length ? 1000 : 0;
   } catch (e) {
     LOG.info("Unable to fetch tasks to unlock", e);
   }
-  // Subscribe
-  for (const topic of Object.keys(CAMUNDA_TOPICS)) {
-    subscribe(topic);
-  }
-  // Start client
-  client.start();
+  setTimeout(() => {
+      // Subscribe
+      for (const topic of Object.keys(CAMUNDA_TOPICS)) {
+          subscribe(topic);
+      }
+      // Start client
+      client.start();
+  }, sleep)
 };
 
 setTimeout(async () => await start(client));
