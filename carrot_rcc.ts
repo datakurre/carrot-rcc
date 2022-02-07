@@ -213,9 +213,11 @@ const isEqual = async (
   if (old === undefined) {
     return false;
   }
-  switch (old.type) {
+  switch (await inferType(old, current)) {
     case "File":
       return false;
+    case "Date":
+      return new Date(old.value).getTime() === new Date(current).getTime();
     default:
       return old.value === current;
   }
