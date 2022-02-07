@@ -8,7 +8,7 @@
     "prettier:check": "prettier --check \"*.ts\"",
     "prettier:format": "prettier --write \"*.ts\"",
     "start": "tsc -w",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "jest --coverage"
   },
   "repository": {
     "type": "git",
@@ -29,7 +29,7 @@
   },
   "dependencies": {
     "adm-zip": "^0.5.5",
-    "camunda-external-task-client-js": "git+https://github.com/camunda/camunda-external-task-client-js.git#5923f9a3e98af20aedb3481662f3fdc8f9ef9f81",
+    "camunda-external-task-client-js": "^2.1.1",
     "dotenv": "^10.0.0",
     "fdir": "^5.1.0",
     "mime-types": "^2.1.31",
@@ -47,12 +47,15 @@
     "@types/adm-zip": "^0.4.34",
     "@types/camunda-external-task-client-js": "^1.3.1",
     "@types/dotenv": "^8.2.0",
+    "@types/jest": "^27.4.0",
     "@types/mime-types": "^2.1.0",
     "@types/yaml": "^1.9.7",
     "import-sort-style-module": "^6.0.0",
+    "jest": "^27.5.0",
     "prettier": "^2.3.2",
     "prettier-plugin-import-sort": "0.0.7",
     "rollup": "^2.52.7",
+    "ts-jest": "^27.1.3",
     "tslib": "^2.3.0",
     "typescript": "^4.3.5"
   }

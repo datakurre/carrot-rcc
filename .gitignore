@@ -4,6 +4,7 @@
 .vagrant/
 env
 dist/
+coverage/
 result
 node_modules
 result

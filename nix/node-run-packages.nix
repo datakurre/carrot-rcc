@@ -13,40 +13,40 @@ let
         sha512 = "/aPsuoj/1Dw/kzhkgz+ES6TxG0zfTMGLwuK2ZG00k/iJzYHTLCE8mVU8EPqEOp/lmxPoq1C1C9RYToRKb2KEfg==";
       };
     };
-    "@szmarczak/http-timer-4.0.5" = {
+    "@szmarczak/http-timer-4.0.6" = {
       name = "_at_szmarczak_slash_http-timer";
       packageName = "@szmarczak/http-timer";
-      version = "4.0.5";
+      version = "4.0.6";
       src = fetchurl {
-        url = "https://registry.npmjs.org/@szmarczak/http-timer/-/http-timer-4.0.5.tgz";
-        sha512 = "PyRA9sm1Yayuj5OIoJ1hGt2YISX45w9WcFbh6ddT0Z/0yaFxOtGLInr4jUfU1EAFVs0Yfyfev4RNwBlUaHdlDQ==";
+        url = "https://registry.npmjs.org/@szmarczak/http-timer/-/http-timer-4.0.6.tgz";
+        sha512 = "4BAffykYOgO+5nzBWYwE3W90sBgLJoUPRWWcL8wlyiM8IB8ipJz3UMJ9KXQd1RKQXpKp8Tutn80HZtWsu2u76w==";
       };
     };
-    "@types/cacheable-request-6.0.1" = {
+    "@types/cacheable-request-6.0.2" = {
       name = "_at_types_slash_cacheable-request";
       packageName = "@types/cacheable-request";
-      version = "6.0.1";
+      version = "6.0.2";
       src = fetchurl {
-        url = "https://registry.npmjs.org/@types/cacheable-request/-/cacheable-request-6.0.1.tgz";
-        sha512 = "ykFq2zmBGOCbpIXtoVbz4SKY5QriWPh3AjyU4G74RYbtt5yOc5OfaY75ftjg7mikMOla1CTGpX3lLbuJh8DTrQ==";
+        url = "https://registry.npmjs.org/@types/cacheable-request/-/cacheable-request-6.0.2.tgz";
+        sha512 = "B3xVo+dlKM6nnKTcmm5ZtY/OL8bOAOd2Olee9M1zft65ox50OzjEHW91sDiU9j6cvW8Ejg1/Qkf4xd2kugApUA==";
       };
     };
-    "@types/http-cache-semantics-4.0.0" = {
+    "@types/http-cache-semantics-4.0.1" = {
       name = "_at_types_slash_http-cache-semantics";
       packageName = "@types/http-cache-semantics";
-      version = "4.0.0";
+      version = "4.0.1";
       src = fetchurl {
-        url = "https://registry.npmjs.org/@types/http-cache-semantics/-/http-cache-semantics-4.0.0.tgz";
-        sha512 = "c3Xy026kOF7QOTn00hbIllV1dLR9hG9NkSrLQgCVs8NF6sBU+VGWjD3wLPhmh1TYAc7ugCFsvHYMN4VcBN1U1A==";
+        url = "https://registry.npmjs.org/@types/http-cache-semantics/-/http-cache-semantics-4.0.1.tgz";
+        sha512 = "SZs7ekbP8CN0txVG2xVRH6EgKmEm31BOxA07vkFaETzZz1xh+cbt8BcI0slpymvwhx5dlFnQG2rTlPVQn+iRPQ==";
       };
     };
-    "@types/keyv-3.1.1" = {
+    "@types/keyv-3.1.3" = {
       name = "_at_types_slash_keyv";
       packageName = "@types/keyv";
-      version = "3.1.1";
+      version = "3.1.3";
       src = fetchurl {
-        url = "https://registry.npmjs.org/@types/keyv/-/keyv-3.1.1.tgz";
-        sha512 = "MPtoySlAZQ37VoLaPcTHCu1RWJ4llDkULYZIzOYxlhxBqYPB0RsRlmMU0R6tahtFe27mIdkHV+551ZWV4PLmVw==";
+        url = "https://registry.npmjs.org/@types/keyv/-/keyv-3.1.3.tgz";
+        sha512 = "FXCJgyyN3ivVgRoml4h94G/p3kY+u/B86La+QptcqJaWtBWtmc6TtkNfS40n9bIvyLteHh7zXOtgbobORKPbDg==";
       };
     };
     "@types/node-15.12.5" = {
@@ -121,14 +121,13 @@ let
         sha512 = "7O+FbCihrB5WGbFYesctwmTKae6rOiIzmz1icreWJ+0aA7LJfuqhEso2T9ncpcFtzMQtzXf2QGGueWJGTYsqrA==";
       };
     };
-    "camunda-external-task-client-js-git+https://github.com/camunda/camunda-external-task-client-js.git#5923f9a3e98af20aedb3481662f3fdc8f9ef9f81" = {
+    "camunda-external-task-client-js-2.1.1" = {
       name = "camunda-external-task-client-js";
       packageName = "camunda-external-task-client-js";
-      version = "2.2.0-SNAPSHOT";
-      src = fetchgit {
-        url = "https://github.com/camunda/camunda-external-task-client-js.git";
-        rev = "5923f9a3e98af20aedb3481662f3fdc8f9ef9f81";
-        sha256 = "cd959c39df629290a5d8f91925656a9c41e3ac80e2fb0c43bc9e083cbe664958";
+      version = "2.1.1";
+      src = fetchurl {
+        url = "https://registry.npmjs.org/camunda-external-task-client-js/-/camunda-external-task-client-js-2.1.1.tgz";
+        sha512 = "3oJjXUfkw5cJHhgeGpgmymr4XbQpLluC4EHkTy7ennqOJBzaRbKHAisv0O1VGlWvyI1eEfunMM4s05J1kxVU3g==";
       };
     };
     "chalk-2.4.2" = {
@@ -311,13 +310,13 @@ let
         sha512 = "4bV5BfR2mqfQTJm+V5tPPdf+ZpuhiIvTuAB5g8kcrXOZpTT/QwwVRWBywX1ozr6lEuPdbHxwaJlm9G6mI2sfSQ==";
       };
     };
-    "keyv-4.0.3" = {
+    "keyv-4.1.1" = {
       name = "keyv";
       packageName = "keyv";
-      version = "4.0.3";
+      version = "4.1.1";
       src = fetchurl {
-        url = "https://registry.npmjs.org/keyv/-/keyv-4.0.3.tgz";
-        sha512 = "zdGa2TOpSZPq5mU6iowDARnMBZgtCqJ11dJROFi6tg6kTn4nuUdU09lFyLFSaHrWqpIJ+EBq4E8/Dc0Vx5vLdA==";
+        url = "https://registry.npmjs.org/keyv/-/keyv-4.1.1.tgz";
+        sha512 = "tGv1yP6snQVDSM4X6yxrv2zzq/EvpW+oYiUz6aueW1u9CtS8RzUQYxxmFwgZlO2jSgCxQbchhxaqXXp2hnKGpQ==";
       };
     };
     "lowercase-keys-2.0.0" = {
@@ -580,10 +579,10 @@ let
     src = ./..;
     dependencies = [
       sources."@sindresorhus/is-2.1.1"
-      sources."@szmarczak/http-timer-4.0.5"
-      sources."@types/cacheable-request-6.0.1"
-      sources."@types/http-cache-semantics-4.0.0"
-      sources."@types/keyv-3.1.1"
+      sources."@szmarczak/http-timer-4.0.6"
+      sources."@types/cacheable-request-6.0.2"
+      sources."@types/http-cache-semantics-4.0.1"
+      sources."@types/keyv-3.1.3"
       sources."@types/node-15.12.5"
       sources."@types/responselike-1.0.0"
       sources."adm-zip-0.5.5"
@@ -592,7 +591,7 @@ let
       sources."cacheable-lookup-2.0.1"
       sources."cacheable-request-7.0.2"
       sources."call-bind-1.0.2"
-      sources."camunda-external-task-client-js-git+https://github.com/camunda/camunda-external-task-client-js.git#5923f9a3e98af20aedb3481662f3fdc8f9ef9f81"
+      sources."camunda-external-task-client-js-2.1.1"
       sources."chalk-2.4.2"
       (sources."clone-response-1.0.2" // {
         dependencies = [
@@ -617,7 +616,7 @@ let
       sources."has-symbols-1.0.2"
       sources."http-cache-semantics-4.1.0"
       sources."json-buffer-3.0.1"
-      sources."keyv-4.0.3"
+      sources."keyv-4.1.1"
       sources."lowercase-keys-2.0.0"
       sources."mime-db-1.48.0"
       sources."mime-types-2.1.31"

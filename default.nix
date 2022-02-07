@@ -57,9 +57,8 @@ pkgs.stdenv.mkDerivation rec {
     nodejs-14_x
   ];
   shellHook = ''
-    fusermount -qu node_modules
-    mkdir -p node_modules
-    bindfs ${dev_node_modules} node_modules -o nonempty
+    fusermount -qu node_modules && mkdir -p node_modules || true
+    bindfs ${dev_node_modules} node_modules -o nonempty || cp -a ${dev_node_modules} node_modules
     export PATH=$(pwd)/node_modules/.bin:$PATH
   '';
 }
