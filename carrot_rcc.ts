@@ -458,9 +458,7 @@ const save = async (
           patch.modifications[name] = {
             value: (typeof current[name].getMonth === "function"
               ? current[name].toISOString()
-              : `${current[name].substring(0, 10)}T${current[name].substring(
-                  11
-                )}${TZ}`
+              : current[name]
             ).replace(/Z$/, "+0000"),
             type: "Date",
           };
