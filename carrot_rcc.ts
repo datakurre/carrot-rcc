@@ -250,33 +250,6 @@ const inferType = async (
   return "Json";
 };
 
-const TZ: string = ((): string => {
-  const date = new Date();
-  const offset = date.getTimezoneOffset();
-  const base = Math.floor(offset / 60) * -100 + (offset % 60);
-  if (offset == 0) {
-    return "+0000";
-  } else if (base >= 1000) {
-    return `+${base}`;
-  } else if (base >= 100) {
-    return `+0${base}`;
-  } else if (base >= 10) {
-    return `+00${base}`;
-  } else if (base >= 1) {
-    return `+000${base}`;
-  } else if (base <= -1000) {
-    return `-${base}`;
-  } else if (base <= -100) {
-    return `-0${base}`;
-  } else if (base <= -10) {
-    return `-00${base}`;
-  } else if (base <= -1) {
-    return `-000${base}`;
-  } else {
-    return "+0000";
-  }
-})();
-
 interface File {
   name: string;
   hex: string;
@@ -529,9 +502,7 @@ const save = async (
           patch.modifications[name] = {
             value: (typeof current[name].getMonth === "function"
               ? current[name].toISOString()
-              : `${current[name].substring(0, 10)}T${current[name].substring(
-                  11
-                )}${TZ}`
+              : current[name]
             ).replace(/Z$/, "+0000"),
             type: "Date",
           };
