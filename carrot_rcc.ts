@@ -22,7 +22,7 @@ import { IRequestOptions } from "typed-rest-client";
 import YAML from "yaml";
 
 import * as api from "./Camunda";
-import { TZ, inferType, isEqual } from "./carrot_rcc_lib";
+import { TZ, inferType, isEqual, toCamundaDateString } from "./carrot_rcc_lib";
 
 const crypto = require("crypto");
 
@@ -456,10 +456,7 @@ const save = async (
           break;
         case "Date":
           patch.modifications[name] = {
-            value: (typeof current[name].getMonth === "function"
-              ? current[name].toISOString()
-              : current[name]
-            ).replace(/Z$/, "+0000"),
+            value: toCamundaDateString(current[name]),
             type: "Date",
           };
           break;

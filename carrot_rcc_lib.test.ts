@@ -1,4 +1,150 @@
-import { TZ, inferType, isEqual, offsetToString } from "./carrot_rcc_lib";
+import {
+  TZ,
+  inferType,
+  isBoolean,
+  isDate,
+  isDouble,
+  isEqual,
+  isInteger,
+  isJson,
+  isLong,
+  isString,
+  offsetToString,
+  toCamundaDateString,
+} from "./carrot_rcc_lib";
+
+describe("isInteger", () => {
+  it("should return false for boolean", () => {
+    expect(isInteger(false)).toBe(false);
+  });
+  it("should return false for string", () => {
+    expect(isInteger("0")).toBe(false);
+  });
+  it("should return true for 0", () => {
+    expect(isInteger(0)).toBe(true);
+  });
+  it("should return true for 1", () => {
+    expect(isInteger(1)).toBe(true);
+  });
+  it("should return false for double", () => {
+    expect(isInteger(1.1)).toBe(false);
+  });
+  it("should return false for long", () => {
+    expect(isInteger(Math.pow(2, 31))).toBe(false);
+  });
+});
+
+describe("isLong", () => {
+  it("should return false for 0", () => {
+    expect(isLong(0)).toBe(false);
+  });
+  it("should return false for 1", () => {
+    expect(isLong(1)).toBe(false);
+  });
+  it("should return false for double", () => {
+    expect(isLong(1.1)).toBe(false);
+  });
+  it("should return true for long", () => {
+    expect(isLong(Math.pow(2, 31))).toBe(true);
+  });
+});
+
+describe("isDouble", () => {
+  it("should return false for 0", () => {
+    expect(isDouble(0)).toBe(false);
+  });
+  it("should return false for 1", () => {
+    expect(isDouble(1)).toBe(false);
+  });
+  it("should return false for long", () => {
+    expect(isDouble(Math.pow(2, 31))).toBe(false);
+  });
+  it("should return true for double", () => {
+    expect(isDouble(1.1)).toBe(true);
+  });
+});
+
+describe("isBoolean", () => {
+  it("should return false for null", () => {
+    expect(isBoolean(null)).toBe(false);
+  });
+  it("should return false for undefined", () => {
+    expect(isBoolean(undefined)).toBe(false);
+  });
+  it("should return false for 0", () => {
+    expect(isBoolean(0)).toBe(false);
+  });
+  it("should return false for 1", () => {
+    expect(isBoolean(1)).toBe(false);
+  });
+  it("should return true for false", () => {
+    expect(isBoolean(false)).toBe(true);
+  });
+  it("should return true for false", () => {
+    expect(isBoolean(true)).toBe(true);
+  });
+});
+
+describe("isString", () => {
+  it("should return false for null", () => {
+    expect(isString(null)).toBe(false);
+  });
+  it("should return false for undefined", () => {
+    expect(isString(undefined)).toBe(false);
+  });
+  it("should return false for 0", () => {
+    expect(isString(0)).toBe(false);
+  });
+  it("should return false for 1", () => {
+    expect(isString(1)).toBe(false);
+  });
+  it("should return true for string", () => {
+    expect(isString("")).toBe(true);
+  });
+});
+
+describe("isJson", () => {
+  it("should return false for undefined", () => {
+    expect(isJson(undefined)).toBe(false);
+  });
+  it("should return false for string", () => {
+    expect(isJson("")).toBe(false);
+  });
+  it("should return true for object", () => {
+    expect(isJson({})).toBe(true);
+  });
+  it("should return true for null", () => {
+    expect(isJson(null)).toBe(true);
+  });
+});
+
+describe("isDate", () => {
+  it("should return false for undefined", () => {
+    expect(isDate(undefined)).toBe(false);
+  });
+  it("should return false for null", () => {
+    expect(isDate(null)).toBe(false);
+  });
+  it("should return false for empty string", () => {
+    expect(isDate("")).toBe(false);
+  });
+  it("should return true for date", () => {
+    expect(isDate(new Date())).toBe(true);
+  });
+  it("should return true for ISO formatted date", () => {
+    expect(isDate(new Date().toISOString())).toBe(true);
+  });
+  it("should return true for Camunda formaotted date", () => {
+    expect(isDate(new Date().toISOString().replace(/Z$/, "+0000"))).toBe(true);
+  });
+  it("should return true for date string", () => {
+    expect(isDate("2020-01-01")).toBe(true);
+    expect(isDate("2020-01-01 12:00:00")).toBe(true);
+    expect(isDate("2020-01-01 12:00:00.000")).toBe(true);
+    expect(isDate("2020-01-01T12:00:00")).toBe(true);
+    expect(isDate("2020-01-01T12:00:00.000")).toBe(true);
+  });
+});
 
 describe("TZ", () => {
   it("should be +0000 (GMT), +0200 or +0300 (in a test setup)", () => {
@@ -151,6 +297,12 @@ describe("inferType", () => {
     expect.assertions(1);
     return inferType(undefined, 1).then((data) => expect(data).toBe("Integer"));
   });
+  it('should infer long numbers values as "Long"', () => {
+    expect.assertions(1);
+    return inferType(undefined, Math.pow(2, 31)).then((data) =>
+      expect(data).toBe("Long")
+    );
+  });
   it('should infer other numbers values as "Double"', () => {
     expect.assertions(1);
     return inferType(undefined, 1.1).then((data) =>
@@ -160,5 +312,78 @@ describe("inferType", () => {
   it("should infer other values as JSON", () => {
     expect.assertions(1);
     return inferType(undefined, null).then((data) => expect(data).toBe("Json"));
+  });
+});
+
+describe("toCamundaDateString", () => {
+  it("should convert date to Camunda date string", () => {
+    const a = new Date();
+    expect(toCamundaDateString(a)).toBe(a.toISOString().replace(/Z$/, "+0000"));
+  });
+  it("should return ISO string as Camunda date string", () => {
+    const a = new Date();
+    expect(toCamundaDateString("2022-02-07 22:04:58.297+0200")).toBe(
+      "2022-02-07T20:04:58.297+0000"
+    );
+    expect(toCamundaDateString("2022-02-07T22:04:58.297+0200")).toBe(
+      "2022-02-07T20:04:58.297+0000"
+    );
+    expect(toCamundaDateString(a.toISOString())).toBe(
+      a.toISOString().replace(/Z$/, "+0000")
+    );
+  });
+  it("should return 'YYYY-MM-DD' to ISO string with local TZ", () => {
+    // TODO: How to test with different locales
+    expect([
+      "2020-01-01T00:00:00.000+0000",
+      "2020-01-01T00:00:00.000+0200",
+    ]).toContain(toCamundaDateString("2020-01-01"));
+  });
+  it("should return 'YYYY-MM-DD{T| }HH:MM:SS[.s]' to ISO string with local TZ", () => {
+    // TODO: How to test with different locales
+    expect([
+      "2020-01-01T00:00:00.000+0000",
+      "2020-01-01T00:00:00.000+0200",
+    ]).toContain(toCamundaDateString("2020-01-01"));
+    expect([
+      "2020-01-01T00:00:00.000+0000",
+      "2020-01-01T00:00:00.000+0200",
+    ]).toContain(toCamundaDateString("2020-01-01 00:00"));
+    expect([
+      "2020-01-01T00:00:00.000+0000",
+      "2020-01-01T00:00:00.000+0200",
+    ]).toContain(toCamundaDateString("2020-01-01T00:00"));
+    expect([
+      "2020-01-01T00:00:00.000+0000",
+      "2020-01-01T00:00:00.000+0200",
+    ]).toContain(toCamundaDateString("2020-01-01 00:00:00"));
+    expect([
+      "2020-01-01T00:00:00.000+0000",
+      "2020-01-01T00:00:00.000+0200",
+    ]).toContain(toCamundaDateString("2020-01-01T00:00:00"));
+    expect([
+      "2020-01-01T00:00:00.000+0000",
+      "2020-01-01T00:00:00.000+0200",
+    ]).toContain(toCamundaDateString("2020-01-01 00:00:00.000"));
+    expect([
+      "2020-01-01T00:00:00.000+0000",
+      "2020-01-01T00:00:00.000+0200",
+    ]).toContain(toCamundaDateString("2020-01-01T00:00:00.000"));
+    expect([
+      "2020-01-01T12:00:00.000+0000",
+      "2020-01-01T12:00:00.000+0200",
+    ]).toContain(toCamundaDateString("2020-01-01 12:00:00"));
+    expect([
+      "2020-01-01T12:00:00.000+0000",
+      "2020-01-01T12:00:00.000+0200",
+    ]).toContain(toCamundaDateString("2020-01-01T12:00:00"));
+    expect([
+      "2020-01-01T12:00:00.000+0000",
+      "2020-01-01T12:00:00.000+0200",
+    ]).toContain(toCamundaDateString("2020-01-01 12:00:00.000"));
+    expect([
+      "2020-01-01T12:00:00.000+0000",
+      "2020-01-01T12:00:00.000+0200",
+    ]).toContain(toCamundaDateString("2020-01-01T12:00:00.000"));
   });
 });
