@@ -11,7 +11,6 @@ import {
   Client,
   Interceptor,
   Task,
-  TypedValue,
   logger,
 } from "camunda-external-task-client-js";
 import dotenv from "dotenv";
@@ -23,6 +22,7 @@ import { IRequestOptions } from "typed-rest-client";
 import YAML from "yaml";
 
 import * as api from "./Camunda";
+import { TZ, inferType, isEqual, toCamundaDateString } from "./carrot_rcc_lib";
 
 const crypto = require("crypto");
 
@@ -205,77 +205,6 @@ const client = new Client({
 LOG.debug((client as any).options);
 LOG.debug(CAMUNDA_TOPICS);
 LOG.debug(CAMUNDA_TOPICS_VAULT);
-
-const isEqual = async (
-  old: TypedValue | undefined,
-  current: any
-): Promise<boolean> => {
-  if (old === undefined) {
-    return false;
-  }
-  switch (old.type) {
-    case "File":
-      return false;
-    default:
-      return old.value === current;
-  }
-};
-
-const inferType = async (
-  old: TypedValue | undefined,
-  current: any
-): Promise<string> => {
-  if (old?.type === "object") {
-    // We can only save deserialized objects back as JSON
-    return "Json";
-  } else if (old?.type) {
-    return old.type[0].toUpperCase() + old.type.substr(1);
-  } else if (typeof current === "boolean") {
-    return "Boolean";
-  } else if (typeof current === "string") {
-    if (current.match(/^\d{4}-\d{2}-\d{2}T?[0-9:.Z]*$/)) {
-      return "Date";
-    } else {
-      return "String";
-    }
-  } else if (typeof current.getMonth === "function") {
-    return "Date";
-  } else if (typeof current === "number") {
-    if (!`${current}`.match(/\./)) {
-      return "Integer";
-    } else {
-      return "Double";
-    }
-  }
-  return "Json";
-};
-
-const TZ: string = ((): string => {
-  const date = new Date();
-  const offset = date.getTimezoneOffset();
-  const base = Math.floor(offset / 60) * -100 + (offset % 60);
-  if (offset == 0) {
-    return "+0000";
-  } else if (base >= 1000) {
-    return `+${base}`;
-  } else if (base >= 100) {
-    return `+0${base}`;
-  } else if (base >= 10) {
-    return `+00${base}`;
-  } else if (base >= 1) {
-    return `+000${base}`;
-  } else if (base <= -1000) {
-    return `-${base}`;
-  } else if (base <= -100) {
-    return `-0${base}`;
-  } else if (base <= -10) {
-    return `-00${base}`;
-  } else if (base <= -1) {
-    return `-000${base}`;
-  } else {
-    return "+0000";
-  }
-})();
 
 interface File {
   name: string;
@@ -527,12 +456,7 @@ const save = async (
           break;
         case "Date":
           patch.modifications[name] = {
-            value: (typeof current[name].getMonth === "function"
-              ? current[name].toISOString()
-              : `${current[name].substring(0, 10)}T${current[name].substring(
-                  11
-                )}${TZ}`
-            ).replace(/Z$/, "+0000"),
+            value: toCamundaDateString(current[name]),
             type: "Date",
           };
           break;
@@ -913,13 +837,13 @@ const start = async (client: Client) => {
     LOG.info("Unable to fetch tasks to unlock", e);
   }
   setTimeout(() => {
-      // Subscribe
-      for (const topic of Object.keys(CAMUNDA_TOPICS)) {
-          subscribe(topic);
-      }
-      // Start client
-      client.start();
-  }, sleep)
+    // Subscribe
+    for (const topic of Object.keys(CAMUNDA_TOPICS)) {
+      subscribe(topic);
+    }
+    // Start client
+    client.start();
+  }, sleep);
 };
 
 setTimeout(async () => await start(client));

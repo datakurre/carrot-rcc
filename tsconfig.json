@@ -3,7 +3,7 @@
     "target": "esnext",
     "module": "esnext",
     "typeRoots": [
-      "./@types"
+      "./@types", "./node_modules/@types"
     ],
     "outDir": ".",
     "moduleResolution": "node",
@@ -13,5 +13,7 @@
   "include": [
     "*.ts"
   ],
-  "exclude": []
+  "exclude": [
+    "*.test.ts"
+  ]
 }
