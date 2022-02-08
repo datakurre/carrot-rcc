@@ -8,7 +8,7 @@
     "prettier:check": "prettier --check \"*.ts\"",
     "prettier:format": "prettier --write \"*.ts\"",
     "start": "tsc -w",
-    "test": "jest --coverage"
+    "test": "TZ=Europe/Helsinki jest --coverage"
   },
   "repository": {
     "type": "git",

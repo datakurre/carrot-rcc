@@ -147,8 +147,9 @@ describe("isDate", () => {
 });
 
 describe("TZ", () => {
-  it("should be +0000 (GMT), +0200 or +0300 (in a test setup)", () => {
-    expect(["+0000", "+0200", "+0300"]).toContain(TZ);
+  it("should be +0200 or +0300 for Europe/Helsinki", () => {
+    // TZ=Europe/Helsinki
+    expect(["+0200", "+0300"]).toContain(TZ);
   });
 });
 
@@ -335,55 +336,55 @@ describe("toCamundaDateString", () => {
   it("should return 'YYYY-MM-DD' to ISO string with local TZ", () => {
     // TODO: How to test with different locales
     expect([
-      "2020-01-01T00:00:00.000+0000",
       "2020-01-01T00:00:00.000+0200",
+      "2020-01-01T00:00:00.000+0300",
     ]).toContain(toCamundaDateString("2020-01-01"));
   });
   it("should return 'YYYY-MM-DD{T| }HH:MM:SS[.s]' to ISO string with local TZ", () => {
-    // TODO: How to test with different locales
+    // TZ=Europe/Helsinki
     expect([
-      "2020-01-01T00:00:00.000+0000",
       "2020-01-01T00:00:00.000+0200",
+      "2020-01-01T00:00:00.000+0300",
     ]).toContain(toCamundaDateString("2020-01-01"));
     expect([
-      "2020-01-01T00:00:00.000+0000",
       "2020-01-01T00:00:00.000+0200",
+      "2020-01-01T00:00:00.000+0300",
     ]).toContain(toCamundaDateString("2020-01-01 00:00"));
     expect([
-      "2020-01-01T00:00:00.000+0000",
       "2020-01-01T00:00:00.000+0200",
+      "2020-01-01T00:00:00.000+0300",
     ]).toContain(toCamundaDateString("2020-01-01T00:00"));
     expect([
-      "2020-01-01T00:00:00.000+0000",
       "2020-01-01T00:00:00.000+0200",
+      "2020-01-01T00:00:00.000+0300",
     ]).toContain(toCamundaDateString("2020-01-01 00:00:00"));
     expect([
-      "2020-01-01T00:00:00.000+0000",
       "2020-01-01T00:00:00.000+0200",
+      "2020-01-01T00:00:00.000+0300",
     ]).toContain(toCamundaDateString("2020-01-01T00:00:00"));
     expect([
-      "2020-01-01T00:00:00.000+0000",
       "2020-01-01T00:00:00.000+0200",
+      "2020-01-01T00:00:00.000+0300",
     ]).toContain(toCamundaDateString("2020-01-01 00:00:00.000"));
     expect([
-      "2020-01-01T00:00:00.000+0000",
       "2020-01-01T00:00:00.000+0200",
+      "2020-01-01T00:00:00.000+0300",
     ]).toContain(toCamundaDateString("2020-01-01T00:00:00.000"));
     expect([
-      "2020-01-01T12:00:00.000+0000",
       "2020-01-01T12:00:00.000+0200",
+      "2020-01-01T12:00:00.000+0300",
     ]).toContain(toCamundaDateString("2020-01-01 12:00:00"));
     expect([
-      "2020-01-01T12:00:00.000+0000",
       "2020-01-01T12:00:00.000+0200",
+      "2020-01-01T12:00:00.000+0300",
     ]).toContain(toCamundaDateString("2020-01-01T12:00:00"));
     expect([
-      "2020-01-01T12:00:00.000+0000",
       "2020-01-01T12:00:00.000+0200",
+      "2020-01-01T12:00:00.000+0300",
     ]).toContain(toCamundaDateString("2020-01-01 12:00:00.000"));
     expect([
-      "2020-01-01T12:00:00.000+0000",
       "2020-01-01T12:00:00.000+0200",
+      "2020-01-01T12:00:00.000+0300",
     ]).toContain(toCamundaDateString("2020-01-01T12:00:00.000"));
   });
 });
