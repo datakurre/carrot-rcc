@@ -305,8 +305,8 @@ in {
           mktplcRef = {
             name = "robotframework-lsp";
             publisher = "robocorp";
-            version = "0.39.0";
-            sha256 = "03zq8bbws1lxsi2ds5hg3q6y1bkfxz9dx52150w9as0b5x7k990r";
+            version = "0.40.1";
+            sha256 = "1y35idwf66jaj5hq2kz3rrswa8mvzsmwnjnzrrn93zs8vmv59gg8";
           };
         })
         (pkgs.vscode-utils.buildVscodeMarketplaceExtension rec {
