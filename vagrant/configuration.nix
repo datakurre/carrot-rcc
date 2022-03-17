@@ -6,12 +6,12 @@ let
 
   robotframework = ps:
     ps.robotframework.overridePythonAttrs(old: rec {
-      version = "5.0b1";
+      version = "5.0rc1";
       src = ps.fetchPypi {
         pname = "robotframework";
         extension = "zip";
         inherit version;
-        sha256 = "0zn70xnr37sbjqgnvn8bij6cxp2kw2ypl0cn3n7vm3lapq8wxsxp";
+        sha256 = "18086q96njl2as527r756xjznqikc3jflx97yw8rz8i67yqwdjn6";
       };
       doCheck = false;
     });
@@ -305,16 +305,16 @@ in {
           mktplcRef = {
             name = "robotframework-lsp";
             publisher = "robocorp";
-            version = "0.40.1";
-            sha256 = "1y35idwf66jaj5hq2kz3rrswa8mvzsmwnjnzrrn93zs8vmv59gg8";
+            version = "0.42.1";
+            sha256 = "1q010v7b2r5h2lsv6cyxqhdiaiqhl9x4f609bp9mw9pbs9xvsg40";
           };
         })
         (pkgs.vscode-utils.buildVscodeMarketplaceExtension rec {
           mktplcRef = {
             name = "robocorp-code";
             publisher = "robocorp";
-            version = "0.27.1";
-            sha256 = "0ypg9cxqakcsm68k55y4v33dvq9vyak7d7lzahm563wy3r6psj6z";
+            version = "0.28.1";
+            sha256 = "0blvgxm5f5a89jwpr7ajihb1pk9mj9jgy1yajicvdk6b63v09hv9";
           };
           postInstall = ''
             mkdir -p $out/share/vscode/extensions/robocorp.robocorp-code/bin

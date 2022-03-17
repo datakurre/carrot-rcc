@@ -1,8 +1,8 @@
 Thumbs.db
 .DS_Store
 .gradle
-/build/
-/target/
+build/
+target/
 out/
 .idea
 *.iml

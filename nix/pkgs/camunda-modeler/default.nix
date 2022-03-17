@@ -35,8 +35,8 @@ let
   };
 
   bpmn-js-token-simulation-plugin = fetchurl {
-    url = "https://github.com/bpmn-io/bpmn-js-token-simulation-plugin/archive/30530cfbd997940b86d7b4fa4153fdcec1dfce17.tar.gz";
-    sha256 = "1axqkzc2rgr9zkn5h3hqjdfv0qyv5r3kh4km2vh180kviw6wisay";
+    url = "https://github.com/bpmn-io/bpmn-js-token-simulation-plugin/archive/ba7b6c0f4edf0872229da58a20ef96590d9a99a8.tar.gz";
+    sha256 = "1wp2b2ngard7b47kx9qxl1b26z0ljhvxp07q28kmgks7cxfalz7v";
   };
 
   dmn-testing-plugin = fetchurl {
@@ -53,10 +53,10 @@ in
 
 stdenv.mkDerivation rec {
   name = "camunda-modeler-${version}";
-  version = "5.0.0-alpha.0";
+  version = "5.0.0-alpha.1";
   src = fetchurl {
     url = "https://github.com/camunda/camunda-modeler/releases/download/v${version}/camunda-modeler-${version}-linux-x64.tar.gz";
-    sha256 = "1awljg7nz27ijxdxbfp3903b7r0vg4gnnqbl8ivqps9b8xsbgnsh";
+    sha256 = "095kklcjcz4llvqxcqylqpk0p42dmqxq1a98vqlgqd993kyvf3y7";
   };
 
   nativeBuildInputs = [ electron makeWrapper nodePackages.asar autoPatchelfHook gcc-unwrapped ];
