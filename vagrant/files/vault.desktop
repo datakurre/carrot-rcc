@@ -1,6 +1,0 @@
-[Desktop Entry]
-Version=1.0
-Type=Link
-Name=Vault
-Icon=/home/vagrant/.config/vagrant/vault.png
-URL=http://localhost:8200/

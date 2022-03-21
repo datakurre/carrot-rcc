@@ -35,6 +35,17 @@ let
       }
     '';
 
+  configGCE = pkgs.writeText "configuration.nix"
+    ''
+      { config, pkgs, ... }:
+
+      let repo = fetchTarball https://github.com/datakurre/carrot-rcc/archive/refs/heads/main.tar.gz; in
+
+      {
+        imports = [ "''${repo}/vagrant/configuration-gce.nix" ];
+      }
+    '';
+
 in
 
 {
@@ -109,4 +120,23 @@ in
       })
     ];
   }).config.system.build.vagrantHyperV;
+
+  gce = (import "${pkgs.path}/nixos/lib/eval-config.nix" {
+    inherit pkgs;
+    modules = [
+      ./configuration-gce.nix
+      ({config, pkgs, ...}: {
+        virtualisation.googleComputeImage.configFile = builtins.toFile "configuration.nix" ''
+          { config, pkgs, ... }:
+
+          let repo = fetchTarball https://github.com/datakurre/carrot-rcc/archive/refs/heads/main.tar.gz; in
+
+          {
+            imports = [ "''${repo}/vagrant/configuration-gce.nix" ];
+          }
+        '';
+        nixpkgs.overlays = [];
+      })
+    ];
+  }).config.system.build.googleComputeImage;
 }

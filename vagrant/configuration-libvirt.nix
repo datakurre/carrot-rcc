@@ -2,6 +2,7 @@
 
 {
   imports = let nixpkgs = (import ../nix/sources.nix).nixpkgs; in [
+    "${nixpkgs}/nixos/modules/virtualisation/vagrant-guest.nix"
     "${nixpkgs}/nixos/modules/profiles/qemu-guest.nix"
     "${nixpkgs}/nixos/modules/installer/cd-dvd/channel.nix"
     ./configuration.nix

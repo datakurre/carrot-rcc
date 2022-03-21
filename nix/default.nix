@@ -5,6 +5,8 @@
 
 let
 
+  unstable = import sources."nixpkgs-unstable" {};
+
   overlay = _: pkgs: {
     buildMavenRepositoryFromLockFile = (pkgs.callPackage ./pkgs/mvn2nix { inherit nixpkgs; }).buildMavenRepositoryFromLockFile;
     camunda-modeler = pkgs.callPackage ./pkgs/camunda-modeler {};
@@ -18,6 +20,9 @@ let
     poetry2nix = pkgs.callPackage ./pkgs/poetry2nix { inherit nixpkgs; };
     rcc = pkgs.callPackage ./pkgs/rcc/rcc.nix {};
     rccFHSUserEnv = pkgs.callPackage ./pkgs/rcc {};
+
+    inherit (unstable)
+    novnc;
   };
 
   pkgs = import nixpkgs {

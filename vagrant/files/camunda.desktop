@@ -1,6 +1,0 @@
-[Desktop Entry]
-Version=1.0
-Type=Link
-Name=Camunda
-Icon=/home/vagrant/.config/vagrant/camunda.png
-URL=http://localhost:8080/camunda/
