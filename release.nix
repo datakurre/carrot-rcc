@@ -11,11 +11,13 @@ let
     name = "env";
     paths = [
       app
+      rcc
       bashInteractive
       coreutils
       findutils
       netcat
       tini
+      glibc.bin
     ];
   };
 
@@ -42,10 +44,18 @@ chmod a+x usr/local/bin/*
 makeWrapper ${bashInteractive}/bin/sh usr/local/bin/sh \
   --set SHELL /usr/local/bin/sh \
   --prefix PATH : ${app}/bin \
+  --prefix PATH : ${rcc}/bin \
   --prefix PATH : ${coreutils}/bin \
   --prefix PATH : ${findutils}/bin \
   --prefix PATH : ${netcat}/bin \
-  --prefix PATH : ${tini}/bin
+  --prefix PATH : ${tini}/bin \
+  --prefix PATH : ${glibc.bin}/bin
+
+# libc dynamic linker needed for running rcc-installed python
+mkdir lib64
+for file in ${glibc}/lib64/??*; do
+  ln -s $file lib64/$(basename $file)
+done
 
 # artifact
 tar czvhP \
@@ -53,5 +63,5 @@ tar czvhP \
   --exclude="${env}" \
   --exclude="*ncurses*/ncurses*/ncurses*" \
   --files-from=${closure} \
-  usr > $out || true
+  usr lib64 > $out || true
 ''
