@@ -19,13 +19,14 @@ let
 in {
 
   options = {
+    options.username = lib.mkOption { default = "vagrant"; };
+    options.shared-folder = lib.mkOption { default = true; };
     options.vscode-with-vim = lib.mkOption { default = false; };
   };
 
   imports = let nixpkgs = (import ../nix/sources.nix).nixpkgs;
                 home-manager = builtins.fetchTarball "https://github.com/nix-community/home-manager/archive/release-21.11.tar.gz";
   in [
-    "${nixpkgs}/nixos/modules/virtualisation/vagrant-guest.nix"
     (import "${home-manager}/nixos")
   ];
 
@@ -37,6 +38,7 @@ in {
     };
 
     networking.nameservers = [ "1.1.1.1" "9.9.9.9" ];
+    networking.firewall.allowedTCPPorts = [ 443 ];
 
     i18n.defaultLocale = "en_US.UTF-8";
     time.timeZone = "Europe/Berlin";
@@ -58,7 +60,7 @@ in {
           defaultSession = "xfce";
           autoLogin = {
             enable = true;
-            user = "vagrant";
+            user = config.options.username;
           };
         };
         desktopManager = {
@@ -150,7 +152,7 @@ in {
         JVM_OPTS = "-Dfile.encoding=UTF-8";
       };
       serviceConfig = {
-        User = "vagrant";
+        User = config.options.username;
         Group = "users";
         Restart = "on-failure";
         StateDirectory = "camunda";
@@ -209,7 +211,7 @@ in {
         VAULT_TOKEN = "secret";
       };
       serviceConfig = {
-        User = "vagrant";
+        User = config.options.username;
         Group = "users";
         Restart = "on-failure";
         RestartSec = 1;
@@ -221,9 +223,74 @@ in {
       script = ''
         rm -f $STATE_DIRECTORY/carrot-rcc
         cd $STATE_DIRECTORY
-        export HOME=/home/vagrant
+        export HOME=/home/${config.options.username}
         exec carrot-rcc $(find . -name "*.zip")
       '';
+    };
+
+    # NoVNC
+    services.nginx.enable = true;
+    services.nginx.virtualHosts.localhost = {
+      root = "${pkgs.novnc}/share/webapps/novnc";
+      forceSSL = true;
+      sslCertificate = "/etc/novnc-selfsigned.crt";
+	  sslCertificateKey = "/etc/novnc-selfsigned.key";
+      locations."/websockify" = {
+        proxyWebsockets = true;
+        proxyPass = "http://localhost:14000";
+        extraConfig = ''
+          proxy_read_timeout 61s;
+          proxy_buffering off;
+          proxy_set_header Host $host;
+        '';
+      };
+      locations."/" = {
+        index = "vnc.html";
+      };
+    };
+    systemd.services.novnc-cert = {
+      wantedBy = [ "multi-user.target" ];
+      before = [ "nginx.service" ];
+      bindsTo = [ "nginx.service" ];
+      path = [ pkgs.openssl ];
+      serviceConfig = {
+        Type = "oneshot";
+      };
+      unitConfig = {
+        StartLimitIntervalSec = 0;
+      };
+      script = ''
+        openssl req -new -newkey rsa:4096 -days 365 -nodes -x509 \
+         -subj "/C=US/ST=Denial/L=Springfield/O=Carrot-RCC/CN=www.example.com" \
+         -keyout /etc/novnc-selfsigned.key -out /etc/novnc-selfsigned.crt
+        chown nginx:root /etc/novnc-selfsigned.key
+        chown nginx:root /etc/novnc-selfsigned.crt
+      '';
+    };
+    systemd.services.vnc = {
+      wantedBy = [ "multi-user.target" ];
+      after = [ "display-manager.service" ];
+      before = [ "websockify.service" ];
+      serviceConfig = {
+        Environment = "DISPLAY=:0";
+        Restart = "on-failure";
+      };
+      unitConfig = {
+        StartLimitIntervalSec = 0;
+      };
+      script = ''
+        systemctl restart display-manager
+        while ! /run/wrappers/bin/su - ${config.options.username} -c "${pkgs.xorg.xset}/bin/xset -q"; do sleep 1; done
+        sleep 5  # allow slow GCE instance to catch up
+        /run/wrappers/bin/su - ${config.options.username} -c "exec ${pkgs.tigervnc}/bin/x0vncserver -localhost -SecurityTypes none -AlwaysShared"
+      '';
+    };
+    systemd.services.websockify = {
+      wantedBy = [ "default.target" ];
+      after = [ "vnc.service" ];
+      serviceConfig = {
+        ExecStart = "${pkgs.python3Packages.websockify}/bin/websockify localhost:14000 localhost:5900";
+      };
     };
 
     environment.systemPackages = with pkgs; [
@@ -238,90 +305,200 @@ in {
       (python3Full.withPackages(ps: [(robotframework ps)]))
     ];
 
-    users.extraUsers.vagrant.extraGroups = [ "vagrant" ];
-
-    users.groups.vagrant = {
-      gid = 1000;
-      members = [ "vagrant" ];
-    };
-
-    home-manager.users."vagrant" = {
-      home.file.".config/vagrant/camunda-modeler.desktop".source = ./files/camunda-modeler.desktop;
-      home.file.".config/vagrant/camunda-modeler.png".source = ./files/camunda-modeler.png;
-      home.file.".config/vagrant/camunda.desktop".source = ./files/camunda.desktop;
-      home.file.".config/vagrant/camunda.png".source = ./files/camunda.png;
-      home.file.".config/vagrant/chromium-browser.desktop".source = ./files/chromium-browser.desktop;
-      home.file.".config/vagrant/journal.desktop".source = ./files/journal.desktop;
-      home.file.".config/vagrant/keyboard.desktop".source = ./files/keyboard.desktop;
-      home.file.".config/vagrant/mailhog.desktop".source = ./files/mailhog.desktop;
-      home.file.".config/vagrant/mailhog.png".source = ./files/mailhog.png;
-      home.file.".config/vagrant/mockoon.desktop".source = ./files/mockoon.desktop;
-      home.file.".config/vagrant/mockoon.png".source = ./files/mockoon.png;
-      home.file.".config/vagrant/robocorp-code.desktop".source = ./files/robocorp-code.desktop;
-      home.file.".config/vagrant/robocorp-code.png".source = ./files/robocorp-code.png;
-      home.file.".config/vagrant/vault.desktop".source = ./files/vault.desktop;
-      home.file.".config/vagrant/vault.png".source = ./files/vault.png;
-      home.file.".config/vagrant/xfce4-session-logout.desktop".source = ./files/xfce4-session-logout.desktop;
-      xsession = {
-        enable = true;
-        windowManager.command = ''test -n "$1" && eval "$@"'';
-        profileExtra = ''
-          # resolve directory
-          if [ -f ~/.config/user-dirs.dirs ]; then
-            source ~/.config/user-dirs.dirs
-          fi
-          if [ -z "$XDG_DESKTOP_DIR" ]; then
-            XDG_DESKTOP_DIR="Desktop"
-          fi
-          # configure icons
-          mkdir -p $XDG_DESKTOP_DIR
-          cp -L ~/.config/vagrant/*.desktop $XDG_DESKTOP_DIR
-          chmod u+w $XDG_DESKTOP_DIR/*.desktop
-          rm -f $XDG_DESKTOP_DIR/Shared
-          ln -s /vagrant $XDG_DESKTOP_DIR/Shared
-          ln -s /var/lib/carrot-rcc $XDG_DESKTOP_DIR/Robots
-          ln -s /var/lib/camunda $XDG_DESKTOP_DIR/BPMN
-          # configure desktop
-          xfconf-query -c xfwm4 -p /general/workspace_count -t int -s 1 --create
-          # migrations
-          rm -f $XDG_DESKTOP_DIR/keybaord.desktop
-        '';
-        initExtra= ''
-          setxkbmap -layout us
-        '';
+    users.groups = builtins.listToAttrs [{
+      name = config.options.username;
+      value = {
+        gid = 1000;
+        members = [ config.options.username ];
       };
-      programs.vscode.enable = true;
-      programs.vscode.userSettings = {
-        "python.experiments.enabled" = false;
+    }];
+
+    users.extraUsers = builtins.listToAttrs [{
+      name = config.options.username;
+      value = {
+        extraGroups = [ config.options.username ];
       };
-      programs.vscode.package = (pkgs.vscode-fhsWithPackages (ps: with ps; [
-        (ps.python3Full.withPackages(ps: [(robotframework ps)]))
-        pkgs.rcc
-      ]));
-      programs.vscode.extensions = (with pkgs.vscode-extensions; [
-        ms-python.python
-        ms-vsliveshare.vsliveshare
-        (pkgs.vscode-utils.buildVscodeMarketplaceExtension rec {
-          mktplcRef = {
-            name = "robotframework-lsp";
-            publisher = "robocorp";
-            version = "0.42.1";
-            sha256 = "1q010v7b2r5h2lsv6cyxqhdiaiqhl9x4f609bp9mw9pbs9xvsg40";
-          };
-        })
-        (pkgs.vscode-utils.buildVscodeMarketplaceExtension rec {
-          mktplcRef = {
-            name = "robocorp-code";
-            publisher = "robocorp";
-            version = "0.28.1";
-            sha256 = "0blvgxm5f5a89jwpr7ajihb1pk9mj9jgy1yajicvdk6b63v09hv9";
-          };
-          postInstall = ''
-            mkdir -p $out/share/vscode/extensions/robocorp.robocorp-code/bin
-            ln -s ${pkgs.rcc}/bin/rcc $out/share/vscode/extensions/robocorp.robocorp-code/bin
+    }];
+
+    home-manager.users = builtins.listToAttrs [{
+      name = config.options.username;
+      value = {
+        home.file.".config/${config.options.username}/camunda-modeler.png".source = ./files/camunda-modeler.png;
+        home.file.".config/${config.options.username}/camunda-modeler.desktop".source = builtins.toFile "camunda-modeler.desktop" ''
+          [Desktop Entry]
+          StartupWMClass=camunda-modeler
+          Version=1.0
+          Name=Modeler
+          Exec=camunda-modeler
+          StartupNotify=true
+          Terminal=false
+          Icon=/home/${config.options.username}/.config/${config.options.username}/camunda-modeler.png
+          Type=Application
+          MimeType=application/bpmn+xml;application/dmn+xml
+        '';
+        home.file.".config/${config.options.username}/camunda.png".source = ./files/camunda.png;
+        home.file.".config/${config.options.username}/camunda.desktop".source = builtins.toFile "camunda.desktop" ''
+          [Desktop Entry]
+          Version=1.0
+          Type=Link
+          Name=Camunda
+          Icon=/home/${config.options.username}/.config/${config.options.username}/camunda.png
+          URL=http://localhost:8080/camunda/
+        '';
+        home.file.".config/${config.options.username}/chromium-browser.desktop".source = builtins.toFile "chromium-browser.desktop" ''
+          [Desktop Entry]
+          StartupWMClass=chromium-browser
+          Version=1.0
+          Name=Chromium
+          Exec=chromium %U
+          StartupNotify=true
+          Terminal=false
+          Icon=chromium
+          Type=Application
+          Categories=Network;WebBrowser;
+          MimeType=application/pdf;application/rdf+xml;application/rss+xml;application/xhtml+xml;application/xhtml_xml;application/xml;image/gif;image/jpeg;image/png;image/webp;text/html;text/xml;x-scheme-handler/ftp;x-scheme-handler/http;x-scheme-handler/https;x-scheme-handler/webcal;x-scheme-handler/mailto;x-scheme-handler/about;x-scheme-handler/unknown
+        '';
+        home.file.".config/${config.options.username}/journal.desktop".source = builtins.toFile "journal.desktop" ''
+          [Desktop Entry]
+          StartupWMClass=ksystemlog
+          Version=1.0
+          Name=Journal
+          Exec=nix-shell -p ksystemlog --run ksystemlog
+          StartupNotify=false
+          Terminal=false
+          Icon=system-search
+          Type=Application
+        '';
+        home.file.".config/${config.options.username}/keyboard.desktop".source = builtins.toFile "keyboard.desktop" ''
+          [Desktop Entry]
+          StartupWMClass=xfce4-keyboard-settings
+          Version=1.0
+          Name=Keyboard
+          Exec=/run/current-system/sw/bin/xfce4-keyboard-settings
+          StartupNotify=false
+          Terminal=false
+          Icon=input-keyboard
+          Type=Application
+        '';
+        home.file.".config/${config.options.username}/mailhog.png".source = ./files/mailhog.png;
+        home.file.".config/${config.options.username}/mailhog.desktop".source = builtins.toFile "mailhog.desktop" ''
+          [Desktop Entry]
+          Version=1.0
+          Type=Link
+          Name=MailHog
+          Icon=/home/${config.options.username}/.config/${config.options.username}/mailhog.png
+          URL=http://localhost:8025/
+        '';
+        home.file.".config/${config.options.username}/mockoon.png".source = ./files/mockoon.png;
+        home.file.".config/${config.options.username}/mockoon.desktop".source = builtins.toFile "mockoon.desktop" ''
+          [Desktop Entry]
+          StartupWMClass=mockoon
+          Version=1.0
+          Name=Mockoon
+          Exec=mockoon-1.17.0
+          StartupNotify=true
+          Terminal=false
+          Icon=/home/${config.options.username}/.config/${config.options.username}/mockoon.png
+          Type=Application
+        '';
+        home.file.".config/${config.options.username}/robocorp-code.png".source = ./files/robocorp-code.png;
+        home.file.".config/${config.options.username}/robocorp-code.desktop".source = builtins.toFile "robocorp-code.desktop" ''
+          [Desktop Entry]
+          Categories=Utility;TextEditor;Development;IDE;
+          Comment=Code Editing. Redefined.
+          Exec=code /var/lib/carrot-rcc
+          GenericName=Text Editor
+          Icon=/home/${config.options.username}/.config/${config.options.username}/robocorp-code.png
+          MimeType=text/plain;inode/directory;
+          Name=Code
+          StartupNotify=true
+          Terminal=false
+          Type=Application
+          StartupWMClass=Code
+          Actions=new-empty-window;
+          Keywords=vscode;
+        '';
+        home.file.".config/${config.options.username}/vault.png".source = ./files/vault.png;
+        home.file.".config/${config.options.username}/vault.desktop".source = builtins.toFile "vault.desktop" ''
+          [Desktop Entry]
+          Version=1.0
+          Type=Link
+          Name=Vault
+          Icon=/home/${config.options.username}/.config/${config.options.username}/vault.png
+          URL=http://localhost:8200/
+        '';
+        home.file.".config/${config.options.username}/xfce4-session-logout.desktop".source = builtins.toFile "xfce4-session-logout.desktop" ''
+          [Desktop Entry]
+          Version=1.0
+          Type=Application
+          Exec=xfce4-session-logout
+          Icon=system-log-out
+          StartupNotify=false
+          Terminal=false
+          Categories=System;X-XFCE;X-Xfce-Toplevel;
+          OnlyShowIn=XFCE;
+          Name=Log Out
+          Name[fi]=Kirjaudu ulos
+        '';
+        xsession = {
+          enable = true;
+          windowManager.command = ''test -n "$1" && eval "$@"'';
+          initExtra= ''
+            # resolve directory
+            if [ -f ~/.config/user-dirs.dirs ]; then
+              source ~/.config/user-dirs.dirs
+            fi
+            if [ -z "$XDG_DESKTOP_DIR" ]; then
+              XDG_DESKTOP_DIR="Desktop"
+            fi
+
+            # configure icons
+            mkdir -p $XDG_DESKTOP_DIR
+            cp -L ~/.config/${config.options.username}/*.desktop $XDG_DESKTOP_DIR
+            chmod u+w $XDG_DESKTOP_DIR/*.desktop
+            rm -f $XDG_DESKTOP_DIR/Shared
+            ${if config.options.shared-folder then "ln -s /${config.options.username} $XDG_DESKTOP_DIR/Shared" else ""}
+            ln -s /var/lib/carrot-rcc $XDG_DESKTOP_DIR/Robots
+            ln -s /var/lib/camunda $XDG_DESKTOP_DIR/BPMN
+
+            # configure desktop
+            xfconf-query -c xfwm4 -p /general/workspace_count -t int -s 1 --create
+            setxkbmap -layout us
           '';
+        };
+        programs.vscode.enable = true;
+        programs.vscode.userSettings = {
+          "python.experiments.enabled" = false;
+        };
+        programs.vscode.package = (pkgs.vscode-fhsWithPackages (ps: with ps; [
+          (ps.python3Full.withPackages(ps: [(robotframework ps)]))
+          pkgs.rcc
+        ]));
+        programs.vscode.extensions = (with pkgs.vscode-extensions; [
+          ms-python.python
+          ms-vsliveshare.vsliveshare
+          (pkgs.vscode-utils.buildVscodeMarketplaceExtension rec {
+            mktplcRef = {
+              name = "robotframework-lsp";
+              publisher = "robocorp";
+              version = "0.42.1";
+              sha256 = "1q010v7b2r5h2lsv6cyxqhdiaiqhl9x4f609bp9mw9pbs9xvsg40";
+            };
           })
-      ] ++ (if config.options.vscode-with-vim then [ vscodevim.vim ] else []));
-    };
+          (pkgs.vscode-utils.buildVscodeMarketplaceExtension rec {
+            mktplcRef = {
+              name = "robocorp-code";
+              publisher = "robocorp";
+              version = "0.28.1";
+              sha256 = "0blvgxm5f5a89jwpr7ajihb1pk9mj9jgy1yajicvdk6b63v09hv9";
+            };
+            postInstall = ''
+              mkdir -p $out/share/vscode/extensions/robocorp.robocorp-code/bin
+              ln -s ${pkgs.rcc}/bin/rcc $out/share/vscode/extensions/robocorp.robocorp-code/bin
+            '';
+            })
+        ] ++ (if config.options.vscode-with-vim then [ vscodevim.vim ] else []));
+      };
+    }];
   };
 }

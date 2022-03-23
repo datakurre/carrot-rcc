@@ -1,9 +1,0 @@
-[Desktop Entry]
-StartupWMClass=mockoon
-Version=1.0
-Name=Mockoon
-Exec=mockoon-1.17.0
-StartupNotify=true
-Terminal=false
-Icon=/home/vagrant/.config/vagrant/mockoon.png
-Type=Application

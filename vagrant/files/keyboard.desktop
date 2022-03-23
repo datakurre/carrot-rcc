@@ -1,9 +1,0 @@
-[Desktop Entry]
-StartupWMClass=xfce4-keyboard-settings
-Version=1.0
-Name=Keyboard
-Exec=/run/current-system/sw/bin/xfce4-keyboard-settings
-StartupNotify=false
-Terminal=false
-Icon=input-keyboard
-Type=Application
