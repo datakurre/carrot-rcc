@@ -7,6 +7,8 @@ let
   mkElectron = import "${sources."nixpkgs"}/pkgs/development/tools/electron/generic.nix" { inherit stdenv libXScrnSaver makeWrapper fetchurl wrapGAppsHook glib gtk3 unzip atomEnv libuuid at-spi2-atk at-spi2-core libdrm mesa libxkbcommon libxshmfence lib libappindicator-gtk3; };
   electron = mkElectron "12.1.2" {
     x86_64-linux = "0gc739hk959rh5zscb6iq643bb2ar3cksmrmz3s16qlm7qi1xvg0";
+# electron = mkElectron "17.1.2" {
+#   x86_64-linux = "156aa1360qfx3jpa4liccz2f46l8chrag7zig8g4bz50q7l3az3y";
   };
 
   camunda-modeler-plugins = fetchurl {
@@ -49,31 +51,37 @@ let
     sha256 = "0cdj39bxakxri8fxfhbqf57b1ylsxrigil22w84kabf2a116931p";
   };
 
+  asar = stdenv.mkDerivation rec {
+    name = "camunda-modeler-${version}-asar";
+    version = "5.0.0-alpha.1";
+    src = fetchurl {
+      url = "https://github.com/camunda/camunda-modeler/releases/download/v${version}/camunda-modeler-${version}-linux-x64.tar.gz";
+      sha256 = "095kklcjcz4llvqxcqylqpk0p42dmqxq1a98vqlgqd993kyvf3y7";
+    };
+    nativeBuildInputs = [ nodePackages.asar autoPatchelfHook gcc-unwrapped ];
+    installPhase = ''
+      asar extract ./resources/app.asar $out
+      substituteInPlace $out/lib/index.js \
+        --replace "let resourcesPaths = [" \
+                  "let resourcesPaths = [\"$out/var/lib/camunda/resources\","
+#     mv $out/node_modules/grpc/src/node/extension_binary/electron-v12.1-linux-x64-glibc \
+#        $out/node_modules/grpc/src/node/extension_binary/electron-v17.1-linux-x64-glibc
+    '';
+  };
+
 in
 
 stdenv.mkDerivation rec {
   name = "camunda-modeler-${version}";
   version = "5.0.0-alpha.1";
-  src = fetchurl {
-    url = "https://github.com/camunda/camunda-modeler/releases/download/v${version}/camunda-modeler-${version}-linux-x64.tar.gz";
-    sha256 = "095kklcjcz4llvqxcqylqpk0p42dmqxq1a98vqlgqd993kyvf3y7";
-  };
-
+  src = asar;
+  unpackPhase = "";
   nativeBuildInputs = [ electron makeWrapper nodePackages.asar autoPatchelfHook gcc-unwrapped ];
-
   installPhase = ''
-    mkdir build
-    cd build
-    asar extract ../resources/app.asar .
-    substituteInPlace ./lib/index.js \
-      --replace "let resourcesPaths = [" \
-                "let resourcesPaths = [\"$out/var/lib/camunda/resources\","
-    autoPatchelf node_modules/grpc/src/node/extension_binary/*/grpc_node.node
-    asar pack . ../app.asar
-    cd ..
     mkdir -p $out/var/lib/camunda/resources/plugins $out/bin
-    cp app.asar $out/var/lib/camunda
+    asar pack $src $out/var/lib/camunda/app.asar
     cd $out/var/lib/camunda/resources/plugins
+
     tar xzvf ${dmn-testing-plugin}
     tar xzvf ${camunda-modeler-robot-plugin}
     tar xzvf ${bpmn-js-token-simulation-plugin}

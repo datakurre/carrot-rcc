@@ -22,20 +22,18 @@ let
     rccFHSUserEnv = pkgs.callPackage ./pkgs/rcc {};
 
     inherit (unstable)
-    novnc;
+    novnc
+    vscodium;
   };
 
   pkgs = import nixpkgs {
     overlays = [ overlay ];
     config = {
       permittedInsecurePackages = [
-        "electron-12.1.2"  # EOL
+        "electron-12.1.2"  # EOL; camunda-modeler < 5.0.0
       ];
       allowUnfreePredicate = pkg: builtins.elem (pkgs.lib.getName pkg) [
         "code"
-        "font-bh-100dpi"
-        "font-bh-lucidatypewriter-100dpi"
-        "font-bh-lucidatypewriter-75dpi"
         "vscode"
         "vscode-extension-ms-vsliveshare-vsliveshare"
       ];

@@ -22,6 +22,7 @@ in {
     options.username = lib.mkOption { default = "vagrant"; };
     options.shared-folder = lib.mkOption { default = true; };
     options.vscode-with-vim = lib.mkOption { default = false; };
+    options.vscode-unfree = lib.mkOption { default = false; };
   };
 
   imports = let nixpkgs = (import ../nix/sources.nix).nixpkgs;
@@ -31,6 +32,13 @@ in {
   ];
 
   config = {
+
+    nixpkgs.config.allowUnfreePredicate = pkg: builtins.elem (pkgs.lib.getName pkg) []
+      ++ (if config.options.vscode-unfree then [
+          "code"
+          "vscode"
+          "vscode-extension-ms-vsliveshare-vsliveshare"
+      ] else []);
 
     console = {
       font = "Lat2-Terminus16";
@@ -406,7 +414,7 @@ in {
           [Desktop Entry]
           Categories=Utility;TextEditor;Development;IDE;
           Comment=Code Editing. Redefined.
-          Exec=code /var/lib/carrot-rcc
+          Exec=${if config.options.vscode-unfree then "code" else "codium"} /var/lib/carrot-rcc
           GenericName=Text Editor
           Icon=/home/${config.options.username}/.config/${config.options.username}/robocorp-code.png
           MimeType=text/plain;inode/directory;
@@ -416,7 +424,7 @@ in {
           Type=Application
           StartupWMClass=Code
           Actions=new-empty-window;
-          Keywords=vscode;
+          Keywords=${if config.options.vscode-unfree then "vscode" else "vscodium"};
         '';
         home.file.".config/${config.options.username}/vault.png".source = ./files/vault.png;
         home.file.".config/${config.options.username}/vault.desktop".source = builtins.toFile "vault.desktop" ''
@@ -470,13 +478,12 @@ in {
         programs.vscode.userSettings = {
           "python.experiments.enabled" = false;
         };
-        programs.vscode.package = (pkgs.vscode-fhsWithPackages (ps: with ps; [
+        programs.vscode.package = ((if config.options.vscode-unfree then pkgs.vscode-fhsWithPackages else pkgs.vscodium-fhsWithPackages) (ps: with ps; [
           (ps.python3Full.withPackages(ps: [(robotframework ps)]))
           pkgs.rcc
         ]));
         programs.vscode.extensions = (with pkgs.vscode-extensions; [
           ms-python.python
-          ms-vsliveshare.vsliveshare
           (pkgs.vscode-utils.buildVscodeMarketplaceExtension rec {
             mktplcRef = {
               name = "robotframework-lsp";
@@ -497,7 +504,8 @@ in {
               ln -s ${pkgs.rcc}/bin/rcc $out/share/vscode/extensions/robocorp.robocorp-code/bin
             '';
             })
-        ] ++ (if config.options.vscode-with-vim then [ vscodevim.vim ] else []));
+        ] ++ (if config.options.vscode-with-vim then [ vscodevim.vim ] else []))
+          ++ (if config.options.vscode-unfree then [ pkgs.vscode-extensions.ms-vsliveshare.vsliveshare ] else []);
       };
     }];
   };
