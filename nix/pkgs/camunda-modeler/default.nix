@@ -61,9 +61,6 @@ let
     nativeBuildInputs = [ nodePackages.asar autoPatchelfHook gcc-unwrapped ];
     installPhase = ''
       asar extract ./resources/app.asar $out
-      substituteInPlace $out/lib/index.js \
-        --replace "let resourcesPaths = [" \
-                  "let resourcesPaths = [\"$out/var/lib/camunda/resources\","
 #     mv $out/node_modules/grpc/src/node/extension_binary/electron-v12.1-linux-x64-glibc \
 #        $out/node_modules/grpc/src/node/extension_binary/electron-v17.1-linux-x64-glibc
     '';
@@ -79,7 +76,14 @@ stdenv.mkDerivation rec {
   nativeBuildInputs = [ electron makeWrapper nodePackages.asar autoPatchelfHook gcc-unwrapped ];
   installPhase = ''
     mkdir -p $out/var/lib/camunda/resources/plugins $out/bin
-    asar pack $src $out/var/lib/camunda/app.asar
+
+    cp -a $src build
+    chmod u+w -R build
+    substituteInPlace build/lib/index.js \
+      --replace "let resourcesPaths = [" \
+                "let resourcesPaths = [\"$out/var/lib/camunda/resources\","
+    asar pack build $out/var/lib/camunda/app.asar
+
     cd $out/var/lib/camunda/resources/plugins
 
     tar xzvf ${dmn-testing-plugin}
@@ -98,6 +102,7 @@ stdenv.mkDerivation rec {
     tar xzvf ${excel-import-plugin}
     mv camunda-modeler-plugins*/camunda-transaction-boundaries-plugin .
     rm -r camunda-modeler-plugins*
+
     makeWrapper ${electron}/bin/electron $out/bin/camunda-modeler \
       --add-flags "$out/var/lib/camunda/app.asar" \
       --prefix PATH : "${adoptopenjdk-jre-hotspot-bin-11}/bin"
