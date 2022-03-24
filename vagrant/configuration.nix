@@ -332,7 +332,7 @@ in {
       name = config.options.username;
       value = {
         home.file.".config/${config.options.username}/camunda-modeler.png".source = ./files/camunda-modeler.png;
-        home.file.".config/${config.options.username}/camunda-modeler.desktop".source = builtins.toFile "camunda-modeler.desktop" ''
+        home.file.".config/${config.options.username}/camunda-modeler.desktop".source = pkgs.writeScript "camunda-modeler.desktop" ''
           [Desktop Entry]
           StartupWMClass=camunda-modeler
           Version=1.0
@@ -345,7 +345,7 @@ in {
           MimeType=application/bpmn+xml;application/dmn+xml
         '';
         home.file.".config/${config.options.username}/camunda.png".source = ./files/camunda.png;
-        home.file.".config/${config.options.username}/camunda.desktop".source = builtins.toFile "camunda.desktop" ''
+        home.file.".config/${config.options.username}/camunda.desktop".source = pkgs.writeScript "camunda.desktop" ''
           [Desktop Entry]
           Version=1.0
           Type=Link
@@ -353,7 +353,7 @@ in {
           Icon=/home/${config.options.username}/.config/${config.options.username}/camunda.png
           URL=http://localhost:8080/camunda/
         '';
-        home.file.".config/${config.options.username}/chromium-browser.desktop".source = builtins.toFile "chromium-browser.desktop" ''
+        home.file.".config/${config.options.username}/chromium-browser.desktop".source = pkgs.writeScript "chromium-browser.desktop" ''
           [Desktop Entry]
           StartupWMClass=chromium-browser
           Version=1.0
@@ -366,7 +366,7 @@ in {
           Categories=Network;WebBrowser;
           MimeType=application/pdf;application/rdf+xml;application/rss+xml;application/xhtml+xml;application/xhtml_xml;application/xml;image/gif;image/jpeg;image/png;image/webp;text/html;text/xml;x-scheme-handler/ftp;x-scheme-handler/http;x-scheme-handler/https;x-scheme-handler/webcal;x-scheme-handler/mailto;x-scheme-handler/about;x-scheme-handler/unknown
         '';
-        home.file.".config/${config.options.username}/journal.desktop".source = builtins.toFile "journal.desktop" ''
+        home.file.".config/${config.options.username}/journal.desktop".source = pkgs.writeScript "journal.desktop" ''
           [Desktop Entry]
           StartupWMClass=ksystemlog
           Version=1.0
@@ -377,7 +377,7 @@ in {
           Icon=system-search
           Type=Application
         '';
-        home.file.".config/${config.options.username}/keyboard.desktop".source = builtins.toFile "keyboard.desktop" ''
+        home.file.".config/${config.options.username}/keyboard.desktop".source = pkgs.writeScript "keyboard.desktop" ''
           [Desktop Entry]
           StartupWMClass=xfce4-keyboard-settings
           Version=1.0
@@ -389,7 +389,7 @@ in {
           Type=Application
         '';
         home.file.".config/${config.options.username}/mailhog.png".source = ./files/mailhog.png;
-        home.file.".config/${config.options.username}/mailhog.desktop".source = builtins.toFile "mailhog.desktop" ''
+        home.file.".config/${config.options.username}/mailhog.desktop".source = pkgs.writeScript "mailhog.desktop" ''
           [Desktop Entry]
           Version=1.0
           Type=Link
@@ -398,7 +398,7 @@ in {
           URL=http://localhost:8025/
         '';
         home.file.".config/${config.options.username}/mockoon.png".source = ./files/mockoon.png;
-        home.file.".config/${config.options.username}/mockoon.desktop".source = builtins.toFile "mockoon.desktop" ''
+        home.file.".config/${config.options.username}/mockoon.desktop".source = pkgs.writeScript "mockoon.desktop" ''
           [Desktop Entry]
           StartupWMClass=mockoon
           Version=1.0
@@ -410,7 +410,7 @@ in {
           Type=Application
         '';
         home.file.".config/${config.options.username}/robocorp-code.png".source = ./files/robocorp-code.png;
-        home.file.".config/${config.options.username}/robocorp-code.desktop".source = builtins.toFile "robocorp-code.desktop" ''
+        home.file.".config/${config.options.username}/robocorp-code.desktop".source = pkgs.writeScript "robocorp-code.desktop" ''
           [Desktop Entry]
           Categories=Utility;TextEditor;Development;IDE;
           Comment=Code Editing. Redefined.
@@ -427,7 +427,7 @@ in {
           Keywords=${if config.options.vscode-unfree then "vscode" else "vscodium"};
         '';
         home.file.".config/${config.options.username}/vault.png".source = ./files/vault.png;
-        home.file.".config/${config.options.username}/vault.desktop".source = builtins.toFile "vault.desktop" ''
+        home.file.".config/${config.options.username}/vault.desktop".source = pkgs.writeScript "vault.desktop" ''
           [Desktop Entry]
           Version=1.0
           Type=Link
@@ -435,7 +435,7 @@ in {
           Icon=/home/${config.options.username}/.config/${config.options.username}/vault.png
           URL=http://localhost:8200/
         '';
-        home.file.".config/${config.options.username}/xfce4-session-logout.desktop".source = builtins.toFile "xfce4-session-logout.desktop" ''
+        home.file.".config/${config.options.username}/xfce4-session-logout.desktop".source = pkgs.writeScript "xfce4-session-logout.desktop" ''
           [Desktop Entry]
           Version=1.0
           Type=Application
