@@ -37,7 +37,15 @@ in
 
 pkgs.stdenv.mkDerivation rec {
   name = "carrot-rcc";
-  src = gitignoreSource ./.;
+  # For now, we whitelist source files to prevent vagrant updates causing rebuild
+  src = builtins.filterSource (path: type:
+      (baseNameOf path) == "carrot_rcc.ts" ||
+      (baseNameOf path) == "carrot_rcc_lib.ts" ||
+      (baseNameOf path) == "Camunda.ts" ||
+      (baseNameOf path) == "rollup.config.js" ||
+      (baseNameOf path) == "node-dev-packages.nix" ||
+      (baseNameOf path) == "package.json" ||
+      (baseNameOf path) == "package-lock.json" ) ./.;
   buildPhase = ''
     source $stdenv/setup;
     cp -a ${dev_node_modules} node_modules
