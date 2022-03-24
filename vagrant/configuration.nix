@@ -6,12 +6,12 @@ let
 
   robotframework = ps:
     ps.robotframework.overridePythonAttrs(old: rec {
-      version = "5.0rc1";
+      version = "5.0";
       src = ps.fetchPypi {
         pname = "robotframework";
         extension = "zip";
         inherit version;
-        sha256 = "18086q96njl2as527r756xjznqikc3jflx97yw8rz8i67yqwdjn6";
+        sha256 = "1g08qqr9fw9kj5v990g8vjg06y8hjks0l7wjdn9r8hixqjlcpzmz";
       };
       doCheck = false;
     });
