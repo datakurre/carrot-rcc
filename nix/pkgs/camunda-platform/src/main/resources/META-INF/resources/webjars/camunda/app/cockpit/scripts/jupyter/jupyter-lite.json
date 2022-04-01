@@ -4,13 +4,14 @@
     "appUrl": "./lab",
     "appVersion": "0.1.0-beta.4",
     "baseUrl": "./",
-    "faviconUrl": "./lab/favicon.ico",
     "collaborative": true,
     "disabledExtensions": [
       "@jupyterlite/pyolite-kernel-extension",
       "@jupyterlite/javascript-kernel-extension",
       "nbdime-jupyterlab"
     ],
+    "exposeAppInBrowser": true,
+    "faviconUrl": "./lab/favicon.ico",
     "federated_extensions": [
       {
         "extension": "./extension",
@@ -40,7 +41,7 @@
       },
       {
         "liteExtension": false,
-        "load": "static/remoteEntry.840e53bd390d1e27487a.js",
+        "load": "static/remoteEntry.edb832f84d3eabe3d328.js",
         "mimeExtension": "./mimeExtension",
         "name": "jupyterlab-bpmn",
         "style": "./style"
@@ -51,13 +52,6 @@
         "mimeExtension": "./mimeExtension",
         "name": "jupyterlab-dmn",
         "style": "./style"
-      },
-      {
-        "extension": "./extension",
-        "liteExtension": false,
-        "load": "static/remoteEntry.f372bf1de02fb50ae6e0.js",
-        "mimeExtension": "./mimeExtension",
-        "name": "jupyterlab-plotly"
       }
     ],
     "fullLabextensionsUrl": "./extensions",
@@ -67,12 +61,17 @@
     "litePluginSettings": {
       "@jupyterlite/pyolite-camunda-kernel-extension:kernel": {
         "pipliteUrls": [
-          "./pypi/all.json?sha256=256ca8f996f2fd06d433e3ca71b16823506a62564931ea4e0b524ac6421fbf6e"
+          "./pypi/all.json?sha256=24e7742b7936fb4dfdad10f11ca1c21c869b42d6ee0d1c93e5dba90dc9f73482"
+        ]
+      },
+      "@jupyterlite/pyolite-kernel-extension:kernel": {
+        "pipliteUrls": [
+          "./pypi/all.json?sha256=24e7742b7936fb4dfdad10f11ca1c21c869b42d6ee0d1c93e5dba90dc9f73482"
         ]
       },
       "@jupyterlite/robolite-kernel-extension:kernel": {
         "pipliteUrls": [
-          "./pypi/all.json?sha256=256ca8f996f2fd06d433e3ca71b16823506a62564931ea4e0b524ac6421fbf6e"
+          "./pypi/all.json?sha256=24e7742b7936fb4dfdad10f11ca1c21c869b42d6ee0d1c93e5dba90dc9f73482"
         ]
       }
     },

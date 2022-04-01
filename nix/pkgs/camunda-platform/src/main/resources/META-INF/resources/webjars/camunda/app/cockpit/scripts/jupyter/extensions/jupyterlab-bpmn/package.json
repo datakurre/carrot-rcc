@@ -1,6 +1,6 @@
 {
   "name": "jupyterlab-bpmn",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "description": "A JupyterLab extension for rendering BPMN files",
   "keywords": [
     "jupyter",
@@ -71,7 +71,7 @@
     "mimeExtension": true,
     "outputDir": "jupyterlab_bpmn/labextension",
     "_build": {
-      "load": "static/remoteEntry.840e53bd390d1e27487a.js",
+      "load": "static/remoteEntry.edb832f84d3eabe3d328.js",
       "mimeExtension": "./mimeExtension",
       "style": "./style"
     }
