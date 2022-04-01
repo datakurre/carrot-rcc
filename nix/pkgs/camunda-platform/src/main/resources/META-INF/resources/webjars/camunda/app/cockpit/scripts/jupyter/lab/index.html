@@ -7,7 +7,7 @@
     <link
       id="jupyter-lite-main"
       rel="preload"
-      href="./build/bundle.js"
+      href="../build/lab/bundle.js?_=66914db"
       main="index"
       as="script"
     />
@@ -19,13 +19,15 @@
       {}
     </script>
     <script>
-      (async function() {
+      (async function () {
         const { pathname, origin, search, hash } = window.location;
         if (pathname.match(/(index.html|\/)$/) == null) {
           window.location.href = `${origin}${pathname}/${search}${hash}`;
           return;
         }
-        await import('../config-utils.js');
+        await import(
+          '../config-utils.js?_=66914db'
+        );
         // Capture and save Camunda API information sent by Camunda Plugin API
         window.addEventListener('message', function(ev) {
           if (window.location.toString().startsWith(ev.origin)) {
@@ -36,7 +38,7 @@
             window.localStorage.setItem('env', JSON.stringify(env));
           }
         });
-        window.parent.postMessage('ready');
+        window.parent.postMessage('ready'); 
       }.call(this));
     </script>
   </head>

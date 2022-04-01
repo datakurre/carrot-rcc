@@ -33,7 +33,7 @@ const LITE_FILES = ['jupyter-lite.json', 'jupyter-lite.ipynb'];
  *  <link
  *    id="jupyter-lite-main"
  *    rel="preload"
- *    href="./build/bundle.js"
+ *    href="../build/bundle.js?_=bad4a54"
  *    main="index"
  *    as="script"
  *  />
@@ -70,9 +70,9 @@ const RAW_LITE_ROOT = CONFIG_SCRIPT.dataset[LITE_ROOT_ATTR];
 const FULL_LITE_ROOT = new URL(RAW_LITE_ROOT, HERE).toString();
 
 /**
- * Whether we are currently operating on the root itself, changes some behaviors
+ * Paths that are joined with baseUrl to derive full URLs
  */
-const IS_ROOT = HERE == FULL_LITE_ROOT;
+const UNPREFIXED_PATHS = ['licensesUrl', 'themesUrl'];
 
 /* a DOM parser for reading html files */
 const parser = new DOMParser();
@@ -122,7 +122,8 @@ function mergeOneConfig(memo, config) {
       case 'federated_extensions':
         memo[k] = [...(memo[k] || []), ...v];
         break;
-      // this `@org/pkg:plugin` is merged at the first level of values
+      // these `@org/pkg:plugin` are merged at the first level of values
+      case 'litePluginSettings':
       case 'settingsOverrides':
         if (!memo[k]) {
           memo[k] = {};
@@ -205,15 +206,29 @@ export async function getLiteConfig(url, fileName) {
 export function fixRelativeUrls(url, config) {
   let urlBase = new URL(url || here()).pathname;
   for (const [k, v] of Object.entries(config)) {
-    if (k.endsWith('Url') && v.startsWith('./')) {
-      if (k === 'themesUrl') {
-        // themesUrls is joined in code with baseUrl, leave as-is
-        continue;
-      }
-      config[k] = `${urlBase}${v.slice(2)}`;
-    }
+    config[k] = fixOneRelativeUrl(k, v, url, urlBase);
   }
   return config;
+}
+
+export function fixOneRelativeUrl(key, value, url, urlBase) {
+  if (key === 'litePluginSettings' || key === 'settingsOverrides') {
+    // these are plugin id-keyed objects, fix each plugin
+    return Object.entries(value || {}).reduce((m, [k, v]) => {
+      m[k] = fixRelativeUrls(url, v);
+      return m;
+    }, {});
+  } else if (
+    !UNPREFIXED_PATHS.includes(key) &&
+    key.endsWith('Url') &&
+    value.startsWith('./')
+  ) {
+    // themesUrls, etc. are joined in code with baseUrl, leave as-is: otherwise, clean
+    return `${urlBase}${value.slice(2)}`;
+  } else if (key.endsWith('Urls') && Array.isArray(value)) {
+    return value.map((v) => (v.startsWith('./') ? `${urlBase}${v.slice(2)}` : v));
+  }
+  return value;
 }
 
 /**

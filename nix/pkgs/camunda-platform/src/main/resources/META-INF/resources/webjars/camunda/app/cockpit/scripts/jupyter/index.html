@@ -61,7 +61,7 @@ Your JupyterLite is structured like this:
       `.jupyter-lite/#jupyter-config-data`.
     -->
     <script type="module">
-      (async function() { await import('./config-utils.js'); })();
+      await import('./config-utils.js');
     </script>
     <!-- that's it, there shouldn't be anything below here in head! -->
   </head>

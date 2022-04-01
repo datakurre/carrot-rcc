@@ -1,34 +1,52 @@
 {
   "jupyter-config-data": {
     "appName": "JupyterLite",
-    "collaborative": true,
     "appUrl": "./lab",
-    "appVersion": "0.1.0-alpha.6",
+    "appVersion": "0.1.0-beta.4",
     "baseUrl": "./",
     "faviconUrl": "./lab/favicon.ico",
+    "collaborative": true,
+    "disabledExtensions": [
+      "@jupyterlite/pyolite-kernel-extension",
+      "@jupyterlite/javascript-kernel-extension",
+      "nbdime-jupyterlab"
+    ],
     "federated_extensions": [
       {
         "extension": "./extension",
-        "load": "static/remoteEntry.ca1efc27dc965162ca86.js",
+        "liteExtension": false,
+        "load": "static/remoteEntry.3421943a0ce73f10909d.js",
         "name": "@jupyter-widgets/jupyterlab-manager"
       },
       {
         "extension": "./extension",
+        "liteExtension": true,
+        "load": "static/remoteEntry.7b4b35bde938a32b789b.js",
+        "name": "@jupyterlite/pyolite-camunda-kernel-extension",
+        "style": "./style"
+      },
+      {
+        "extension": "./extension",
+        "liteExtension": true,
+        "load": "static/remoteEntry.3aa6257eb08c929fc5c2.js",
+        "name": "@jupyterlite/robolite-kernel-extension",
+        "style": "./style"
+      },
+      {
+        "extension": "./extension",
+        "liteExtension": false,
         "load": "static/remoteEntry.09511d7e294e827882b9.js",
         "name": "@marketsquare/jupyterlab_robotmode"
       },
       {
-        "extension": "./extension",
-        "load": "static/remoteEntry.a458e80b4361f068e82d.js",
-        "name": "jupyter-matplotlib"
-      },
-      {
-        "load": "static/remoteEntry.31cc5d9f6c96596a73c4.js",
+        "liteExtension": false,
+        "load": "static/remoteEntry.840e53bd390d1e27487a.js",
         "mimeExtension": "./mimeExtension",
         "name": "jupyterlab-bpmn",
         "style": "./style"
       },
       {
+        "liteExtension": false,
         "load": "static/remoteEntry.0d9afae254077022069f.js",
         "mimeExtension": "./mimeExtension",
         "name": "jupyterlab-dmn",
@@ -36,17 +54,29 @@
       },
       {
         "extension": "./extension",
-        "load": "static/remoteEntry.7b0dfd91a418a1e7eb37.js",
+        "liteExtension": false,
+        "load": "static/remoteEntry.f372bf1de02fb50ae6e0.js",
         "mimeExtension": "./mimeExtension",
         "name": "jupyterlab-plotly"
       }
     ],
-    "fullLabextensionsUrl": "./lab/extensions",
+    "fullLabextensionsUrl": "./extensions",
     "fullMathjaxUrl": "https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js",
-    "fullStaticUrl": "./lab/build",
-    "mathjaxConfig": "TeX-AMS_CHTML-full,Safe",
-    "settingsUrl": "./lab/build/schemas",
-    "themesUrl": "./lab/build/themes"
+    "fullStaticUrl": "./build",
+    "licensesUrl": "./lab/api/licenses",
+    "litePluginSettings": {
+      "@jupyterlite/pyolite-camunda-kernel-extension:kernel": {
+        "pipliteUrls": [
+          "./pypi/all.json?sha256=256ca8f996f2fd06d433e3ca71b16823506a62564931ea4e0b524ac6421fbf6e"
+        ]
+      },
+      "@jupyterlite/robolite-kernel-extension:kernel": {
+        "pipliteUrls": [
+          "./pypi/all.json?sha256=256ca8f996f2fd06d433e3ca71b16823506a62564931ea4e0b524ac6421fbf6e"
+        ]
+      }
+    },
+    "mathjaxConfig": "TeX-AMS_CHTML-full,Safe"
   },
   "jupyter-lite-schema-version": 0
 }
