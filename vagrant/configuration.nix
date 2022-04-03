@@ -20,6 +20,7 @@ in {
 
   options = {
     options.username = lib.mkOption { default = "vagrant"; };
+    options.ssl = lib.mkOption { default = true; };
     options.shared-folder = lib.mkOption { default = true; };
     options.vscode-with-vim = lib.mkOption { default = false; };
     options.vscode-unfree = lib.mkOption { default = false; };
@@ -46,7 +47,7 @@ in {
     };
 
     networking.nameservers = [ "1.1.1.1" "9.9.9.9" ];
-    networking.firewall.allowedTCPPorts = [ 443 ];
+    networking.firewall.allowedTCPPorts = if config.options.ssl then [ 443 ] else [ 8000 ];
 
     i18n.defaultLocale = "en_US.UTF-8";
     time.timeZone = "Europe/Berlin";
@@ -240,7 +241,7 @@ in {
     services.nginx.enable = true;
     services.nginx.virtualHosts.localhost = {
       root = "${pkgs.novnc}/share/webapps/novnc";
-      forceSSL = true;
+      forceSSL = config.options.ssl;
       sslCertificate = "/etc/novnc-selfsigned.crt";
 	  sslCertificateKey = "/etc/novnc-selfsigned.key";
       locations."/websockify" = {
@@ -255,7 +256,12 @@ in {
       locations."/" = {
         index = "vnc.html";
       };
-    };
+    } // (if config.options.ssl then {} else {
+      listen = [{
+        addr = "localhost";
+        port = 8000;
+      }];
+    });
     systemd.services.novnc-cert = {
       wantedBy = [ "multi-user.target" ];
       before = [ "nginx.service" ];
