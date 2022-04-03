@@ -4,14 +4,14 @@
     "appUrl": "./lab",
     "appVersion": "0.1.0-beta.4",
     "baseUrl": "./",
+    "faviconUrl": "./lab/favicon.ico",
     "collaborative": true,
+    "exposeAppInBrowser": true,
     "disabledExtensions": [
       "@jupyterlite/pyolite-kernel-extension",
       "@jupyterlite/javascript-kernel-extension",
       "nbdime-jupyterlab"
     ],
-    "exposeAppInBrowser": true,
-    "faviconUrl": "./lab/favicon.ico",
     "federated_extensions": [
       {
         "extension": "./extension",
@@ -52,6 +52,13 @@
         "mimeExtension": "./mimeExtension",
         "name": "jupyterlab-dmn",
         "style": "./style"
+      },
+      {
+        "extension": "./extension",
+        "liteExtension": false,
+        "load": "static/remoteEntry.f372bf1de02fb50ae6e0.js",
+        "mimeExtension": "./mimeExtension",
+        "name": "jupyterlab-plotly"
       }
     ],
     "fullLabextensionsUrl": "./extensions",
