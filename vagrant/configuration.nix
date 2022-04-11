@@ -454,6 +454,7 @@ in {
           Name=Log Out
           Name[fi]=Kirjaudu ulos
         '';
+        home.file.".config/vagrant/robot-framework.png".source = ./files/robot-framework.png;
         xsession = {
           enable = true;
           windowManager.command = ''test -n "$1" && eval "$@"'';
@@ -474,6 +475,24 @@ in {
             ${if config.options.shared-folder then "ln -s /${config.options.username} $XDG_DESKTOP_DIR/Shared" else ""}
             ln -s /var/lib/carrot-rcc $XDG_DESKTOP_DIR/Robots
             ln -s /var/lib/camunda $XDG_DESKTOP_DIR/BPMN
+
+            # configure background
+            xfconf-query -c xfce4-desktop -p /backdrop/screen0/monitorVirtual1/workspace0/last-image -t string -s ~/.config/vagrant/robot-framework.png
+            if [ $? -ne 0 ]; then
+              xfconf-query -c xfce4-desktop -p /backdrop/screen0/monitorVirtual1/workspace0/last-image -t string -s ~/.config/vagrant/robot-framework.png --create
+            fi
+            xfconf-query -c xfce4-desktop -p /backdrop/screen0/monitorVirtual1/workspace0/color-style -t int -s 0
+            if [ $? -ne 0 ]; then
+              xfconf-query -c xfce4-desktop -p /backdrop/screen0/monitorVirtual1/workspace0/color-style -t int -s 0 --create
+            fi
+            xfconf-query -c xfce4-desktop -p /backdrop/screen0/monitorVirtual1/workspace0/image-style -t int -s 1
+            if [ $? -ne 0 ]; then
+              xfconf-query -c xfce4-desktop -p /backdrop/screen0/monitorVirtual1/workspace0/image-style -t int -s 1 --create
+            fi
+            xfconf-query -c xfce4-desktop -p /backdrop/screen0/monitorVirtual1/workspace0/rgba1 -t double -t double -t double -t double -s 0.368627 -s 0.360784 -s 0.392157 -s 1.0
+            if [ $? -ne 0 ]; then
+              xfconf-query -c xfce4-desktop -p /backdrop/screen0/monitorVirtual1/workspace0/rgba1 -t double -t double -t double -t double -s 0.368627 -s 0.360784 -s 0.392157 -s 1.0 --create
+            fi
 
             # configure desktop
             xfconf-query -c xfwm4 -p /general/workspace_count -t int -s 1 --create
