@@ -501,7 +501,10 @@ in {
         };
         programs.vscode.enable = true;
         programs.vscode.userSettings = {
+          "editor.minimap.enabled" = false;
           "python.experiments.enabled" = false;
+          "robot.codeLens.enabled" = true;
+          "robocorp.verifyLSP" = true;
         };
         programs.vscode.package = ((if config.options.vscode-unfree then pkgs.vscode-fhsWithPackages else pkgs.vscodium-fhsWithPackages) (ps: with ps; [
           (ps.python3Full.withPackages(ps: [(robotframework ps)]))
