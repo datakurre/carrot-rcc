@@ -27,7 +27,7 @@ in {
   };
 
   imports = let nixpkgs = (import ../nix/sources.nix).nixpkgs;
-                home-manager = builtins.fetchTarball "https://github.com/nix-community/home-manager/archive/release-21.11.tar.gz";
+                home-manager = builtins.fetchTarball "https://github.com/datakurre/home-manager/archive/release-21.11.tar.gz";
   in [
     (import "${home-manager}/nixos")
   ];
