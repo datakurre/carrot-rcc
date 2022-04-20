@@ -5,10 +5,10 @@
         "homepage": "https://robocorp.com/docs/product-manuals/robocorp-cli",
         "owner": "robocorp",
         "repo": "rcc",
-        "rev": "28136f20750d035ec9336cebfd10067b1c7d3c38",
-        "sha256": "0v30nskp1b3l2ng8kb4kzapps73y3pdzif2gfankhrkvnk1mckzl",
+        "rev": "93e6b3fa131a49ea50e60d3cea94a02ae18f672a",
+        "sha256": "195fh4rbdyv8dqpm56vdm57cnz8prdg81fyyfpb87dchq8x7jzwn",
         "type": "tarball",
-        "url": "https://github.com/robocorp/rcc/archive/28136f20750d035ec9336cebfd10067b1c7d3c38.tar.gz",
+        "url": "https://github.com/robocorp/rcc/archive/93e6b3fa131a49ea50e60d3cea94a02ae18f672a.tar.gz",
         "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
     }
 }

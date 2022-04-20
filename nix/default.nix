@@ -23,7 +23,10 @@ let
 
     inherit (unstable)
     novnc
+#   vscode
     vscodium;
+
+    vscode = pkgs.callPackage ./pkgs/vscode/vscode.nix {};
   };
 
   pkgs = import nixpkgs {
