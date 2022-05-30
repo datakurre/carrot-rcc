@@ -6,9 +6,9 @@
         "owner": "robocorp",
         "repo": "rcc",
         "rev": "47eed71ddaeee74d91bd2d497211920720e320fd",
-        "sha256": "195fh4rbdyv8dqpm56vdm57cnz8prdg81fyyfpb87dchq8x7jzwn",
+        "sha256": "0yab4y5g7xnglc0254p7y341nskkm6nxgxngnyd5gz5cnb80a04s",
         "type": "tarball",
-        "url": "https://github.com/robocorp/rcc/archive/93e6b3fa131a49ea50e60d3cea94a02ae18f672a.tar.gz",
+        "url": "https://github.com/robocorp/rcc/archive/47eed71ddaeee74d91bd2d497211920720e320fd.tar.gz",
         "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
     }
 }
