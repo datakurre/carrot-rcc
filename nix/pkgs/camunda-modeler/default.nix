@@ -36,7 +36,7 @@ let
 
   bpmn-js-token-simulation-plugin = fetchurl {
     url = "https://github.com/bpmn-io/bpmn-js-token-simulation-plugin/archive/ba7b6c0f4edf0872229da58a20ef96590d9a99a8.tar.gz";
-    sha256 = "1wp2b2ngard7b47kx9qxl1b26z0ljhvxp07q28kmgks7cxfalz7v";
+    sha256 = "0gns9pvy393jasvdwhyjgm79wpnmkbycp0hpm1pylif5qgb0df8a";
   };
 
   dmn-testing-plugin = fetchurl {
