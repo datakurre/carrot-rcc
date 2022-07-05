@@ -1,0 +1,1406 @@
+{
+  "Jinja2": {
+    "releases": {
+      "3.1.1": [
+        {
+          "comment_text": "",
+          "digests": {
+            "md5": "cae2986094602b6c2d6f4405e8d0eb3b",
+            "sha256": "539835f51a74a69f41b848a9645dbdc35b4f20a3b601e2d9a7e22947b15ff119"
+          },
+          "downloads": -1,
+          "filename": "Jinja2-3.1.1-py3-none-any.whl",
+          "has_sig": false,
+          "md5_digest": "cae2986094602b6c2d6f4405e8d0eb3b",
+          "packagetype": "bdist_wheel",
+          "python_version": "py3",
+          "requires_python": ">=3.7",
+          "size": 132603,
+          "upload_time": "2022-03-25T20:32:56Z",
+          "upload_time_iso_8601": "2022-03-25T20:32:56Z",
+          "url": "./Jinja2-3.1.1-py3-none-any.whl",
+          "yanked": false,
+          "yanked_reason": null
+        }
+      ]
+    }
+  },
+  "Pygments": {
+    "releases": {
+      "2.11.2": [
+        {
+          "comment_text": "",
+          "digests": {
+            "md5": "9b19b40b048b2897d0af1b6af62f3799",
+            "sha256": "44238f1b60a76d78fc8ca0528ee429702aae011c265fe6a8dd8b63049ae41c65"
+          },
+          "downloads": -1,
+          "filename": "Pygments-2.11.2-py3-none-any.whl",
+          "has_sig": false,
+          "md5_digest": "9b19b40b048b2897d0af1b6af62f3799",
+          "packagetype": "bdist_wheel",
+          "python_version": "py3",
+          "requires_python": ">=3.5",
+          "size": 1063665,
+          "upload_time": "2022-01-06T09:16:11Z",
+          "upload_time_iso_8601": "2022-01-06T09:16:11Z",
+          "url": "./Pygments-2.11.2-py3-none-any.whl",
+          "yanked": false,
+          "yanked_reason": null
+        }
+      ]
+    }
+  },
+  "Send2Trash": {
+    "releases": {
+      "1.8.0": [
+        {
+          "comment_text": "",
+          "digests": {
+            "md5": "a399ec6f5bd5cc414c6920bd471d468d",
+            "sha256": "f20eaadfdb517eaca5ce077640cb261c7d2698385a6a0f072a4a5447fd49fa08"
+          },
+          "downloads": -1,
+          "filename": "Send2Trash-1.8.0-py3-none-any.whl",
+          "has_sig": false,
+          "md5_digest": "a399ec6f5bd5cc414c6920bd471d468d",
+          "packagetype": "bdist_wheel",
+          "python_version": "py3",
+          "requires_python": null,
+          "size": 18534,
+          "upload_time": "2021-08-08T23:53:00Z",
+          "upload_time_iso_8601": "2021-08-08T23:53:00Z",
+          "url": "./Send2Trash-1.8.0-py3-none-any.whl",
+          "yanked": false,
+          "yanked_reason": null
+        }
+      ]
+    }
+  },
+  "argon2-cffi": {
+    "releases": {
+      "21.3.0": [
+        {
+          "comment_text": "",
+          "digests": {
+            "md5": "23666b79fb18c22056efc8e34a08ade4",
+            "sha256": "8c976986f2c5c0e5000919e6de187906cfd81fb1c72bf9d88c01177e77da7f80"
+          },
+          "downloads": -1,
+          "filename": "argon2_cffi-21.3.0-py3-none-any.whl",
+          "has_sig": false,
+          "md5_digest": "23666b79fb18c22056efc8e34a08ade4",
+          "packagetype": "bdist_wheel",
+          "python_version": "py3",
+          "requires_python": ">=3.6",
+          "size": 14443,
+          "upload_time": "2021-12-11T09:47:49Z",
+          "upload_time_iso_8601": "2021-12-11T09:47:49Z",
+          "url": "./argon2_cffi-21.3.0-py3-none-any.whl",
+          "yanked": false,
+          "yanked_reason": null
+        }
+      ]
+    }
+  },
+  "asttokens": {
+    "releases": {
+      "2.0.5": [
+        {
+          "comment_text": "",
+          "digests": {
+            "md5": "168c8346a97b411eaeda3eee83573cfd",
+            "sha256": "0844691e88552595a6f4a4281a9f7f79b8dd45ca4ccea82e5e05b4bbdb76705c"
+          },
+          "downloads": -1,
+          "filename": "asttokens-2.0.5-py2.py3-none-any.whl",
+          "has_sig": false,
+          "md5_digest": "168c8346a97b411eaeda3eee83573cfd",
+          "packagetype": "bdist_wheel",
+          "python_version": "py3",
+          "requires_python": null,
+          "size": 20796,
+          "upload_time": "2021-04-19T12:38:25Z",
+          "upload_time_iso_8601": "2021-04-19T12:38:25Z",
+          "url": "./asttokens-2.0.5-py2.py3-none-any.whl",
+          "yanked": false,
+          "yanked_reason": null
+        }
+      ]
+    }
+  },
+  "attrs": {
+    "releases": {
+      "21.4.0": [
+        {
+          "comment_text": "",
+          "digests": {
+            "md5": "ad5a10e4dd479f5b1f4b258acf661163",
+            "sha256": "2d27e3784d7a565d36ab851fe94887c5eccd6a463168875832a1be79c82828b4"
+          },
+          "downloads": -1,
+          "filename": "attrs-21.4.0-py2.py3-none-any.whl",
+          "has_sig": false,
+          "md5_digest": "ad5a10e4dd479f5b1f4b258acf661163",
+          "packagetype": "bdist_wheel",
+          "python_version": "py3",
+          "requires_python": ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*",
+          "size": 60567,
+          "upload_time": "2021-12-29T11:15:07Z",
+          "upload_time_iso_8601": "2021-12-29T11:15:07Z",
+          "url": "./attrs-21.4.0-py2.py3-none-any.whl",
+          "yanked": false,
+          "yanked_reason": null
+        }
+      ]
+    }
+  },
+  "backcall": {
+    "releases": {
+      "0.2.0": [
+        {
+          "comment_text": "",
+          "digests": {
+            "md5": "4671e998e1853d64a365680de7ecc7a2",
+            "sha256": "fbbce6a29f263178a1f7915c1940bde0ec2b2a967566fe1c65c1dfb7422bd255"
+          },
+          "downloads": -1,
+          "filename": "backcall-0.2.0-py2.py3-none-any.whl",
+          "has_sig": false,
+          "md5_digest": "4671e998e1853d64a365680de7ecc7a2",
+          "packagetype": "bdist_wheel",
+          "python_version": "py3",
+          "requires_python": null,
+          "size": 11157,
+          "upload_time": "2020-06-09T12:11:31Z",
+          "upload_time_iso_8601": "2020-06-09T12:11:31Z",
+          "url": "./backcall-0.2.0-py2.py3-none-any.whl",
+          "yanked": false,
+          "yanked_reason": null
+        }
+      ]
+    }
+  },
+  "beautifulsoup4": {
+    "releases": {
+      "4.10.0": [
+        {
+          "comment_text": "",
+          "digests": {
+            "md5": "d131bd9701fff9a9ebdb42d921e234fd",
+            "sha256": "9a315ce70049920ea4572a4055bc4bd700c940521d36fc858205ad4fcde149bf"
+          },
+          "downloads": -1,
+          "filename": "beautifulsoup4-4.10.0-py3-none-any.whl",
+          "has_sig": false,
+          "md5_digest": "d131bd9701fff9a9ebdb42d921e234fd",
+          "packagetype": "bdist_wheel",
+          "python_version": "py3",
+          "requires_python": ">3.0.0",
+          "size": 97398,
+          "upload_time": "2021-09-07T21:16:07Z",
+          "upload_time_iso_8601": "2021-09-07T21:16:07Z",
+          "url": "./beautifulsoup4-4.10.0-py3-none-any.whl",
+          "yanked": false,
+          "yanked_reason": null
+        }
+      ]
+    }
+  },
+  "bleach": {
+    "releases": {
+      "4.1.0": [
+        {
+          "comment_text": "",
+          "digests": {
+            "md5": "255c85ae782d21aec40751ef17580202",
+            "sha256": "4d2651ab93271d1129ac9cbc679f524565cc8a1b791909c4a51eac4446a15994"
+          },
+          "downloads": -1,
+          "filename": "bleach-4.1.0-py2.py3-none-any.whl",
+          "has_sig": false,
+          "md5_digest": "255c85ae782d21aec40751ef17580202",
+          "packagetype": "bdist_wheel",
+          "python_version": "py3",
+          "requires_python": ">=3.6",
+          "size": 157937,
+          "upload_time": "2021-08-25T12:14:15Z",
+          "upload_time_iso_8601": "2021-08-25T12:14:15Z",
+          "url": "./bleach-4.1.0-py2.py3-none-any.whl",
+          "yanked": false,
+          "yanked_reason": null
+        }
+      ]
+    }
+  },
+  "decorator": {
+    "releases": {
+      "5.1.1": [
+        {
+          "comment_text": "",
+          "digests": {
+            "md5": "8db4a90c5a545654183eaf793e7833de",
+            "sha256": "b8c3f85900b9dc423225913c5aace94729fe1fa9763b38939a95226f02d37186"
+          },
+          "downloads": -1,
+          "filename": "decorator-5.1.1-py3-none-any.whl",
+          "has_sig": false,
+          "md5_digest": "8db4a90c5a545654183eaf793e7833de",
+          "packagetype": "bdist_wheel",
+          "python_version": "py3",
+          "requires_python": ">=3.5",
+          "size": 9073,
+          "upload_time": "2022-01-07T06:20:04Z",
+          "upload_time_iso_8601": "2022-01-07T06:20:04Z",
+          "url": "./decorator-5.1.1-py3-none-any.whl",
+          "yanked": false,
+          "yanked_reason": null
+        }
+      ]
+    }
+  },
+  "defusedxml": {
+    "releases": {
+      "0.7.1": [
+        {
+          "comment_text": "",
+          "digests": {
+            "md5": "f0f8408ec7056772fe2872cc31b55640",
+            "sha256": "a352e7e428770286cc899e2542b6cdaedb2b4953ff269a210103ec58f6198a61"
+          },
+          "downloads": -1,
+          "filename": "defusedxml-0.7.1-py2.py3-none-any.whl",
+          "has_sig": false,
+          "md5_digest": "f0f8408ec7056772fe2872cc31b55640",
+          "packagetype": "bdist_wheel",
+          "python_version": "py3",
+          "requires_python": ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*",
+          "size": 25604,
+          "upload_time": "2021-03-08T08:59:25Z",
+          "upload_time_iso_8601": "2021-03-08T08:59:25Z",
+          "url": "./defusedxml-0.7.1-py2.py3-none-any.whl",
+          "yanked": false,
+          "yanked_reason": null
+        }
+      ]
+    }
+  },
+  "docutils": {
+    "releases": {
+      "0.18.1": [
+        {
+          "comment_text": "",
+          "digests": {
+            "md5": "fb64f4546e57ee206f16138612df8307",
+            "sha256": "23010f129180089fbcd3bc08cfefccb3b890b0050e1ca00c867036e9d161b98c"
+          },
+          "downloads": -1,
+          "filename": "docutils-0.18.1-py2.py3-none-any.whl",
+          "has_sig": false,
+          "md5_digest": "fb64f4546e57ee206f16138612df8307",
+          "packagetype": "bdist_wheel",
+          "python_version": "py3",
+          "requires_python": ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*",
+          "size": 570050,
+          "upload_time": "2021-11-23T15:49:39Z",
+          "upload_time_iso_8601": "2021-11-23T15:49:39Z",
+          "url": "./docutils-0.18.1-py2.py3-none-any.whl",
+          "yanked": false,
+          "yanked_reason": null
+        }
+      ]
+    }
+  },
+  "entrypoints": {
+    "releases": {
+      "0.4": [
+        {
+          "comment_text": "",
+          "digests": {
+            "md5": "1c8f717951f0d2f0125739753eda6bdc",
+            "sha256": "f174b5ff827504fd3cd97cc3f8649f3693f51538c7e4bdf3ef002c8429d42f9f"
+          },
+          "downloads": -1,
+          "filename": "entrypoints-0.4-py3-none-any.whl",
+          "has_sig": false,
+          "md5_digest": "1c8f717951f0d2f0125739753eda6bdc",
+          "packagetype": "bdist_wheel",
+          "python_version": "py3",
+          "requires_python": ">=3.6",
+          "size": 5294,
+          "upload_time": "2022-02-02T19:30:26Z",
+          "upload_time_iso_8601": "2022-02-02T19:30:26Z",
+          "url": "./entrypoints-0.4-py3-none-any.whl",
+          "yanked": false,
+          "yanked_reason": null
+        }
+      ]
+    }
+  },
+  "executing": {
+    "releases": {
+      "0.8.3": [
+        {
+          "comment_text": "",
+          "digests": {
+            "md5": "c837af93760b7dd8b7ab90db5626240b",
+            "sha256": "d1eef132db1b83649a3905ca6dd8897f71ac6f8cac79a7e58a1a09cf137546c9"
+          },
+          "downloads": -1,
+          "filename": "executing-0.8.3-py2.py3-none-any.whl",
+          "has_sig": false,
+          "md5_digest": "c837af93760b7dd8b7ab90db5626240b",
+          "packagetype": "bdist_wheel",
+          "python_version": "py3",
+          "requires_python": null,
+          "size": 16406,
+          "upload_time": "2022-02-27T20:45:23Z",
+          "upload_time_iso_8601": "2022-02-27T20:45:23Z",
+          "url": "./executing-0.8.3-py2.py3-none-any.whl",
+          "yanked": false,
+          "yanked_reason": null
+        }
+      ]
+    }
+  },
+  "ipython": {
+    "releases": {
+      "8.2.0": [
+        {
+          "comment_text": "",
+          "digests": {
+            "md5": "0271a06735db24e53d95ccebd1b79e4a",
+            "sha256": "1b672bfd7a48d87ab203d9af8727a3b0174a4566b4091e9447c22fb63ea32857"
+          },
+          "downloads": -1,
+          "filename": "ipython-8.2.0-py3-none-any.whl",
+          "has_sig": false,
+          "md5_digest": "0271a06735db24e53d95ccebd1b79e4a",
+          "packagetype": "bdist_wheel",
+          "python_version": "py3",
+          "requires_python": ">=3.8",
+          "size": 750749,
+          "upload_time": "2022-03-27T07:10:34Z",
+          "upload_time_iso_8601": "2022-03-27T07:10:34Z",
+          "url": "./ipython-8.2.0-py3-none-any.whl",
+          "yanked": false,
+          "yanked_reason": null
+        }
+      ]
+    }
+  },
+  "ipython-genutils": {
+    "releases": {
+      "0.2.0": [
+        {
+          "comment_text": "",
+          "digests": {
+            "md5": "5bf384d999c2e38b696a4d6f162875c3",
+            "sha256": "72dd37233799e619666c9f639a9da83c34013a73e8bbc79a7a6348d93c61fab8"
+          },
+          "downloads": -1,
+          "filename": "ipython_genutils-0.2.0-py2.py3-none-any.whl",
+          "has_sig": false,
+          "md5_digest": "5bf384d999c2e38b696a4d6f162875c3",
+          "packagetype": "bdist_wheel",
+          "python_version": "py3",
+          "requires_python": null,
+          "size": 26343,
+          "upload_time": "2020-02-26T16:00:40Z",
+          "upload_time_iso_8601": "2020-02-26T16:00:40Z",
+          "url": "./ipython_genutils-0.2.0-py2.py3-none-any.whl",
+          "yanked": false,
+          "yanked_reason": null
+        }
+      ]
+    }
+  },
+  "ipywidgets": {
+    "releases": {
+      "7.7.0": [
+        {
+          "comment_text": "",
+          "digests": {
+            "md5": "c9e30dc5687d1f6b104b95c75390610a",
+            "sha256": "e58ff58bc94d481e91ecb6e13a5cb96a87b6b8ade135e055603d0ca24593df38"
+          },
+          "downloads": -1,
+          "filename": "ipywidgets-7.7.0-py2.py3-none-any.whl",
+          "has_sig": false,
+          "md5_digest": "c9e30dc5687d1f6b104b95c75390610a",
+          "packagetype": "bdist_wheel",
+          "python_version": "py3",
+          "requires_python": null,
+          "size": 123367,
+          "upload_time": "2022-03-16T05:31:50Z",
+          "upload_time_iso_8601": "2022-03-16T05:31:50Z",
+          "url": "./ipywidgets-7.7.0-py2.py3-none-any.whl",
+          "yanked": false,
+          "yanked_reason": null
+        }
+      ]
+    }
+  },
+  "jedi": {
+    "releases": {
+      "0.18.1": [
+        {
+          "comment_text": "",
+          "digests": {
+            "md5": "5aac57d746c651d9e71d4d00deb2890e",
+            "sha256": "637c9635fcf47945ceb91cd7f320234a7be540ded6f3e99a50cb6febdfd1ba8d"
+          },
+          "downloads": -1,
+          "filename": "jedi-0.18.1-py2.py3-none-any.whl",
+          "has_sig": false,
+          "md5_digest": "5aac57d746c651d9e71d4d00deb2890e",
+          "packagetype": "bdist_wheel",
+          "python_version": "py3",
+          "requires_python": ">=3.6",
+          "size": 1567177,
+          "upload_time": "2021-11-16T22:47:49Z",
+          "upload_time_iso_8601": "2021-11-16T22:47:49Z",
+          "url": "./jedi-0.18.1-py2.py3-none-any.whl",
+          "yanked": false,
+          "yanked_reason": null
+        }
+      ]
+    }
+  },
+  "jsonschema": {
+    "releases": {
+      "4.4.0": [
+        {
+          "comment_text": "",
+          "digests": {
+            "md5": "e8aa503dd72011b77a094d01afb93495",
+            "sha256": "77281a1f71684953ee8b3d488371b162419767973789272434bbc3f29d9c8823"
+          },
+          "downloads": -1,
+          "filename": "jsonschema-4.4.0-py3-none-any.whl",
+          "has_sig": false,
+          "md5_digest": "e8aa503dd72011b77a094d01afb93495",
+          "packagetype": "bdist_wheel",
+          "python_version": "py3",
+          "requires_python": ">=3.7",
+          "size": 72687,
+          "upload_time": "2022-01-12T10:22:03Z",
+          "upload_time_iso_8601": "2022-01-12T10:22:03Z",
+          "url": "./jsonschema-4.4.0-py3-none-any.whl",
+          "yanked": false,
+          "yanked_reason": null
+        }
+      ]
+    }
+  },
+  "jupyter-client": {
+    "releases": {
+      "7.2.0": [
+        {
+          "comment_text": "",
+          "digests": {
+            "md5": "bab198b01adbe0836edf26b8509fcf7c",
+            "sha256": "c5d9177edb74a0a0d060965dd33ec589b58cf7d1a16f9b60c465404852e0f992"
+          },
+          "downloads": -1,
+          "filename": "jupyter_client-7.2.0-py3-none-any.whl",
+          "has_sig": false,
+          "md5_digest": "bab198b01adbe0836edf26b8509fcf7c",
+          "packagetype": "bdist_wheel",
+          "python_version": "py3",
+          "requires_python": ">=3.7",
+          "size": 130535,
+          "upload_time": "2022-03-29T07:00:30Z",
+          "upload_time_iso_8601": "2022-03-29T07:00:30Z",
+          "url": "./jupyter_client-7.2.0-py3-none-any.whl",
+          "yanked": false,
+          "yanked_reason": null
+        }
+      ]
+    }
+  },
+  "jupyter-core": {
+    "releases": {
+      "4.9.2": [
+        {
+          "comment_text": "",
+          "digests": {
+            "md5": "eb1a5c07373bf5ef87a74b081e276110",
+            "sha256": "f875e4d27e202590311d468fa55f90c575f201490bd0c18acabe4e318db4a46d"
+          },
+          "downloads": -1,
+          "filename": "jupyter_core-4.9.2-py3-none-any.whl",
+          "has_sig": false,
+          "md5_digest": "eb1a5c07373bf5ef87a74b081e276110",
+          "packagetype": "bdist_wheel",
+          "python_version": "py3",
+          "requires_python": ">=3.6",
+          "size": 86914,
+          "upload_time": "2022-02-15T20:34:38Z",
+          "upload_time_iso_8601": "2022-02-15T20:34:38Z",
+          "url": "./jupyter_core-4.9.2-py3-none-any.whl",
+          "yanked": false,
+          "yanked_reason": null
+        }
+      ]
+    }
+  },
+  "jupyterlab-pygments": {
+    "releases": {
+      "0.1.2": [
+        {
+          "comment_text": "",
+          "digests": {
+            "md5": "dd23fc1ffefad0cba239c27311db1fee",
+            "sha256": "abfb880fd1561987efaefcb2d2ac75145d2a5d0139b1876d5be806e32f630008"
+          },
+          "downloads": -1,
+          "filename": "jupyterlab_pygments-0.1.2-py2.py3-none-any.whl",
+          "has_sig": false,
+          "md5_digest": "dd23fc1ffefad0cba239c27311db1fee",
+          "packagetype": "bdist_wheel",
+          "python_version": "py3",
+          "requires_python": null,
+          "size": 4613,
+          "upload_time": "2020-09-29T06:00:08Z",
+          "upload_time_iso_8601": "2020-09-29T06:00:08Z",
+          "url": "./jupyterlab_pygments-0.1.2-py2.py3-none-any.whl",
+          "yanked": false,
+          "yanked_reason": null
+        }
+      ]
+    }
+  },
+  "jupyterlab-widgets": {
+    "releases": {
+      "1.1.0": [
+        {
+          "comment_text": "",
+          "digests": {
+            "md5": "f86408c1bfec380ad73bb5369ca3f379",
+            "sha256": "c2a9bd3789f120f64d73268c066ed3b000c56bc1dda217be5cdc43e7b4ebad3f"
+          },
+          "downloads": -1,
+          "filename": "jupyterlab_widgets-1.1.0-py3-none-any.whl",
+          "has_sig": false,
+          "md5_digest": "f86408c1bfec380ad73bb5369ca3f379",
+          "packagetype": "bdist_wheel",
+          "python_version": "py3",
+          "requires_python": ">=3.6",
+          "size": 245114,
+          "upload_time": "2022-03-16T05:17:12Z",
+          "upload_time_iso_8601": "2022-03-16T05:17:12Z",
+          "url": "./jupyterlab_widgets-1.1.0-py3-none-any.whl",
+          "yanked": false,
+          "yanked_reason": null
+        }
+      ]
+    }
+  },
+  "lunr": {
+    "releases": {
+      "0.6.2": [
+        {
+          "comment_text": "",
+          "digests": {
+            "md5": "cb6854321ebb3441b0d0b49f6ff475fc",
+            "sha256": "6fbf619e07ff97c6198f9cae0fc32d69a0d49fb0708c2559efbede45670cba06"
+          },
+          "downloads": -1,
+          "filename": "lunr-0.6.2-py2.py3-none-any.whl",
+          "has_sig": false,
+          "md5_digest": "cb6854321ebb3441b0d0b49f6ff475fc",
+          "packagetype": "bdist_wheel",
+          "python_version": "py3",
+          "requires_python": ">=3.6",
+          "size": 35137,
+          "upload_time": "2022-02-27T07:45:54Z",
+          "upload_time_iso_8601": "2022-02-27T07:45:54Z",
+          "url": "./lunr-0.6.2-py2.py3-none-any.whl",
+          "yanked": false,
+          "yanked_reason": null
+        }
+      ]
+    }
+  },
+  "matplotlib-inline": {
+    "releases": {
+      "0.1.3": [
+        {
+          "comment_text": "",
+          "digests": {
+            "md5": "6fdbc5b61a309247d9160f9cc3a6f254",
+            "sha256": "aed605ba3b72462d64d475a21a9296f400a19c4f74a31b59103d2a99ffd5aa5c"
+          },
+          "downloads": -1,
+          "filename": "matplotlib_inline-0.1.3-py3-none-any.whl",
+          "has_sig": false,
+          "md5_digest": "6fdbc5b61a309247d9160f9cc3a6f254",
+          "packagetype": "bdist_wheel",
+          "python_version": "py3",
+          "requires_python": ">=3.5",
+          "size": 8244,
+          "upload_time": "2021-09-07T12:03:25Z",
+          "upload_time_iso_8601": "2021-09-07T12:03:25Z",
+          "url": "./matplotlib_inline-0.1.3-py3-none-any.whl",
+          "yanked": false,
+          "yanked_reason": null
+        }
+      ]
+    }
+  },
+  "mistune": {
+    "releases": {
+      "0.8.4": [
+        {
+          "comment_text": "",
+          "digests": {
+            "md5": "73cf3f48f7133224fb8b562ba88165db",
+            "sha256": "88a1051873018da288eee8538d476dffe1262495144b33ecb586c4ab266bb8d4"
+          },
+          "downloads": -1,
+          "filename": "mistune-0.8.4-py2.py3-none-any.whl",
+          "has_sig": false,
+          "md5_digest": "73cf3f48f7133224fb8b562ba88165db",
+          "packagetype": "bdist_wheel",
+          "python_version": "py3",
+          "requires_python": null,
+          "size": 16220,
+          "upload_time": "2020-02-26T15:48:32Z",
+          "upload_time_iso_8601": "2020-02-26T15:48:32Z",
+          "url": "./mistune-0.8.4-py2.py3-none-any.whl",
+          "yanked": false,
+          "yanked_reason": null
+        }
+      ]
+    }
+  },
+  "nbclient": {
+    "releases": {
+      "0.5.13": [
+        {
+          "comment_text": "",
+          "digests": {
+            "md5": "c5a47b965a2d4275fbb977ff4187ead2",
+            "sha256": "47ac905af59379913c1f8f541098d2550153cf8dc58553cbe18c702b181518b0"
+          },
+          "downloads": -1,
+          "filename": "nbclient-0.5.13-py3-none-any.whl",
+          "has_sig": false,
+          "md5_digest": "c5a47b965a2d4275fbb977ff4187ead2",
+          "packagetype": "bdist_wheel",
+          "python_version": "py3",
+          "requires_python": ">=3.7.0",
+          "size": 70613,
+          "upload_time": "2022-03-11T07:00:14Z",
+          "upload_time_iso_8601": "2022-03-11T07:00:14Z",
+          "url": "./nbclient-0.5.13-py3-none-any.whl",
+          "yanked": false,
+          "yanked_reason": null
+        }
+      ]
+    }
+  },
+  "nbconvert": {
+    "releases": {
+      "6.4.5": [
+        {
+          "comment_text": "",
+          "digests": {
+            "md5": "679c99cb5324aaa143dad8334f2c75cd",
+            "sha256": "e01d219f55cc79f9701c834d605e8aa3acf35725345d3942e3983937f368ce14"
+          },
+          "downloads": -1,
+          "filename": "nbconvert-6.4.5-py3-none-any.whl",
+          "has_sig": false,
+          "md5_digest": "679c99cb5324aaa143dad8334f2c75cd",
+          "packagetype": "bdist_wheel",
+          "python_version": "py3",
+          "requires_python": ">=3.7",
+          "size": 561365,
+          "upload_time": "2022-03-28T06:46:11Z",
+          "upload_time_iso_8601": "2022-03-28T06:46:11Z",
+          "url": "./nbconvert-6.4.5-py3-none-any.whl",
+          "yanked": false,
+          "yanked_reason": null
+        }
+      ]
+    }
+  },
+  "nbformat": {
+    "releases": {
+      "5.2.0": [
+        {
+          "comment_text": "",
+          "digests": {
+            "md5": "7c967091a90dab27bd8d4c7fb9fb87cd",
+            "sha256": "3e30424e8291b2188347f5c3ba5273ed3766f12f8c5137c2e456a0815f36e785"
+          },
+          "downloads": -1,
+          "filename": "nbformat-5.2.0-py3-none-any.whl",
+          "has_sig": false,
+          "md5_digest": "7c967091a90dab27bd8d4c7fb9fb87cd",
+          "packagetype": "bdist_wheel",
+          "python_version": "py3",
+          "requires_python": ">=3.7",
+          "size": 74621,
+          "upload_time": "2022-03-10T18:06:50Z",
+          "upload_time_iso_8601": "2022-03-10T18:06:50Z",
+          "url": "./nbformat-5.2.0-py3-none-any.whl",
+          "yanked": false,
+          "yanked_reason": null
+        }
+      ]
+    }
+  },
+  "nest-asyncio": {
+    "releases": {
+      "1.5.4": [
+        {
+          "comment_text": "",
+          "digests": {
+            "md5": "d269939d59dcc7c3c6adcf4f22bdd81a",
+            "sha256": "3fdd0d6061a2bb16f21fe8a9c6a7945be83521d81a0d15cff52e9edee50101d6"
+          },
+          "downloads": -1,
+          "filename": "nest_asyncio-1.5.4-py3-none-any.whl",
+          "has_sig": false,
+          "md5_digest": "d269939d59dcc7c3c6adcf4f22bdd81a",
+          "packagetype": "bdist_wheel",
+          "python_version": "py3",
+          "requires_python": ">=3.5",
+          "size": 5145,
+          "upload_time": "2021-12-01T17:45:02Z",
+          "upload_time_iso_8601": "2021-12-01T17:45:02Z",
+          "url": "./nest_asyncio-1.5.4-py3-none-any.whl",
+          "yanked": false,
+          "yanked_reason": null
+        }
+      ]
+    }
+  },
+  "notebook": {
+    "releases": {
+      "6.4.10": [
+        {
+          "comment_text": "",
+          "digests": {
+            "md5": "690319aa459592497d69514643d20fd2",
+            "sha256": "49cead814bff0945fcb2ee07579259418672ac175d3dc3d8102a4b0a656ed4df"
+          },
+          "downloads": -1,
+          "filename": "notebook-6.4.10-py3-none-any.whl",
+          "has_sig": false,
+          "md5_digest": "690319aa459592497d69514643d20fd2",
+          "packagetype": "bdist_wheel",
+          "python_version": "py3",
+          "requires_python": ">=3.6",
+          "size": 9904252,
+          "upload_time": "2022-03-15T13:56:09Z",
+          "upload_time_iso_8601": "2022-03-15T13:56:09Z",
+          "url": "./notebook-6.4.10-py3-none-any.whl",
+          "yanked": false,
+          "yanked_reason": null
+        }
+      ]
+    }
+  },
+  "packaging": {
+    "releases": {
+      "21.3": [
+        {
+          "comment_text": "",
+          "digests": {
+            "md5": "670a7057642064a747bd8274b24eb3f9",
+            "sha256": "ef103e05f519cdc783ae24ea4e2e0f508a9c99b2d4969652eed6a2e1ea5bd522"
+          },
+          "downloads": -1,
+          "filename": "packaging-21.3-py3-none-any.whl",
+          "has_sig": false,
+          "md5_digest": "670a7057642064a747bd8274b24eb3f9",
+          "packagetype": "bdist_wheel",
+          "python_version": "py3",
+          "requires_python": ">=3.6",
+          "size": 40750,
+          "upload_time": "2021-11-17T22:39:11Z",
+          "upload_time_iso_8601": "2021-11-17T22:39:11Z",
+          "url": "./packaging-21.3-py3-none-any.whl",
+          "yanked": false,
+          "yanked_reason": null
+        }
+      ]
+    }
+  },
+  "pandocfilters": {
+    "releases": {
+      "1.5.0": [
+        {
+          "comment_text": "",
+          "digests": {
+            "md5": "f183cea1efb5321287b8b46d9fe6c712",
+            "sha256": "33aae3f25fd1a026079f5d27bdd52496f0e0803b3469282162bafdcbdf6ef14f"
+          },
+          "downloads": -1,
+          "filename": "pandocfilters-1.5.0-py2.py3-none-any.whl",
+          "has_sig": false,
+          "md5_digest": "f183cea1efb5321287b8b46d9fe6c712",
+          "packagetype": "bdist_wheel",
+          "python_version": "py3",
+          "requires_python": ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*",
+          "size": 8667,
+          "upload_time": "2021-09-14T00:37:58Z",
+          "upload_time_iso_8601": "2021-09-14T00:37:58Z",
+          "url": "./pandocfilters-1.5.0-py2.py3-none-any.whl",
+          "yanked": false,
+          "yanked_reason": null
+        }
+      ]
+    }
+  },
+  "parso": {
+    "releases": {
+      "0.8.3": [
+        {
+          "comment_text": "",
+          "digests": {
+            "md5": "d477f66b883c4b5b0c008ced7de44861",
+            "sha256": "c001d4636cd3aecdaf33cbb40aebb59b094be2a74c556778ef5576c175e19e75"
+          },
+          "downloads": -1,
+          "filename": "parso-0.8.3-py2.py3-none-any.whl",
+          "has_sig": false,
+          "md5_digest": "d477f66b883c4b5b0c008ced7de44861",
+          "packagetype": "bdist_wheel",
+          "python_version": "py3",
+          "requires_python": ">=3.6",
+          "size": 100781,
+          "upload_time": "2021-11-30T19:05:48Z",
+          "upload_time_iso_8601": "2021-11-30T19:05:48Z",
+          "url": "./parso-0.8.3-py2.py3-none-any.whl",
+          "yanked": false,
+          "yanked_reason": null
+        }
+      ]
+    }
+  },
+  "pexpect": {
+    "releases": {
+      "4.8.0": [
+        {
+          "comment_text": "",
+          "digests": {
+            "md5": "7bf9120209a613a6792c6f0619bd8428",
+            "sha256": "0b48a55dcb3c05f3329815901ea4fc1537514d6ba867a152b581d69ae3710937"
+          },
+          "downloads": -1,
+          "filename": "pexpect-4.8.0-py2.py3-none-any.whl",
+          "has_sig": false,
+          "md5_digest": "7bf9120209a613a6792c6f0619bd8428",
+          "packagetype": "bdist_wheel",
+          "python_version": "py3",
+          "requires_python": null,
+          "size": 59024,
+          "upload_time": "2020-02-26T15:40:24Z",
+          "upload_time_iso_8601": "2020-02-26T15:40:24Z",
+          "url": "./pexpect-4.8.0-py2.py3-none-any.whl",
+          "yanked": false,
+          "yanked_reason": null
+        }
+      ]
+    }
+  },
+  "pickleshare": {
+    "releases": {
+      "0.7.5": [
+        {
+          "comment_text": "",
+          "digests": {
+            "md5": "7c68934703b75ccfbaad00d1210f7011",
+            "sha256": "9649af414d74d4df115d5d718f82acb59c9d418196b7b4290ed47a12ce62df56"
+          },
+          "downloads": -1,
+          "filename": "pickleshare-0.7.5-py2.py3-none-any.whl",
+          "has_sig": false,
+          "md5_digest": "7c68934703b75ccfbaad00d1210f7011",
+          "packagetype": "bdist_wheel",
+          "python_version": "py3",
+          "requires_python": null,
+          "size": 6877,
+          "upload_time": "2020-02-26T16:00:05Z",
+          "upload_time_iso_8601": "2020-02-26T16:00:05Z",
+          "url": "./pickleshare-0.7.5-py2.py3-none-any.whl",
+          "yanked": false,
+          "yanked_reason": null
+        }
+      ]
+    }
+  },
+  "prometheus-client": {
+    "releases": {
+      "0.13.1": [
+        {
+          "comment_text": "",
+          "digests": {
+            "md5": "ea03504218eaf0e4f489ebca79d1effe",
+            "sha256": "357a447fd2359b0a1d2e9b311a0c5778c330cfbe186d880ad5a6b39884652316"
+          },
+          "downloads": -1,
+          "filename": "prometheus_client-0.13.1-py3-none-any.whl",
+          "has_sig": false,
+          "md5_digest": "ea03504218eaf0e4f489ebca79d1effe",
+          "packagetype": "bdist_wheel",
+          "python_version": "py3",
+          "requires_python": ">=3.6",
+          "size": 57106,
+          "upload_time": "2022-01-28T14:02:40Z",
+          "upload_time_iso_8601": "2022-01-28T14:02:40Z",
+          "url": "./prometheus_client-0.13.1-py3-none-any.whl",
+          "yanked": false,
+          "yanked_reason": null
+        }
+      ]
+    }
+  },
+  "prompt-toolkit": {
+    "releases": {
+      "3.0.28": [
+        {
+          "comment_text": "",
+          "digests": {
+            "md5": "472c6a13f3b1322009b7d5dc7826b5fc",
+            "sha256": "30129d870dcb0b3b6a53efdc9d0a83ea96162ffd28ffe077e94215b233dc670c"
+          },
+          "downloads": -1,
+          "filename": "prompt_toolkit-3.0.28-py3-none-any.whl",
+          "has_sig": false,
+          "md5_digest": "472c6a13f3b1322009b7d5dc7826b5fc",
+          "packagetype": "bdist_wheel",
+          "python_version": "py3",
+          "requires_python": ">=3.6.2",
+          "size": 380236,
+          "upload_time": "2022-02-11T06:51:02Z",
+          "upload_time_iso_8601": "2022-02-11T06:51:02Z",
+          "url": "./prompt_toolkit-3.0.28-py3-none-any.whl",
+          "yanked": false,
+          "yanked_reason": null
+        }
+      ]
+    }
+  },
+  "ptyprocess": {
+    "releases": {
+      "0.7.0": [
+        {
+          "comment_text": "",
+          "digests": {
+            "md5": "99ec04989f767cb72ac82ce671b561b0",
+            "sha256": "4b41f3967fce3af57cc7e94b888626c18bf37a083e3651ca8feeb66d492fef35"
+          },
+          "downloads": -1,
+          "filename": "ptyprocess-0.7.0-py2.py3-none-any.whl",
+          "has_sig": false,
+          "md5_digest": "99ec04989f767cb72ac82ce671b561b0",
+          "packagetype": "bdist_wheel",
+          "python_version": "py3",
+          "requires_python": null,
+          "size": 13993,
+          "upload_time": "2020-12-28T13:15:29Z",
+          "upload_time_iso_8601": "2020-12-28T13:15:29Z",
+          "url": "./ptyprocess-0.7.0-py2.py3-none-any.whl",
+          "yanked": false,
+          "yanked_reason": null
+        }
+      ]
+    }
+  },
+  "pure-eval": {
+    "releases": {
+      "0.2.2": [
+        {
+          "comment_text": "",
+          "digests": {
+            "md5": "9763cb67380548da5b3e5b7916f16f39",
+            "sha256": "01eaab343580944bc56080ebe0a674b39ec44a945e6d09ba7db3cb8cec289350"
+          },
+          "downloads": -1,
+          "filename": "pure_eval-0.2.2-py3-none-any.whl",
+          "has_sig": false,
+          "md5_digest": "9763cb67380548da5b3e5b7916f16f39",
+          "packagetype": "bdist_wheel",
+          "python_version": "py3",
+          "requires_python": null,
+          "size": 11693,
+          "upload_time": "2022-01-22T13:41:28Z",
+          "upload_time_iso_8601": "2022-01-22T13:41:28Z",
+          "url": "./pure_eval-0.2.2-py3-none-any.whl",
+          "yanked": false,
+          "yanked_reason": null
+        }
+      ]
+    }
+  },
+  "pycparser": {
+    "releases": {
+      "2.21": [
+        {
+          "comment_text": "",
+          "digests": {
+            "md5": "763d265dfc20860dfbb4c81458400d03",
+            "sha256": "8ee45429555515e1f6b185e78100aea234072576aa43ab53aefcae078162fca9"
+          },
+          "downloads": -1,
+          "filename": "pycparser-2.21-py2.py3-none-any.whl",
+          "has_sig": false,
+          "md5_digest": "763d265dfc20860dfbb4c81458400d03",
+          "packagetype": "bdist_wheel",
+          "python_version": "py3",
+          "requires_python": ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*",
+          "size": 118697,
+          "upload_time": "2021-11-06T10:50:14Z",
+          "upload_time_iso_8601": "2021-11-06T10:50:14Z",
+          "url": "./pycparser-2.21-py2.py3-none-any.whl",
+          "yanked": false,
+          "yanked_reason": null
+        }
+      ]
+    }
+  },
+  "pyparsing": {
+    "releases": {
+      "3.0.7": [
+        {
+          "comment_text": "",
+          "digests": {
+            "md5": "a133aa1a85795d8d7ba79e7601c419f6",
+            "sha256": "a6c06a88f252e6c322f65faf8f418b16213b51bdfaece0524c1c1bc30c63c484"
+          },
+          "downloads": -1,
+          "filename": "pyparsing-3.0.7-py3-none-any.whl",
+          "has_sig": false,
+          "md5_digest": "a133aa1a85795d8d7ba79e7601c419f6",
+          "packagetype": "bdist_wheel",
+          "python_version": "py3",
+          "requires_python": ">=3.6",
+          "size": 98049,
+          "upload_time": "2022-01-21T03:41:33Z",
+          "upload_time_iso_8601": "2022-01-21T03:41:33Z",
+          "url": "./pyparsing-3.0.7-py3-none-any.whl",
+          "yanked": false,
+          "yanked_reason": null
+        }
+      ]
+    }
+  },
+  "python-dateutil": {
+    "releases": {
+      "2.8.2": [
+        {
+          "comment_text": "",
+          "digests": {
+            "md5": "95743ca628ad14d4aeb3628907f017bd",
+            "sha256": "961d03dc3453ebbc59dbdea9e4e11c5651520a876d0f4db161e8674aae935da9"
+          },
+          "downloads": -1,
+          "filename": "python_dateutil-2.8.2-py2.py3-none-any.whl",
+          "has_sig": false,
+          "md5_digest": "95743ca628ad14d4aeb3628907f017bd",
+          "packagetype": "bdist_wheel",
+          "python_version": "py3",
+          "requires_python": "!=3.0.*,!=3.1.*,!=3.2.*,>=2.7",
+          "size": 247702,
+          "upload_time": "2021-07-14T05:19:19Z",
+          "upload_time_iso_8601": "2021-07-14T05:19:19Z",
+          "url": "./python_dateutil-2.8.2-py2.py3-none-any.whl",
+          "yanked": false,
+          "yanked_reason": null
+        }
+      ]
+    }
+  },
+  "robotframework": {
+    "releases": {
+      "5.0": [
+        {
+          "comment_text": "",
+          "digests": {
+            "md5": "7753b611e3a64a3dbc2eab7220625c12",
+            "sha256": "ee912636885e2dc4bcf4ec1d5b3ac2a5b81cadfcfedf4a169bd4ad6576ff8f53"
+          },
+          "downloads": -1,
+          "filename": "robotframework-5.0-py3-none-any.whl",
+          "has_sig": false,
+          "md5_digest": "7753b611e3a64a3dbc2eab7220625c12",
+          "packagetype": "bdist_wheel",
+          "python_version": "py3",
+          "requires_python": ">=3.6",
+          "size": 638891,
+          "upload_time": "2022-03-23T13:26:24Z",
+          "upload_time_iso_8601": "2022-03-23T13:26:24Z",
+          "url": "./robotframework-5.0-py3-none-any.whl",
+          "yanked": false,
+          "yanked_reason": null
+        }
+      ]
+    }
+  },
+  "robotkernel": {
+    "releases": {
+      "1.6a2": [
+        {
+          "comment_text": "",
+          "digests": {
+            "md5": "d51ce1e4e2d758ec9c0d2dc757454dcc",
+            "sha256": "900e8bef33bbe2cc71bb3218b75484aae6149373d94df672ec51956b8446bff1"
+          },
+          "downloads": -1,
+          "filename": "robotkernel-1.6a2-py3-none-any.whl",
+          "has_sig": false,
+          "md5_digest": "d51ce1e4e2d758ec9c0d2dc757454dcc",
+          "packagetype": "bdist_wheel",
+          "python_version": "py3",
+          "requires_python": null,
+          "size": 4248358,
+          "upload_time": "2022-03-09T16:28:42Z",
+          "upload_time_iso_8601": "2022-03-09T16:28:42Z",
+          "url": "./robotkernel-1.6a2-py3-none-any.whl",
+          "yanked": false,
+          "yanked_reason": null
+        }
+      ]
+    }
+  },
+  "setuptools": {
+    "releases": {
+      "61.2.0": [
+        {
+          "comment_text": "",
+          "digests": {
+            "md5": "558eca3846b50a2e2226d60c79220c8a",
+            "sha256": "8f4813dd6a4d6cc17bde85fb2e635fe19763f96efbb0ddf5575562e5ee0bc47a"
+          },
+          "downloads": -1,
+          "filename": "setuptools-61.2.0-py3-none-any.whl",
+          "has_sig": false,
+          "md5_digest": "558eca3846b50a2e2226d60c79220c8a",
+          "packagetype": "bdist_wheel",
+          "python_version": "py3",
+          "requires_python": ">=3.7",
+          "size": 1142215,
+          "upload_time": "2022-03-27T18:13:13Z",
+          "upload_time_iso_8601": "2022-03-27T18:13:13Z",
+          "url": "./setuptools-61.2.0-py3-none-any.whl",
+          "yanked": false,
+          "yanked_reason": null
+        }
+      ]
+    }
+  },
+  "six": {
+    "releases": {
+      "1.16.0": [
+        {
+          "comment_text": "",
+          "digests": {
+            "md5": "529d7fd7e14612ccde86417b4402d6f3",
+            "sha256": "8abb2f1d86890a2dfb989f9a77cfcfd3e47c2a354b01111771326f8aa26e0254"
+          },
+          "downloads": -1,
+          "filename": "six-1.16.0-py2.py3-none-any.whl",
+          "has_sig": false,
+          "md5_digest": "529d7fd7e14612ccde86417b4402d6f3",
+          "packagetype": "bdist_wheel",
+          "python_version": "py3",
+          "requires_python": ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*",
+          "size": 11053,
+          "upload_time": "2021-05-05T11:18:17Z",
+          "upload_time_iso_8601": "2021-05-05T11:18:17Z",
+          "url": "./six-1.16.0-py2.py3-none-any.whl",
+          "yanked": false,
+          "yanked_reason": null
+        }
+      ]
+    }
+  },
+  "soupsieve": {
+    "releases": {
+      "2.3.1": [
+        {
+          "comment_text": "",
+          "digests": {
+            "md5": "f87f1c7d0abd1df341323e39963b0672",
+            "sha256": "1a3cca2617c6b38c0343ed661b1fa5de5637f257d4fe22bd9f1338010a1efefb"
+          },
+          "downloads": -1,
+          "filename": "soupsieve-2.3.1-py3-none-any.whl",
+          "has_sig": false,
+          "md5_digest": "f87f1c7d0abd1df341323e39963b0672",
+          "packagetype": "bdist_wheel",
+          "python_version": "py3",
+          "requires_python": ">=3.6",
+          "size": 37271,
+          "upload_time": "2021-11-11T11:53:13Z",
+          "upload_time_iso_8601": "2021-11-11T11:53:13Z",
+          "url": "./soupsieve-2.3.1-py3-none-any.whl",
+          "yanked": false,
+          "yanked_reason": null
+        }
+      ]
+    }
+  },
+  "stack-data": {
+    "releases": {
+      "0.2.0": [
+        {
+          "comment_text": "",
+          "digests": {
+            "md5": "6ca19ac586c36cb488773ac930d63161",
+            "sha256": "999762f9c3132308789affa03e9271bbbe947bf78311851f4d485d8402ed858e"
+          },
+          "downloads": -1,
+          "filename": "stack_data-0.2.0-py3-none-any.whl",
+          "has_sig": false,
+          "md5_digest": "6ca19ac586c36cb488773ac930d63161",
+          "packagetype": "bdist_wheel",
+          "python_version": "py3",
+          "requires_python": null,
+          "size": 21161,
+          "upload_time": "2022-02-14T16:52:17Z",
+          "upload_time_iso_8601": "2022-02-14T16:52:17Z",
+          "url": "./stack_data-0.2.0-py3-none-any.whl",
+          "yanked": false,
+          "yanked_reason": null
+        }
+      ]
+    }
+  },
+  "terminado": {
+    "releases": {
+      "0.13.3": [
+        {
+          "comment_text": "",
+          "digests": {
+            "md5": "beb687445bf415e7a46cdad3fc7d5650",
+            "sha256": "874d4ea3183536c1782d13c7c91342ef0cf4e5ee1d53633029cbc972c8760bd8"
+          },
+          "downloads": -1,
+          "filename": "terminado-0.13.3-py3-none-any.whl",
+          "has_sig": false,
+          "md5_digest": "beb687445bf415e7a46cdad3fc7d5650",
+          "packagetype": "bdist_wheel",
+          "python_version": "py3",
+          "requires_python": ">=3.7",
+          "size": 14163,
+          "upload_time": "2022-03-07T14:20:50Z",
+          "upload_time_iso_8601": "2022-03-07T14:20:50Z",
+          "url": "./terminado-0.13.3-py3-none-any.whl",
+          "yanked": false,
+          "yanked_reason": null
+        }
+      ]
+    }
+  },
+  "testpath": {
+    "releases": {
+      "0.6.0": [
+        {
+          "comment_text": "",
+          "digests": {
+            "md5": "281de6bcd32e45d9408010d9c3df8ca7",
+            "sha256": "8ada9f80a2ac6fb0391aa7cdb1a7d11cfa8429f693eda83f74dde570fe6fa639"
+          },
+          "downloads": -1,
+          "filename": "testpath-0.6.0-py3-none-any.whl",
+          "has_sig": false,
+          "md5_digest": "281de6bcd32e45d9408010d9c3df8ca7",
+          "packagetype": "bdist_wheel",
+          "python_version": "py3",
+          "requires_python": ">= 3.5",
+          "size": 83894,
+          "upload_time": "2022-02-23T18:05:05Z",
+          "upload_time_iso_8601": "2022-02-23T18:05:05Z",
+          "url": "./testpath-0.6.0-py3-none-any.whl",
+          "yanked": false,
+          "yanked_reason": null
+        }
+      ]
+    }
+  },
+  "traitlets": {
+    "releases": {
+      "5.1.1": [
+        {
+          "comment_text": "",
+          "digests": {
+            "md5": "257c2158ed18ed953d536a0a61406e2d",
+            "sha256": "2d313cc50a42cd6c277e7d7dc8d4d7fedd06a2c215f78766ae7b1a66277e0033"
+          },
+          "downloads": -1,
+          "filename": "traitlets-5.1.1-py3-none-any.whl",
+          "has_sig": false,
+          "md5_digest": "257c2158ed18ed953d536a0a61406e2d",
+          "packagetype": "bdist_wheel",
+          "python_version": "py3",
+          "requires_python": ">=3.7",
+          "size": 102024,
+          "upload_time": "2021-10-25T15:32:20Z",
+          "upload_time_iso_8601": "2021-10-25T15:32:20Z",
+          "url": "./traitlets-5.1.1-py3-none-any.whl",
+          "yanked": false,
+          "yanked_reason": null
+        }
+      ]
+    }
+  },
+  "wcwidth": {
+    "releases": {
+      "0.2.5": [
+        {
+          "comment_text": "",
+          "digests": {
+            "md5": "8b664207c7e30fc97917d2ac444e2232",
+            "sha256": "beb4802a9cebb9144e99086eff703a642a13d6a0052920003a230f3294bbe784"
+          },
+          "downloads": -1,
+          "filename": "wcwidth-0.2.5-py2.py3-none-any.whl",
+          "has_sig": false,
+          "md5_digest": "8b664207c7e30fc97917d2ac444e2232",
+          "packagetype": "bdist_wheel",
+          "python_version": "py3",
+          "requires_python": null,
+          "size": 30763,
+          "upload_time": "2020-06-23T13:10:29Z",
+          "upload_time_iso_8601": "2020-06-23T13:10:29Z",
+          "url": "./wcwidth-0.2.5-py2.py3-none-any.whl",
+          "yanked": false,
+          "yanked_reason": null
+        }
+      ]
+    }
+  },
+  "webencodings": {
+    "releases": {
+      "0.5.1": [
+        {
+          "comment_text": "",
+          "digests": {
+            "md5": "36654e7c7b772611b536014fa9e6e918",
+            "sha256": "a0af1213f3c2226497a97e2b3aa01a7e4bee4f403f95be16fc9acd2947514a78"
+          },
+          "downloads": -1,
+          "filename": "webencodings-0.5.1-py2.py3-none-any.whl",
+          "has_sig": false,
+          "md5_digest": "36654e7c7b772611b536014fa9e6e918",
+          "packagetype": "bdist_wheel",
+          "python_version": "py3",
+          "requires_python": null,
+          "size": 11774,
+          "upload_time": "2020-02-26T15:55:37Z",
+          "upload_time_iso_8601": "2020-02-26T15:55:37Z",
+          "url": "./webencodings-0.5.1-py2.py3-none-any.whl",
+          "yanked": false,
+          "yanked_reason": null
+        }
+      ]
+    }
+  }
+}

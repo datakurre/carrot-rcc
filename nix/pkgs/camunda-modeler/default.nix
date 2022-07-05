@@ -5,10 +5,8 @@ let
   sources = import ../../../nix/sources.nix;
 
   mkElectron = import "${sources."nixpkgs"}/pkgs/development/tools/electron/generic.nix" { inherit stdenv libXScrnSaver makeWrapper fetchurl wrapGAppsHook glib gtk3 unzip atomEnv libuuid at-spi2-atk at-spi2-core libdrm mesa libxkbcommon libxshmfence lib libappindicator-gtk3; };
-  electron = mkElectron "12.1.2" {
-    x86_64-linux = "0gc739hk959rh5zscb6iq643bb2ar3cksmrmz3s16qlm7qi1xvg0";
-# electron = mkElectron "17.1.2" {
-#   x86_64-linux = "156aa1360qfx3jpa4liccz2f46l8chrag7zig8g4bz50q7l3az3y";
+  electron = mkElectron "17.1.0" {
+    x86_64-linux = "1s18zrmqiiks9nq27nw2s65wcl0rqhxc6b343wg6qdk9b65c4vhh";
   };
 
   camunda-modeler-plugins = fetchurl {
@@ -38,7 +36,7 @@ let
 
   bpmn-js-token-simulation-plugin = fetchurl {
     url = "https://github.com/bpmn-io/bpmn-js-token-simulation-plugin/archive/ba7b6c0f4edf0872229da58a20ef96590d9a99a8.tar.gz";
-    sha256 = "1wp2b2ngard7b47kx9qxl1b26z0ljhvxp07q28kmgks7cxfalz7v";
+    sha256 = "0gns9pvy393jasvdwhyjgm79wpnmkbycp0hpm1pylif5qgb0df8a";
   };
 
   dmn-testing-plugin = fetchurl {
@@ -53,19 +51,14 @@ let
 
   asar = stdenv.mkDerivation rec {
     name = "camunda-modeler-${version}-asar";
-    version = "5.0.0-alpha.1";
+    version = "5.0.0";
     src = fetchurl {
       url = "https://github.com/camunda/camunda-modeler/releases/download/v${version}/camunda-modeler-${version}-linux-x64.tar.gz";
-      sha256 = "095kklcjcz4llvqxcqylqpk0p42dmqxq1a98vqlgqd993kyvf3y7";
+      sha256 = "11gkcb209dgnmavn113b91dywh4b1n4i0a7xnhkc4angn8y22amp";
     };
     nativeBuildInputs = [ nodePackages.asar autoPatchelfHook gcc-unwrapped ];
     installPhase = ''
       asar extract ./resources/app.asar $out
-      substituteInPlace $out/lib/index.js \
-        --replace "let resourcesPaths = [" \
-                  "let resourcesPaths = [\"$out/var/lib/camunda/resources\","
-#     mv $out/node_modules/grpc/src/node/extension_binary/electron-v12.1-linux-x64-glibc \
-#        $out/node_modules/grpc/src/node/extension_binary/electron-v17.1-linux-x64-glibc
     '';
   };
 
@@ -73,13 +66,20 @@ in
 
 stdenv.mkDerivation rec {
   name = "camunda-modeler-${version}";
-  version = "5.0.0-alpha.1";
+  version = "5.0.0";
   src = asar;
   unpackPhase = "";
   nativeBuildInputs = [ electron makeWrapper nodePackages.asar autoPatchelfHook gcc-unwrapped ];
   installPhase = ''
     mkdir -p $out/var/lib/camunda/resources/plugins $out/bin
-    asar pack $src $out/var/lib/camunda/app.asar
+
+    cp -a $src build
+    chmod u+w -R build
+    substituteInPlace build/lib/index.js \
+      --replace "let resourcesPaths = [" \
+                "let resourcesPaths = [\"$out/var/lib/camunda/resources\","
+    asar pack build $out/var/lib/camunda/app.asar
+
     cd $out/var/lib/camunda/resources/plugins
 
     tar xzvf ${dmn-testing-plugin}
@@ -98,6 +98,7 @@ stdenv.mkDerivation rec {
     tar xzvf ${excel-import-plugin}
     mv camunda-modeler-plugins*/camunda-transaction-boundaries-plugin .
     rm -r camunda-modeler-plugins*
+
     makeWrapper ${electron}/bin/electron $out/bin/camunda-modeler \
       --add-flags "$out/var/lib/camunda/app.asar" \
       --prefix PATH : "${adoptopenjdk-jre-hotspot-bin-11}/bin"

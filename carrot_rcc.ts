@@ -444,10 +444,10 @@ const save = async (
 
   if (patch.modifications) {
     for (const name of Object.keys(current)) {
-      if (await isEqual(old[name], current[name])) {
+      if (isEqual(old[name], current[name])) {
         continue;
       }
-      switch (await inferType(old[name], current[name])) {
+      switch (inferType(current[name])) {
         case "Boolean":
           patch.modifications[name] = {
             value: !!current[name],

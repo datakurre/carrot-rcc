@@ -6,12 +6,12 @@ let
 
   robotframework = ps:
     ps.robotframework.overridePythonAttrs(old: rec {
-      version = "5.0rc1";
+      version = "5.0.1";
       src = ps.fetchPypi {
         pname = "robotframework";
         extension = "zip";
         inherit version;
-        sha256 = "18086q96njl2as527r756xjznqikc3jflx97yw8rz8i67yqwdjn6";
+        sha256 = "1j0glardn8jg5zr82mkkcwl294288l1l9ywi3qz8r7gdfybwapfg";
       };
       doCheck = false;
     });
@@ -20,13 +20,14 @@ in {
 
   options = {
     options.username = lib.mkOption { default = "vagrant"; };
+    options.ssl = lib.mkOption { default = true; };
     options.shared-folder = lib.mkOption { default = true; };
     options.vscode-with-vim = lib.mkOption { default = false; };
     options.vscode-unfree = lib.mkOption { default = false; };
   };
 
   imports = let nixpkgs = (import ../nix/sources.nix).nixpkgs;
-                home-manager = builtins.fetchTarball "https://github.com/nix-community/home-manager/archive/release-21.11.tar.gz";
+                home-manager = builtins.fetchTarball "https://github.com/datakurre/home-manager/archive/release-21.11.tar.gz";
   in [
     (import "${home-manager}/nixos")
   ];
@@ -46,7 +47,7 @@ in {
     };
 
     networking.nameservers = [ "1.1.1.1" "9.9.9.9" ];
-    networking.firewall.allowedTCPPorts = [ 443 ];
+    networking.firewall.allowedTCPPorts = if config.options.ssl then [ 443 ] else [ 8000 ];
 
     i18n.defaultLocale = "en_US.UTF-8";
     time.timeZone = "Europe/Berlin";
@@ -240,7 +241,7 @@ in {
     services.nginx.enable = true;
     services.nginx.virtualHosts.localhost = {
       root = "${pkgs.novnc}/share/webapps/novnc";
-      forceSSL = true;
+      forceSSL = config.options.ssl;
       sslCertificate = "/etc/novnc-selfsigned.crt";
 	  sslCertificateKey = "/etc/novnc-selfsigned.key";
       locations."/websockify" = {
@@ -255,7 +256,12 @@ in {
       locations."/" = {
         index = "vnc.html";
       };
-    };
+    } // (if config.options.ssl then {} else {
+      listen = [{
+        addr = "localhost";
+        port = 8000;
+      }];
+    });
     systemd.services.novnc-cert = {
       wantedBy = [ "multi-user.target" ];
       before = [ "nginx.service" ];
@@ -332,7 +338,7 @@ in {
       name = config.options.username;
       value = {
         home.file.".config/${config.options.username}/camunda-modeler.png".source = ./files/camunda-modeler.png;
-        home.file.".config/${config.options.username}/camunda-modeler.desktop".source = builtins.toFile "camunda-modeler.desktop" ''
+        home.file.".config/${config.options.username}/camunda-modeler.desktop".source = pkgs.writeScript "camunda-modeler.desktop" ''
           [Desktop Entry]
           StartupWMClass=camunda-modeler
           Version=1.0
@@ -345,7 +351,7 @@ in {
           MimeType=application/bpmn+xml;application/dmn+xml
         '';
         home.file.".config/${config.options.username}/camunda.png".source = ./files/camunda.png;
-        home.file.".config/${config.options.username}/camunda.desktop".source = builtins.toFile "camunda.desktop" ''
+        home.file.".config/${config.options.username}/camunda.desktop".source = pkgs.writeScript "camunda.desktop" ''
           [Desktop Entry]
           Version=1.0
           Type=Link
@@ -353,7 +359,7 @@ in {
           Icon=/home/${config.options.username}/.config/${config.options.username}/camunda.png
           URL=http://localhost:8080/camunda/
         '';
-        home.file.".config/${config.options.username}/chromium-browser.desktop".source = builtins.toFile "chromium-browser.desktop" ''
+        home.file.".config/${config.options.username}/chromium-browser.desktop".source = pkgs.writeScript "chromium-browser.desktop" ''
           [Desktop Entry]
           StartupWMClass=chromium-browser
           Version=1.0
@@ -366,7 +372,7 @@ in {
           Categories=Network;WebBrowser;
           MimeType=application/pdf;application/rdf+xml;application/rss+xml;application/xhtml+xml;application/xhtml_xml;application/xml;image/gif;image/jpeg;image/png;image/webp;text/html;text/xml;x-scheme-handler/ftp;x-scheme-handler/http;x-scheme-handler/https;x-scheme-handler/webcal;x-scheme-handler/mailto;x-scheme-handler/about;x-scheme-handler/unknown
         '';
-        home.file.".config/${config.options.username}/journal.desktop".source = builtins.toFile "journal.desktop" ''
+        home.file.".config/${config.options.username}/journal.desktop".source = pkgs.writeScript "journal.desktop" ''
           [Desktop Entry]
           StartupWMClass=ksystemlog
           Version=1.0
@@ -377,7 +383,7 @@ in {
           Icon=system-search
           Type=Application
         '';
-        home.file.".config/${config.options.username}/keyboard.desktop".source = builtins.toFile "keyboard.desktop" ''
+        home.file.".config/${config.options.username}/keyboard.desktop".source = pkgs.writeScript "keyboard.desktop" ''
           [Desktop Entry]
           StartupWMClass=xfce4-keyboard-settings
           Version=1.0
@@ -389,7 +395,7 @@ in {
           Type=Application
         '';
         home.file.".config/${config.options.username}/mailhog.png".source = ./files/mailhog.png;
-        home.file.".config/${config.options.username}/mailhog.desktop".source = builtins.toFile "mailhog.desktop" ''
+        home.file.".config/${config.options.username}/mailhog.desktop".source = pkgs.writeScript "mailhog.desktop" ''
           [Desktop Entry]
           Version=1.0
           Type=Link
@@ -398,7 +404,7 @@ in {
           URL=http://localhost:8025/
         '';
         home.file.".config/${config.options.username}/mockoon.png".source = ./files/mockoon.png;
-        home.file.".config/${config.options.username}/mockoon.desktop".source = builtins.toFile "mockoon.desktop" ''
+        home.file.".config/${config.options.username}/mockoon.desktop".source = pkgs.writeScript "mockoon.desktop" ''
           [Desktop Entry]
           StartupWMClass=mockoon
           Version=1.0
@@ -410,7 +416,7 @@ in {
           Type=Application
         '';
         home.file.".config/${config.options.username}/robocorp-code.png".source = ./files/robocorp-code.png;
-        home.file.".config/${config.options.username}/robocorp-code.desktop".source = builtins.toFile "robocorp-code.desktop" ''
+        home.file.".config/${config.options.username}/robocorp-code.desktop".source = pkgs.writeScript "robocorp-code.desktop" ''
           [Desktop Entry]
           Categories=Utility;TextEditor;Development;IDE;
           Comment=Code Editing. Redefined.
@@ -427,7 +433,7 @@ in {
           Keywords=${if config.options.vscode-unfree then "vscode" else "vscodium"};
         '';
         home.file.".config/${config.options.username}/vault.png".source = ./files/vault.png;
-        home.file.".config/${config.options.username}/vault.desktop".source = builtins.toFile "vault.desktop" ''
+        home.file.".config/${config.options.username}/vault.desktop".source = pkgs.writeScript "vault.desktop" ''
           [Desktop Entry]
           Version=1.0
           Type=Link
@@ -435,7 +441,7 @@ in {
           Icon=/home/${config.options.username}/.config/${config.options.username}/vault.png
           URL=http://localhost:8200/
         '';
-        home.file.".config/${config.options.username}/xfce4-session-logout.desktop".source = builtins.toFile "xfce4-session-logout.desktop" ''
+        home.file.".config/${config.options.username}/xfce4-session-logout.desktop".source = pkgs.writeScript "xfce4-session-logout.desktop" ''
           [Desktop Entry]
           Version=1.0
           Type=Application
@@ -448,6 +454,7 @@ in {
           Name=Log Out
           Name[fi]=Kirjaudu ulos
         '';
+        home.file.".config/vagrant/robot-framework.png".source = ./files/robot-framework.png;
         xsession = {
           enable = true;
           windowManager.command = ''test -n "$1" && eval "$@"'';
@@ -469,6 +476,24 @@ in {
             ln -s /var/lib/carrot-rcc $XDG_DESKTOP_DIR/Robots
             ln -s /var/lib/camunda $XDG_DESKTOP_DIR/BPMN
 
+            # configure background
+            xfconf-query -c xfce4-desktop -p /backdrop/screen0/monitorVirtual1/workspace0/last-image -t string -s ~/.config/vagrant/robot-framework.png
+            if [ $? -ne 0 ]; then
+              xfconf-query -c xfce4-desktop -p /backdrop/screen0/monitorVirtual1/workspace0/last-image -t string -s ~/.config/vagrant/robot-framework.png --create
+            fi
+            xfconf-query -c xfce4-desktop -p /backdrop/screen0/monitorVirtual1/workspace0/color-style -t int -s 0
+            if [ $? -ne 0 ]; then
+              xfconf-query -c xfce4-desktop -p /backdrop/screen0/monitorVirtual1/workspace0/color-style -t int -s 0 --create
+            fi
+            xfconf-query -c xfce4-desktop -p /backdrop/screen0/monitorVirtual1/workspace0/image-style -t int -s 1
+            if [ $? -ne 0 ]; then
+              xfconf-query -c xfce4-desktop -p /backdrop/screen0/monitorVirtual1/workspace0/image-style -t int -s 1 --create
+            fi
+            xfconf-query -c xfce4-desktop -p /backdrop/screen0/monitorVirtual1/workspace0/rgba1 -t double -t double -t double -t double -s 0.368627 -s 0.360784 -s 0.392157 -s 1.0
+            if [ $? -ne 0 ]; then
+              xfconf-query -c xfce4-desktop -p /backdrop/screen0/monitorVirtual1/workspace0/rgba1 -t double -t double -t double -t double -s 0.368627 -s 0.360784 -s 0.392157 -s 1.0 --create
+            fi
+
             # configure desktop
             xfconf-query -c xfwm4 -p /general/workspace_count -t int -s 1 --create
             setxkbmap -layout us
@@ -476,7 +501,10 @@ in {
         };
         programs.vscode.enable = true;
         programs.vscode.userSettings = {
+          "editor.minimap.enabled" = false;
           "python.experiments.enabled" = false;
+          "robot.codeLens.enabled" = true;
+          "robocorp.verifyLSP" = true;
         };
         programs.vscode.package = ((if config.options.vscode-unfree then pkgs.vscode-fhsWithPackages else pkgs.vscodium-fhsWithPackages) (ps: with ps; [
           (ps.python3Full.withPackages(ps: [(robotframework ps)]))
@@ -488,16 +516,16 @@ in {
             mktplcRef = {
               name = "robotframework-lsp";
               publisher = "robocorp";
-              version = "0.42.1";
-              sha256 = "1q010v7b2r5h2lsv6cyxqhdiaiqhl9x4f609bp9mw9pbs9xvsg40";
+              version = "0.47.9";
+              sha256 = "1qpj3f2kjaadpdi326ssirz5aqr5ds9r8gf86zhd6xc8734jp8fp";
             };
           })
           (pkgs.vscode-utils.buildVscodeMarketplaceExtension rec {
             mktplcRef = {
               name = "robocorp-code";
               publisher = "robocorp";
-              version = "0.28.1";
-              sha256 = "0blvgxm5f5a89jwpr7ajihb1pk9mj9jgy1yajicvdk6b63v09hv9";
+              version = "0.32.3";
+              sha256 = "1w0h9ijb6qa78ga2qnjgc83wq4fpbzc0x43gj11x4y7zhqa7j3bq";
             };
             postInstall = ''
               mkdir -p $out/share/vscode/extensions/robocorp.robocorp-code/bin
