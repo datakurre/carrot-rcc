@@ -47,9 +47,8 @@ export const isEqual = (old: TypedValue | undefined, current: any): boolean => {
   if (old === undefined) {
     return false;
   }
-  const oldType = inferType(old);
   const currType = inferType(current);
-  if (oldType !== currType) {
+  if (old.type.toUpperCase() !== currType.toUpperCase()) {
     return false;
   }
   switch (currType) {

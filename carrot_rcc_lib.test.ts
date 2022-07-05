@@ -176,70 +176,66 @@ describe("offsetToString", () => {
 describe("isEqual", () => {
   it("should return false when values are not equal", () => {
     expect.assertions(1);
-    return isEqual({ type: "string", value: "foo", valueInfo: {} }, "bar").then(
-      (data) => expect(data).toBe(false)
-    );
+    return expect(
+      isEqual({ type: "string", value: "foo", valueInfo: {} }, "bar")
+    ).toBe(false);
   });
   it("should return true values are equal", () => {
     expect.assertions(1);
-    return isEqual({ type: "string", value: "foo", valueInfo: {} }, "foo").then(
-      (data) => expect(data).toBe(true)
-    );
+    return expect(
+      isEqual({ type: "string", value: "foo", valueInfo: {} }, "foo")
+    ).toBe(true);
   });
   it("should return false for new values", () => {
     expect.assertions(1);
-    return isEqual(undefined, undefined).then((data) =>
-      expect(data).toBe(false)
-    );
+    return expect(isEqual(undefined, undefined)).toBe(false);
   });
   it("should return false for files", () => {
     expect.assertions(1);
-    return isEqual({ type: "file", value: null, valueInfo: {} }, null).then(
-      (data) => expect(data).toBe(false)
-    );
+    return expect(
+      isEqual({ type: "file", value: null, valueInfo: {} }, null)
+    ).toBe(false);
   });
   it("should return false when dates are not equal", () => {
     expect.assertions(1);
     const [a, b] = [new Date(), new Date("2020-01-01")];
-    return isEqual({ type: "date", value: a, valueInfo: {} }, b).then((data) =>
-      expect(data).toBe(false)
+    return expect(isEqual({ type: "date", value: a, valueInfo: {} }, b)).toBe(
+      false
     );
   });
   it("should return true when dates are equal", () => {
     expect.assertions(1);
     const a = new Date();
-    return isEqual({ type: "date", value: a, valueInfo: {} }, a).then((data) =>
-      expect(data).toBe(true)
+    return expect(isEqual({ type: "date", value: a, valueInfo: {} }, a)).toBe(
+      true
     );
   });
   it("should return true when date does not match ISO string", () => {
     expect.assertions(1);
     const [a, b] = [new Date(), new Date("2020-01-01")];
-    return isEqual(
-      { type: "date", value: a, valueInfo: {} },
-      b.toISOString()
-    ).then((data) => expect(data).toBe(false));
+    return expect(
+      isEqual({ type: "date", value: a, valueInfo: {} }, b.toISOString())
+    ).toBe(false);
   });
   it("should return true when date matches ISO string", () => {
     expect.assertions(1);
     const a = new Date();
-    return isEqual(
-      { type: "date", value: a, valueInfo: {} },
-      a.toISOString()
-    ).then((data) => expect(data).toBe(true));
+    return expect(
+      isEqual({ type: "date", value: a, valueInfo: {} }, a.toISOString())
+    ).toBe(true);
   });
   it('should return false when date does not match "YYYY-MM-DD" string', () => {
     expect.assertions(1);
     const [a, b] = [new Date("2020-01-01"), "2020-01-02"];
-    return isEqual({ type: "date", value: a, valueInfo: {} }, b).then((data) =>
-      expect(data).toBe(false)
+    return expect(isEqual({ type: "date", value: a, valueInfo: {} }, b)).toBe(
+      false
     );
   });
   it('should return true when date matches "YYYY-MM-DD" string', () => {
     expect.assertions(1);
     const [a, b] = [new Date("2020-01-01"), "2020-01-01"];
-    return isEqual({ type: "date", value: a, valueInfo: {} }, b).then((data) =>
-      expect(data).toBe(true)
+    return expect(isEqual({ type: "date", value: a, valueInfo: {} }, b)).toBe(
+      true
     );
   });
 });
@@ -247,72 +243,51 @@ describe("isEqual", () => {
 describe("inferType", () => {
   it('should infer "object" as JSON', () => {
     expect.assertions(1);
-    return inferType({ type: "object", value: {}, valueInfo: {} }, {}).then(
-      (data) => expect(data).toBe("Json")
-    );
-  });
-  it("should default to existing variable type when available", () => {
-    expect.assertions(1);
-    return inferType({ type: "file", value: {}, valueInfo: {} }, {}).then(
-      (data) => expect(data).toBe("File")
+    return expect(inferType({ type: "object", value: {}, valueInfo: {} })).toBe(
+      "Json"
     );
   });
   it('should infer true values as "Boolean"', () => {
     expect.assertions(1);
-    return inferType(undefined, true).then((data) =>
-      expect(data).toBe("Boolean")
-    );
+    return expect(inferType(true)).toBe("Boolean");
   });
   it('should infer false values as "Boolean"', () => {
     expect.assertions(1);
-    return inferType(undefined, false).then((data) =>
-      expect(data).toBe("Boolean")
-    );
+    return expect(inferType(false)).toBe("Boolean");
   });
   it('should infer date strings as "Date"', () => {
     expect.assertions(1);
-    return inferType(undefined, "2020-01-01").then((data) =>
-      expect(data).toBe("Date")
-    );
+    return expect(inferType("2020-01-01")).toBe("Date");
   });
   it('should infer ISO date strings as "Date"', () => {
     expect.assertions(1);
-    return inferType(undefined, "2022-02-07T19:16:08.644Z").then((data) =>
-      expect(data).toBe("Date")
-    );
+    return expect(inferType("2022-02-07T19:16:08.644Z")).toBe("Date");
   });
   it('should infer other strings as "String"', () => {
     expect.assertions(1);
-    return inferType(
-      undefined,
-      "This is not a date 2022-02-07T19:16:08.644Z"
-    ).then((data) => expect(data).toBe("String"));
+    return expect(
+      inferType("This is not a date 2022-02-07T19:16:08.644Z")
+    ).toBe("String");
   });
   it('should infer date values as "Date"', () => {
     expect.assertions(1);
-    return inferType(undefined, new Date()).then((data) =>
-      expect(data).toBe("Date")
-    );
+    return expect(inferType(new Date())).toBe("Date");
   });
   it('should infer integer numbers values as "Integer"', () => {
     expect.assertions(1);
-    return inferType(undefined, 1).then((data) => expect(data).toBe("Integer"));
+    return expect(inferType(1)).toBe("Integer");
   });
   it('should infer long numbers values as "Long"', () => {
     expect.assertions(1);
-    return inferType(undefined, Math.pow(2, 31)).then((data) =>
-      expect(data).toBe("Long")
-    );
+    return expect(inferType(Math.pow(2, 31))).toBe("Long");
   });
   it('should infer other numbers values as "Double"', () => {
     expect.assertions(1);
-    return inferType(undefined, 1.1).then((data) =>
-      expect(data).toBe("Double")
-    );
+    return expect(inferType(1.1)).toBe("Double");
   });
   it("should infer other values as JSON", () => {
     expect.assertions(1);
-    return inferType(undefined, null).then((data) => expect(data).toBe("Json"));
+    return expect(inferType(null)).toBe("Json");
   });
 });
 
