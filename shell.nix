@@ -12,6 +12,7 @@ pkgs.mkShell {
     poetry
     poetry2nix.cli
     rccFHSUserEnv
+    jfrog-cli
   ];
   shellHook = ''
     export SSL_CERT_FILE=${pkgs.cacert}/etc/ssl/certs/ca-bundle.crt

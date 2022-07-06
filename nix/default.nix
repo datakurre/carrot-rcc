@@ -20,6 +20,7 @@ let
     poetry2nix = pkgs.callPackage ./pkgs/poetry2nix { inherit nixpkgs; };
     rcc = pkgs.callPackage ./pkgs/rcc/rcc.nix {};
     rccFHSUserEnv = pkgs.callPackage ./pkgs/rcc {};
+    jfrog-cli = pkgs.callPackage ./pkgs/jfrog-cli {};
 
     inherit (unstable)
     novnc
