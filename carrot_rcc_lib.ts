@@ -43,14 +43,15 @@ export const TZ: string = ((): string => {
   return offsetToString(offset);
 })();
 
-export const isEqual = async (
-  old: TypedValue | undefined,
-  current: any
-): Promise<boolean> => {
+export const isEqual = (old: TypedValue | undefined, current: any): boolean => {
   if (old === undefined) {
     return false;
   }
-  switch (await inferType(old, current)) {
+  const currType = inferType(current);
+  if (old.type.toUpperCase() !== currType.toUpperCase()) {
+    return false;
+  }
+  switch (currType) {
     case "File":
       return false;
     case "Date":
@@ -60,16 +61,8 @@ export const isEqual = async (
   }
 };
 
-export const inferType = async (
-  old: TypedValue | undefined,
-  current: any
-): Promise<string> => {
-  if (old?.type === "object") {
-    // We can only save deserialized objects back as JSON
-    return "Json";
-  } else if (old?.type) {
-    return old.type[0].toUpperCase() + old.type.substr(1);
-  } else if (isBoolean(current)) {
+export const inferType = (current: any): string => {
+  if (isBoolean(current)) {
     return "Boolean";
   } else if (isDate(current)) {
     return "Date";
