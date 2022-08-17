@@ -1,10 +1,10 @@
-{ stdenv, libXScrnSaver, makeWrapper, fetchurl, wrapGAppsHook, glib, gtk3, unzip, atomEnv, libuuid, at-spi2-atk, at-spi2-core, nodePackages, autoPatchelfHook, gcc-unwrapped, libdrm, mesa, libxkbcommon, adoptopenjdk-jre-hotspot-bin-11, libxshmfence, lib, libappindicator-gtk3}:
+{ stdenv, libXScrnSaver, makeWrapper, fetchurl, wrapGAppsHook, glib, gtk3, unzip, atomEnv, libuuid, at-spi2-atk, at-spi2-core, nodePackages, autoPatchelfHook, gcc-unwrapped, libdrm, mesa, libxkbcommon, adoptopenjdk-jre-hotspot-bin-11, libxshmfence, lib, libappindicator-gtk3, libglvnd }:
 
 let
 
   sources = import ../../../nix/sources.nix;
 
-  mkElectron = import "${sources."nixpkgs"}/pkgs/development/tools/electron/generic.nix" { inherit stdenv libXScrnSaver makeWrapper fetchurl wrapGAppsHook glib gtk3 unzip atomEnv libuuid at-spi2-atk at-spi2-core libdrm mesa libxkbcommon libxshmfence lib libappindicator-gtk3; };
+  mkElectron = import "${sources."nixpkgs"}/pkgs/development/tools/electron/generic.nix" { inherit stdenv libXScrnSaver makeWrapper fetchurl wrapGAppsHook glib gtk3 unzip atomEnv libuuid at-spi2-atk at-spi2-core libdrm mesa libxkbcommon libxshmfence lib libappindicator-gtk3 libglvnd; };
   electron = mkElectron "17.1.0" {
     x86_64-linux = "1s18zrmqiiks9nq27nw2s65wcl0rqhxc6b343wg6qdk9b65c4vhh";
   };
@@ -25,8 +25,8 @@ let
   };
 
   camunda-modeler-robot-plugin = fetchurl {
-    url = "https://github.com/datakurre/camunda-modeler-robot-plugin/archive/d9cf521699cfac82ad892c8c9951705438cb0fb5.tar.gz";
-    sha256 = "0gin2icbr74a6ppcs7yj0dxl6na8m98b5whvgxglvm8r0qwzfbgj";
+    url = "https://github.com/datakurre/camunda-modeler-robot-plugin/archive/287307f1c4951e937281a0f00d5857e01257b7c0.tar.gz";
+    sha256 = "sha256-Msa1ZD6PPvKZQh3A/3m5kczCAGmmSCAV+r6NdgmGKak=";
   };
 
   camunda-modeler-tooltip-plugin = fetchurl {
@@ -51,10 +51,10 @@ let
 
   asar = stdenv.mkDerivation rec {
     name = "camunda-modeler-${version}-asar";
-    version = "5.0.0";
+    version = "5.2.0";
     src = fetchurl {
       url = "https://github.com/camunda/camunda-modeler/releases/download/v${version}/camunda-modeler-${version}-linux-x64.tar.gz";
-      sha256 = "11gkcb209dgnmavn113b91dywh4b1n4i0a7xnhkc4angn8y22amp";
+      sha256 = "sha256-ycvs4bf7yqYMW8Xjb/kEHiJv6vuV2jQRxHPNzZoEwjM=";
     };
     nativeBuildInputs = [ nodePackages.asar autoPatchelfHook gcc-unwrapped ];
     installPhase = ''
@@ -66,7 +66,7 @@ in
 
 stdenv.mkDerivation rec {
   name = "camunda-modeler-${version}";
-  version = "5.0.0";
+  version = "5.2.0";
   src = asar;
   unpackPhase = "";
   nativeBuildInputs = [ electron makeWrapper nodePackages.asar autoPatchelfHook gcc-unwrapped ];

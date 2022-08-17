@@ -4,7 +4,7 @@
   imports = let nixpkgs = (import ../nix/sources.nix).nixpkgs; in [
     "${nixpkgs}/nixos/modules/virtualisation/vagrant-guest.nix"
     "${nixpkgs}/nixos/modules/virtualisation/hyperv-image.nix"
-    "${nixpkgs}/nixos/modules/installer/cd-dvd/channel.nix"
+#   "${nixpkgs}/nixos/modules/installer/cd-dvd/channel.nix"
     ./configuration.nix
   ];
 

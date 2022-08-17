@@ -2,10 +2,10 @@
 
 appimageTools.wrapType2 rec {
   name = "mockoon-${version}";
-  version = "1.17.0";
+  version = "1.20.0";
   src = fetchurl {
     url = "https://github.com/mockoon/mockoon/releases/download/v${version}/mockoon-${version}.AppImage";
-    sha256 = "1v0w81m1g1h64b7qbv4wbz739vlgp6nqb83wxm0n806429rzi1fl";
+    sha256 = "sha256-t5yispXEy8EPpKgsZxCzrjZfM2ZvunNxqQI6/2RNG8s=";
   };
   extraPkgs = pkgs: with pkgs; [ ];
 }

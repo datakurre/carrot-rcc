@@ -27,12 +27,14 @@ in {
   };
 
   imports = let nixpkgs = (import ../nix/sources.nix).nixpkgs;
-                home-manager = builtins.fetchTarball "https://github.com/datakurre/home-manager/archive/release-21.11.tar.gz";
+                home-manager = builtins.fetchTarball "https://github.com/rycee/home-manager/archive/release-22.05.tar.gz";
   in [
     (import "${home-manager}/nixos")
   ];
 
   config = {
+
+    system.stateVersion = "22.05";
 
     nixpkgs.config.allowUnfreePredicate = pkg: builtins.elem (pkgs.lib.getName pkg) []
       ++ (if config.options.vscode-unfree then [
@@ -45,6 +47,8 @@ in {
       font = "Lat2-Terminus16";
       keyMap = "us";
     };
+
+    fonts.fontDir.enable = true;
 
     networking.nameservers = [ "1.1.1.1" "9.9.9.9" ];
     networking.firewall.allowedTCPPorts = if config.options.ssl then [ 443 ] else [ 8000 ];
@@ -120,6 +124,7 @@ in {
     };
 
     systemd.paths.camunda-watcher = {
+      enable = false;
       wantedBy = [ "multi-user.target" ];
       pathConfig = {
         PathChanged = "/var/lib/camunda";
@@ -131,6 +136,7 @@ in {
     };
 
     systemd.services.camunda-watcher = {
+      enable = false;
       wantedBy = [ "multi-user.target" ];
       serviceConfig = {
         Type = "oneshot";
@@ -147,6 +153,7 @@ in {
     };
 
     systemd.services.camunda = {
+      enable = false;
       after = [ "camunda-init.service" "postgresql.service" ];
       bindsTo = [ "camunda-init.service" "postgresql.service" ];
       wantedBy = [ "multi-user.target" ];
@@ -177,6 +184,7 @@ in {
     };
 
     systemd.paths.carrot-rcc-watcher = {
+      enable = false;
       wantedBy = [ "multi-user.target" ];
       pathConfig = {
         PathChanged = "/var/lib/carrot-rcc";
@@ -188,6 +196,7 @@ in {
     };
 
     systemd.services.carrot-rcc-watcher = {
+      enable = false;
       wantedBy = [ "multi-user.target" ];
       serviceConfig = {
         Type = "oneshot";
@@ -204,6 +213,7 @@ in {
     };
 
     systemd.services.carrot-rcc = {
+      enable = false;
       wantedBy = [ "multi-user.target" ];
       path = with pkgs; [
         findutils
@@ -236,6 +246,9 @@ in {
         exec carrot-rcc $(find . -name "*.zip")
       '';
     };
+
+    # docker
+    virtualisation.docker.enable = true;
 
     # NoVNC
     services.nginx.enable = true;
@@ -317,6 +330,7 @@ in {
       vim
       xfce.xfdesktop
       (python3Full.withPackages(ps: [(robotframework ps)]))
+      docker-compose
     ];
 
     users.groups = builtins.listToAttrs [{
@@ -330,7 +344,7 @@ in {
     users.extraUsers = builtins.listToAttrs [{
       name = config.options.username;
       value = {
-        extraGroups = [ config.options.username ];
+        extraGroups = [ config.options.username "docker" ];
       };
     }];
 
@@ -501,6 +515,7 @@ in {
         };
         programs.vscode.enable = true;
         programs.vscode.userSettings = {
+          "terminal.integrated.inheritEnv" = false;
           "editor.minimap.enabled" = false;
           "python.experiments.enabled" = false;
           "robot.codeLens.enabled" = true;
@@ -516,16 +531,16 @@ in {
             mktplcRef = {
               name = "robotframework-lsp";
               publisher = "robocorp";
-              version = "0.47.9";
-              sha256 = "1qpj3f2kjaadpdi326ssirz5aqr5ds9r8gf86zhd6xc8734jp8fp";
+              version = "1.0.6";
+              sha256 = "sha256-cbZtvQa9yM+oT/o9Sm8Z7R+K4Qn7uxHMVfTta6sGcSA=";
             };
           })
           (pkgs.vscode-utils.buildVscodeMarketplaceExtension rec {
             mktplcRef = {
               name = "robocorp-code";
               publisher = "robocorp";
-              version = "0.32.3";
-              sha256 = "1w0h9ijb6qa78ga2qnjgc83wq4fpbzc0x43gj11x4y7zhqa7j3bq";
+              version = "0.36.0";
+              sha256 = "sha256-H8gDSDlVad+Fncl+S21dgFy1eJzlzSSHa0CNe9fkSD0=";
             };
             postInstall = ''
               mkdir -p $out/share/vscode/extensions/robocorp.robocorp-code/bin

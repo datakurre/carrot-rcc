@@ -3,7 +3,7 @@
 {
   imports = let nixpkgs = (import ../nix/sources.nix).nixpkgs; in [
     "${nixpkgs}/nixos/modules/virtualisation/google-compute-image.nix"
-    "${nixpkgs}/nixos/modules/installer/cd-dvd/channel.nix"
+#   "${nixpkgs}/nixos/modules/installer/cd-dvd/channel.nix"
     ./configuration.nix
   ];
 

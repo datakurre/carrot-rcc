@@ -1,6 +1,6 @@
 # https://github.com/nmattia/niv
 { sources ? import ./sources.nix
-, nixpkgs ? sources."nixpkgs-21.11"
+, nixpkgs ? sources.nixpkgs
 }:
 
 let
@@ -13,7 +13,6 @@ let
     camunda-platform = pkgs.callPackage ./pkgs/camunda-platform {};
     carrot-rcc = import ../. { inherit pkgs; };
     gitignoreSource = pkgs.callPackage ./pkgs/gitignore-source {};
-    micromamba = (import sources."nixpkgs-21.11" { overlays = []; }).micromamba;
     mockoon = pkgs.callPackage ./pkgs/mockoon {};
     mvn2nix = (pkgs.callPackage ./pkgs/mvn2nix { inherit nixpkgs; }).mvn2nix;
     node2nix = pkgs.callPackage ./pkgs/node2nix { inherit nixpkgs; };
@@ -32,9 +31,6 @@ let
   pkgs = import nixpkgs {
     overlays = [ overlay ];
     config = {
-      permittedInsecurePackages = [
-        "electron-12.1.2"  # EOL; camunda-modeler < 5.0.0
-      ];
       allowUnfreePredicate = pkg: builtins.elem (pkgs.lib.getName pkg) [
         "code"
         "vscode"
