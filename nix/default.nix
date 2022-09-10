@@ -18,6 +18,7 @@ let
     node2nix = pkgs.callPackage ./pkgs/node2nix { inherit nixpkgs; };
     poetry2nix = pkgs.callPackage ./pkgs/poetry2nix { inherit nixpkgs; };
     rcc = pkgs.callPackage ./pkgs/rcc/rcc.nix {};
+    rccShell = pkgs.callPackage ./pkgs/rcc { name = "rcc-shell"; runScript = "bash"; };
     rccFHSUserEnv = pkgs.callPackage ./pkgs/rcc {};
 
     inherit (unstable)

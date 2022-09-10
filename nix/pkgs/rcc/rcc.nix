@@ -2,7 +2,7 @@
 
 buildGoPackage rec {
   name = "rcc-${version}";
-  version = "v11.16.0";
+  version = "v11.25.0";
   goPackagePath = "github.com/robocorp/rcc";
   src = (import ./nix/sources.nix).rcc;
   nativeBuildInputs = [ go-bindata rake zip ];
@@ -11,6 +11,10 @@ buildGoPackage rec {
   postPatch = ''
     source $stdenv/setup
     substituteInPlace Rakefile --replace "\$HOME/go/bin/" ""
+    # Fix issue where rcc holotree variables did unset bash prompt
+    substituteInPlace conda/activate.go \
+      --replace 'if !ok {' 'if !ok && key != "PS1" {'
+    cat conda/activate.go
     rake assets
   '';
 }

@@ -326,7 +326,8 @@ in {
       git
       gnumake
       mockoon
-      rcc
+      rccFHSUserEnv
+      rccShell
       vim
       xfce.xfdesktop
       (python3Full.withPackages(ps: [(robotframework ps)]))
@@ -423,7 +424,7 @@ in {
           StartupWMClass=mockoon
           Version=1.0
           Name=Mockoon
-          Exec=mockoon-1.17.0
+          Exec=mockoon-1.20.0
           StartupNotify=true
           Terminal=false
           Icon=/home/${config.options.username}/.config/${config.options.username}/mockoon.png
