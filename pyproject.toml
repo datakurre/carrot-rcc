@@ -9,7 +9,7 @@ packages = [
     { include = "carrot_rcc.py" },
 ]
 include = [ "carrot-rcc" ]
-readme = "README.md"
+readme = ["README.md", "CHANGELOG.md"]
 
 [tool.poetry.scripts]
 carrot-rcc= "carrot_rcc:main"

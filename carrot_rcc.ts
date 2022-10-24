@@ -65,7 +65,7 @@ options:
   --poll-interval[=<milliseconds>]         [env: CLIENT_POLL_INTERVAL] [default: 1000]
   --log-level[=<debug|info|warn|error>]    [env: CLIENT_LOG_LEVEL] [default: info]
 
-  --rcc-executable[=<path>]                [env: RCC_EXECUTABLE] [default: rcc]
+  --rcc-executable[=<path>]                [env: RCC_EXECUTABLE] (or RCC_EXE) [default: rcc]
   --rcc-controller[=<controller>]          [env: RCC_CONTROLLER] [default: carrot]
   --rcc-encoding[=<encoding>]              [env: RCC_ENCODING] [default: utf-8]
   --rcc-telemetry                          [env: RCC_TELEMETRY] (default: do not track)
@@ -102,7 +102,7 @@ const CLIENT_MAX_TASKS = args["--max-tasks"];
 const CLIENT_POLL_INTERVAL = args["--poll-interval"];
 const CLIENT_WORKER_ID = args["--worker-id"];
 
-const RCC_EXECUTABLE = args["--rcc-executable"];
+const RCC_EXECUTABLE = process.env["RCC_EXE"] || args["--rcc-executable"];
 const RCC_CONTROLLER = args["--rcc-controller"];
 const RCC_ENCODING = args["--rcc-encoding"];
 const RCC_TELEMETRY = !!args["--rcc-telemetry"];
