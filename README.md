@@ -28,7 +28,7 @@ options:
   --poll-interval[=<milliseconds>]         [env: CLIENT_POLL_INTERVAL] [default: 10000]
   --log-level[=<debug|info|warn|error>]    [env: CLIENT_LOG_LEVEL] [default: info]
 
-  --rcc-executable[=<path>]                [env: RCC_EXECUTABLE] [default: rcc]
+  --rcc-executable[=<path>]                [env: RCC_EXECUTABLE] (or RCC_EXE) [default: rcc]
   --rcc-controller[=<controller>]          [env: RCC_CONTROLLER] [default: carrot]
   --rcc-encoding[=<encoding>]              [env: RCC_ENCODING] [default: utf-8]
   --rcc-telemetry                          [env: RCC_TELEMETRY] (default: do not track)
