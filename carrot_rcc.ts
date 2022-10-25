@@ -203,7 +203,7 @@ const client = new Client({
   interceptors: [AuthorizationHeaderInterceptor],
   // Client will wait for asyncResponseTimeout until scheduling a new poll
   // after "interval" specified timeout.
-  asyncResponseTimeout: CLIENT_POLL_INTERVAL,
+  asyncResponseTimeout: Math.max(1000, CLIENT_POLL_INTERVAL) - 300,
   use: (logger as any).level(CLIENT_LOG_LEVEL),
 });
 
