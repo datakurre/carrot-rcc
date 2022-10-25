@@ -10,10 +10,12 @@ Camunda external task Robot Framework RCC client
 ```bash
 usage: carrot-rcc [<robots>...]
                   [--base-url] [--authorization]
-                  [--worker-id] [--max-tasks] [--poll-interval] [--log-level]
+                  [--worker-id] [--max-tasks] [--poll-interval]
                   [--rcc-executable] [--rcc-encoding] [--rcc-telemetry]
                   [--rcc-controller] [--rcc-fixed-spaces]
                   [--vault-addr] [--vault-token]
+                  [--healthz-host] [--healthz-port]
+                  [--log-level]
                   [-h] [--help]
 
 <robots> could also be passed as a comma separated env RCC_ROBOTS
@@ -25,7 +27,7 @@ options:
 
   --worker-id[=<string>]                   [env: CLIENT_WORKER_ID] [default: carrot-rcc]
   --max-tasks[=<cpus>]                     [env: CLIENT_MAX_TASKS] [default: [cpu count]]
-  --poll-interval[=<milliseconds>]         [env: CLIENT_POLL_INTERVAL] [default: 10000]
+  --poll-interval[=<milliseconds>]         [env: CLIENT_POLL_INTERVAL] [default: 60000]
   --log-level[=<debug|info|warn|error>]    [env: CLIENT_LOG_LEVEL] [default: info]
 
   --rcc-executable[=<path>]                [env: RCC_EXECUTABLE] (or RCC_EXE) [default: rcc]
