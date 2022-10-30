@@ -51,10 +51,10 @@ let
 
   asar = stdenv.mkDerivation rec {
     name = "camunda-modeler-${version}-asar";
-    version = "5.2.0";
+    version = "5.4.1";
     src = fetchurl {
       url = "https://github.com/camunda/camunda-modeler/releases/download/v${version}/camunda-modeler-${version}-linux-x64.tar.gz";
-      sha256 = "sha256-ycvs4bf7yqYMW8Xjb/kEHiJv6vuV2jQRxHPNzZoEwjM=";
+      sha256 = "sha256-cdPGVeNmXGfq16Kcv8rCREApBWt7NDdwMD2uHwH7gOY=";
     };
     nativeBuildInputs = [ nodePackages.asar autoPatchelfHook gcc-unwrapped ];
     installPhase = ''
@@ -66,7 +66,7 @@ in
 
 stdenv.mkDerivation rec {
   name = "camunda-modeler-${version}";
-  version = "5.2.0";
+  version = "5.4.1";
   src = asar;
   unpackPhase = "";
   nativeBuildInputs = [ electron makeWrapper nodePackages.asar autoPatchelfHook gcc-unwrapped ];
@@ -85,12 +85,12 @@ stdenv.mkDerivation rec {
     tar xzvf ${dmn-testing-plugin}
     tar xzvf ${camunda-modeler-robot-plugin}
     tar xzvf ${bpmn-js-token-simulation-plugin}
-    tar xzvf ${camunda-modeler-linter-plugin}
+#   tar xzvf ${camunda-modeler-linter-plugin}
 
-    # Fix camunda/camunda-modeler-linter-plugin to allow inclusive gateways
-    substituteInPlace camunda-modeler-linter-plugin-*/dist/client.js \
-      --replace '"no-inclusive-gateway": "error",' "" \
-      --replace '"camunda/avoid-lanes": "warn",' ""
+#   # Fix camunda/camunda-modeler-linter-plugin to allow inclusive gateways
+#   substituteInPlace camunda-modeler-linter-plugin-*/dist/client.js \
+#     --replace '"no-inclusive-gateway": "error",' "" \
+#     --replace '"camunda/avoid-lanes": "warn",' ""
 
     tar xzvf ${camunda-modeler-tooltip-plugin}
     tar xzvf ${camunda-modeler-property-info-plugin}

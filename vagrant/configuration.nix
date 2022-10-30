@@ -58,10 +58,13 @@ in {
 
     services = {
       mailhog = {
-        enable = true;
+        enable = false;
       };
       vault = {
         package = pkgs.vault-bin;
+        enable = true;
+      };
+      minio = {
         enable = true;
       };
       xserver = {
@@ -95,8 +98,9 @@ in {
     };
 
     # Camunda
-    services.postgresql.enable = true;
+    services.postgresql.enable = false;
     systemd.services.camunda-init = {
+      enable = false;
       after = [ "postgresql.service" ];
       before = [ "camunda.service" ];
       bindsTo = [ "postgresql.service" ];
@@ -256,7 +260,7 @@ in {
       root = "${pkgs.novnc}/share/webapps/novnc";
       forceSSL = config.options.ssl;
       sslCertificate = "/etc/novnc-selfsigned.crt";
-	  sslCertificateKey = "/etc/novnc-selfsigned.key";
+      sslCertificateKey = "/etc/novnc-selfsigned.key";
       locations."/websockify" = {
         proxyWebsockets = true;
         proxyPass = "http://localhost:14000";
@@ -294,7 +298,22 @@ in {
         chown nginx:root /etc/novnc-selfsigned.crt
       '';
     };
-    systemd.services.vnc = {
+    systemd.services.vnc = let
+      x11vnc = pkgs.x11vnc.overrideDerivation(old: {
+        buildInputs = old.buildInputs ++ [
+          pkgs.xorg.libXcursor.dev
+          pkgs.cairo.dev
+        ];
+      });
+      tigervnc = pkgs.tigervnc.overrideDerivation(old: {
+        buildInputs = old.buildInputs ++ [
+          pkgs.xorg.libXdamage.dev
+          pkgs.xorg.libXfixes.dev
+          pkgs.xorg.libXrandr.dev
+          pkgs.xorg.libXtst
+        ];
+      }); in
+      {
       wantedBy = [ "multi-user.target" ];
       after = [ "display-manager.service" ];
       before = [ "websockify.service" ];
@@ -309,7 +328,8 @@ in {
         systemctl restart display-manager
         while ! /run/wrappers/bin/su - ${config.options.username} -c "${pkgs.xorg.xset}/bin/xset -q"; do sleep 1; done
         sleep 5  # allow slow GCE instance to catch up
-        /run/wrappers/bin/su - ${config.options.username} -c "exec ${pkgs.tigervnc}/bin/x0vncserver -localhost -SecurityTypes none -AlwaysShared"
+#       /run/wrappers/bin/su - ${config.options.username} -c "exec ${x11vnc}/bin/x11vnc -display :0 -localhost -passwd secret -shared -forever -multiptr"
+        /run/wrappers/bin/su - ${config.options.username} -c "exec ${tigervnc}/bin/x0vncserver -localhost -SecurityTypes none -AlwaysShared"
       '';
     };
     systemd.services.websockify = {
@@ -321,6 +341,7 @@ in {
     };
 
     environment.systemPackages = with pkgs; [
+      micromambaFHSUserEnv
       camunda-modeler
       chromium
       git
@@ -330,6 +351,7 @@ in {
       rccShell
       vim
       xfce.xfdesktop
+      xfce.xfce4-panel
       (python3Full.withPackages(ps: [(robotframework ps)]))
       docker-compose
     ];
@@ -512,6 +534,7 @@ in {
             # configure desktop
             xfconf-query -c xfwm4 -p /general/workspace_count -t int -s 1 --create
             setxkbmap -layout us
+            xfce4-panel &
           '';
         };
         programs.vscode.enable = true;
@@ -532,16 +555,16 @@ in {
             mktplcRef = {
               name = "robotframework-lsp";
               publisher = "robocorp";
-              version = "1.0.6";
-              sha256 = "sha256-cbZtvQa9yM+oT/o9Sm8Z7R+K4Qn7uxHMVfTta6sGcSA=";
+              version = "1.3.5";
+              sha256 = "sha256-xv3y232HynWfInUD+s9IPggzIxvIDcSoVUflF9m7xuc=";
             };
           })
           (pkgs.vscode-utils.buildVscodeMarketplaceExtension rec {
             mktplcRef = {
               name = "robocorp-code";
               publisher = "robocorp";
-              version = "0.36.0";
-              sha256 = "sha256-H8gDSDlVad+Fncl+S21dgFy1eJzlzSSHa0CNe9fkSD0=";
+              version = "0.38.4";
+              sha256 = "sha256-EhOt1GL638+VWm0JgGmX94gAw/9y3nYU7IWTTGeF6YI=";
             };
             postInstall = ''
               mkdir -p $out/share/vscode/extensions/robocorp.robocorp-code/bin

@@ -20,6 +20,15 @@ let
     rcc = pkgs.callPackage ./pkgs/rcc/rcc.nix {};
     rccShell = pkgs.callPackage ./pkgs/rcc { name = "rcc-shell"; runScript = "bash"; };
     rccFHSUserEnv = pkgs.callPackage ./pkgs/rcc {};
+    micromambaFHSUserEnv = pkgs.buildFHSUserEnv {
+      name = "plone-shell";
+      runScript = "bash";
+      targetPkgs = pkgs: (with pkgs; [
+        (micromamba.overrideDerivation(old: {
+          patches = old.patches ++ [ ./micromamba.patch ];
+        }))
+      ]);
+    };
 
     inherit (unstable)
     novnc
