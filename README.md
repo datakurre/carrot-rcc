@@ -10,10 +10,12 @@ Camunda external task Robot Framework RCC client
 ```bash
 usage: carrot-rcc [<robots>...]
                   [--base-url] [--authorization]
-                  [--worker-id] [--max-tasks] [--poll-interval] [--log-level]
+                  [--worker-id] [--max-tasks] [--poll-interval]
                   [--rcc-executable] [--rcc-encoding] [--rcc-telemetry]
                   [--rcc-controller] [--rcc-fixed-spaces]
                   [--vault-addr] [--vault-token]
+                  [--healthz-host] [--healthz-port]
+                  [--log-level]
                   [-h] [--help]
 
 <robots> could also be passed as a comma separated env RCC_ROBOTS
@@ -25,10 +27,10 @@ options:
 
   --worker-id[=<string>]                   [env: CLIENT_WORKER_ID] [default: carrot-rcc]
   --max-tasks[=<cpus>]                     [env: CLIENT_MAX_TASKS] [default: [cpu count]]
-  --poll-interval[=<milliseconds>]         [env: CLIENT_POLL_INTERVAL] [default: 10000]
+  --poll-interval[=<milliseconds>]         [env: CLIENT_POLL_INTERVAL] [default: 60000]
   --log-level[=<debug|info|warn|error>]    [env: CLIENT_LOG_LEVEL] [default: info]
 
-  --rcc-executable[=<path>]                [env: RCC_EXECUTABLE] [default: rcc]
+  --rcc-executable[=<path>]                [env: RCC_EXECUTABLE] (or RCC_EXE) [default: rcc]
   --rcc-controller[=<controller>]          [env: RCC_CONTROLLER] [default: carrot]
   --rcc-encoding[=<encoding>]              [env: RCC_ENCODING] [default: utf-8]
   --rcc-telemetry                          [env: RCC_TELEMETRY] (default: do not track)
@@ -84,34 +86,21 @@ It is also possible to bootstrap everything with just using RCC:
 3. Install `carrot-rcc` into RCC managed environment with
 
    ```bash
-   $ rcc env new conda.yaml
+   $ rcc holotree variables conda.yaml > activate.sh
    ```
    or
    ```bash
-   $ rcc.exe env new conda.yaml
+   $ rcc.exe holotree variables conda.yaml > activate.bat
    ```
 
-4. The hard part is to figure out from the logs where RCC did create the environment. When found, copy a few files back and forth to give you access the environment and `carrot-rcc`, and give `carrot-rcc` access to RCC:
+4. And activate the environment:
 
    ```bash
-   $ cp /home/user/.robocorp/live/850002f365eee60f/rcc_activate.sh .
-   $ cp rcc /home/user/.robocorp/live/850002f365eee60f/bin
-   ```
-   or
-   ```bash
-   $ copy C:\Users\User\AppData\Local\robocorp\live\850002f365eee60f\rcc_activate.cmd .
-   $ copy C:\Users\User\AppData\Local\robocorp\live\850002f365eee60f\Scripts\carrot-rcc.exe .
-   $ copy rcc.exe C:\Users\User\AppData\Local\robocorp\live\850002f365eee60f
-   ```
-
-5. Finally, activate the environment:
-
-   ```bash
-   $ source rcc_activate.sh
+   $ source activate.sh
    ```
    or
    ```bash
-   $ rcc_activate.cmd
+   $ .\activate.bat
    ```
 
 Done. Now `carrot-rcc` should be ready to be run, for example:

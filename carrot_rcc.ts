@@ -44,11 +44,12 @@ dotenv.config();
 const args = neodoc.run(`
 usage: carrot-rcc [<robots>...]
                   [--base-url] [--authorization]
-                  [--worker-id] [--max-tasks] [--poll-interval] [--log-level]
+                  [--worker-id] [--max-tasks] [--poll-interval]
                   [--rcc-executable] [--rcc-encoding] [--rcc-telemetry]
                   [--rcc-controller] [--rcc-fixed-spaces]
                   [--vault-addr] [--vault-token]
                   [--healthz-host] [--healthz-port]
+                  [--log-level]
                   [-h] [--help]
 
 <robots> could also be passed as a comma separated env RCC_ROBOTS
@@ -62,10 +63,10 @@ options:
   --max-tasks[=<cpus>]                     [env: CLIENT_MAX_TASKS] [default: ${
     os.cpus().length
   }]
-  --poll-interval[=<milliseconds>]         [env: CLIENT_POLL_INTERVAL] [default: 1000]
+  --poll-interval[=<milliseconds>]         [env: CLIENT_POLL_INTERVAL] [default: 60000]
   --log-level[=<debug|info|warn|error>]    [env: CLIENT_LOG_LEVEL] [default: info]
 
-  --rcc-executable[=<path>]                [env: RCC_EXECUTABLE] [default: rcc]
+  --rcc-executable[=<path>]                [env: RCC_EXECUTABLE] (or RCC_EXE) [default: rcc]
   --rcc-controller[=<controller>]          [env: RCC_CONTROLLER] [default: carrot]
   --rcc-encoding[=<encoding>]              [env: RCC_ENCODING] [default: utf-8]
   --rcc-telemetry                          [env: RCC_TELEMETRY] (default: do not track)
@@ -102,7 +103,7 @@ const CLIENT_MAX_TASKS = args["--max-tasks"];
 const CLIENT_POLL_INTERVAL = args["--poll-interval"];
 const CLIENT_WORKER_ID = args["--worker-id"];
 
-const RCC_EXECUTABLE = args["--rcc-executable"];
+const RCC_EXECUTABLE = process.env["RCC_EXE"] || args["--rcc-executable"];
 const RCC_CONTROLLER = args["--rcc-controller"];
 const RCC_ENCODING = args["--rcc-encoding"];
 const RCC_TELEMETRY = !!args["--rcc-telemetry"];
@@ -192,13 +193,17 @@ const client = new Client({
   workerId: CLIENT_WORKER_ID,
   maxTasks: CLIENT_MAX_TASKS,
   maxParallelExecutions: CLIENT_MAX_TASKS,
-  // interval: 0, would fill server logs on connection errors due to
-  // camunda-external-task-client-js not allowing to modify interval
-  interval: Math.max(1000, CLIENT_POLL_INTERVAL),
-  lockDuration: CLIENT_POLL_INTERVAL * 20,
+  // "Interval" is the timeout before a new poll after a task has been
+  // completed.  I'd love this to be 0, but there are corner cases where it
+  // would cause the client to poll a lot.
+  interval: 300,
+  // lock must have safe minimal duration to allow renewing
+  lockDuration: Math.max(10000, CLIENT_POLL_INTERVAL * 2),
   autoPoll: true,
   interceptors: [AuthorizationHeaderInterceptor],
-  asyncResponseTimeout: CLIENT_POLL_INTERVAL * 10,
+  // Client will wait for asyncResponseTimeout until scheduling a new poll
+  // after "interval" specified timeout.
+  asyncResponseTimeout: Math.max(1000, CLIENT_POLL_INTERVAL) - 300,
   use: (logger as any).level(CLIENT_LOG_LEVEL),
 });
 

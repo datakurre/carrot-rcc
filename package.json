@@ -1,6 +1,6 @@
 {
   "name": "carrot-rcc",
-  "version": "0.6.1",
+  "version": "0.7.1",
   "description": "Camunda external task Robot Framework RCC client",
   "bin": "./carrot-rcc",
   "scripts": {
@@ -16,7 +16,7 @@
   },
   "keywords": [],
   "author": "",
-  "license": "MIT",
+  "license": "Apache-2.0",
   "bugs": {
     "url": "https://github.com/datakurre/carrot-rcc.git"
   },
