@@ -1,0 +1,13 @@
+diff --git a/libmamba/src/api/install.cpp b/libmamba/src/api/install.cpp
+index c10c636..ec4bdc2 100644
+--- a/libmamba/src/api/install.cpp
++++ b/libmamba/src/api/install.cpp
+@@ -31,7 +31,7 @@
+ namespace mamba
+ {
+     static std::map<std::string, std::string> other_pkg_mgr_install_instructions
+-        = { { "pip", "pip install -r {0} --no-input" } };
++        = { { "pip", "pip install -r {0} --no-input --use-deprecated legacy-resolver -c https://dist.plone.org/release/6-latest/constraints.txt" } };
+ 
+     auto install_for_other_pkgmgr(const detail::other_pkg_mgr_spec& other_spec)
+     {
