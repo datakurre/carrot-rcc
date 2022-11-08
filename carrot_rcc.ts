@@ -69,8 +69,8 @@ options:
   --rcc-executable[=<path>]                [env: RCC_EXECUTABLE] (or RCC_EXE) [default: rcc]
   --rcc-controller[=<controller>]          [env: RCC_CONTROLLER] [default: carrot]
   --rcc-encoding[=<encoding>]              [env: RCC_ENCODING] [default: utf-8]
-  --rcc-telemetry                          [env: RCC_TELEMETRY] (default: do not track)
-  --rcc-fixed-spaces                       [env: RCC_FIXED_SPACES] (default: circulate spaces)
+  --rcc-telemetry                          [env: RCC_TELEMETRY]
+  --rcc-fixed-spaces                       [env: RCC_FIXED_SPACES]
 
   --vault-addr[=<addr>]                    [env: VAULT_ADDR] [default: http://127.0.0.1:8200]
   --vault-token[=<token>]                  [env: VAULT_TOKEN] [default: token]
@@ -89,6 +89,11 @@ examples:
   $ RCC_ROBOTS="robot1.zip,robot2.zip" LOG_LEVEL="debug" carrot-rcc
 
   $ CAMUNDA_API_AUTHORIZATION="Bearer MY_TOKEN" carrot-rcc robot1.zip
+
+RCC telemetry is disabled until --rcc-telemetry is set. 
+
+When --rcc-fixed-spaces is set, concurrent tasks for the same topic may share
+RCC space, possibly resulting in faster startup.
 `);
 
 const RCC_ROBOTS = (args["<robots>"] || []).concat(
