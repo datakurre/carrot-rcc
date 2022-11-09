@@ -90,7 +90,7 @@ examples:
 
   $ CAMUNDA_API_AUTHORIZATION="Bearer MY_TOKEN" carrot-rcc robot1.zip
 
-RCC telemetry is disabled until --rcc-telemetry is set. 
+RCC telemetry is disabled until --rcc-telemetry is set.
 
 When --rcc-fixed-spaces is set, concurrent tasks for the same topic may share
 RCC space, possibly resulting in faster startup.
@@ -156,7 +156,13 @@ const LOG = {
 const toAbsolute = (p: string): string =>
   fs.existsSync(p) && !path.isAbsolute(p) ? path.join(process.cwd(), p) : p;
 
+interface RetryOnFailure {
+  retries: number;
+  retryTimeout: number;
+}
+
 const CAMUNDA_TOPICS: Record<string, string> = {};
+const CAMUNDA_TOPICS_RETRY: Record<string, RetryOnFailure> = {};
 const CAMUNDA_TOPICS_VAULT: Record<string, Record<string, string>> = {};
 
 for (const candidate of RCC_ROBOTS) {
@@ -172,6 +178,16 @@ for (const candidate of RCC_ROBOTS) {
         for (const task of Object.keys(yaml.tasks || {})) {
           CAMUNDA_TOPICS[task] = robot;
           CAMUNDA_TOPICS_VAULT[task] = secrets;
+          let retries = parseInt(yaml.tasks[task].retries, 10);
+          let retryTimeout = parseInt(yaml.tasks[task].retryTimeout, 10);
+          if (!isNaN(retries)) {
+            CAMUNDA_TOPICS_RETRY[task] = {
+              retries: retries,
+              retryTimeout: isNaN(retryTimeout)
+                ? CLIENT_POLL_INTERVAL
+                : retryTimeout,
+            };
+          }
         }
       }
     });
@@ -214,6 +230,7 @@ const client = new Client({
 
 LOG.debug((client as any).options);
 LOG.debug(CAMUNDA_TOPICS);
+LOG.debug(CAMUNDA_TOPICS_RETRY);
 LOG.debug(CAMUNDA_TOPICS_VAULT);
 
 interface File {
@@ -761,9 +778,20 @@ const subscribe = (topic: string) => {
       });
     } catch (e: any) {
       LOG.debug(e);
+      let retries =
+        task.retries === 0
+          ? 0
+          : typeof task.retries !== "undefined" &&
+            !isNaN(task.retries) &&
+            task.retries !== null
+          ? task.retries - 1
+          : CAMUNDA_TOPICS_RETRY[topic]?.retries || 0;
+      let retryTimeout = CAMUNDA_TOPICS_RETRY[topic]?.retryTimeout;
       await taskService.handleFailure(task, {
         errorMessage: `${e?.error?.message ?? e}`,
         errorDetails: e.stack || JSON.stringify(e),
+        retries,
+        retryTimeout,
       });
       // TODO: Maybe do something special on handleFailureError
       if (task.id && handleFailureError.has(task.id)) {
