@@ -458,13 +458,15 @@ const save = async (
   };
 
   const old = task.variables.getAllTyped();
-  const { payload: current, files: filenames } = JSON.parse(
-    fs.readFileSync(
-      fs.existsSync(path.join(itemsDir, "items.output.json"))
-        ? path.join(itemsDir, "items.output.json")
-        : path.join(itemsDir, "items.json")
-    ) as unknown as string
-  )[0];
+  const { payload: current, files: filenames } = fs.existsSync(
+    path.join(itemsDir, "items.output.json")
+  )
+    ? JSON.parse(
+        fs.readFileSync(
+          path.join(itemsDir, "items.output.json")
+        ) as unknown as string
+      )[0]
+    : { payload: {}, files: {} };
   const patch: PatchVariablesDto = {
     modifications: {},
   };
