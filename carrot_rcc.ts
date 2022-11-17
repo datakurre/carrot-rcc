@@ -228,10 +228,10 @@ const client = new Client({
   use: (logger as any).level(CLIENT_LOG_LEVEL),
 });
 
-LOG.debug((client as any).options);
-LOG.debug(CAMUNDA_TOPICS);
-LOG.debug(CAMUNDA_TOPICS_RETRY);
-LOG.debug(CAMUNDA_TOPICS_VAULT);
+LOG.debug("Options : ", (client as any).options);
+LOG.debug("Robots  : ", CAMUNDA_TOPICS);
+LOG.debug("Retries : ", CAMUNDA_TOPICS_RETRY);
+LOG.debug("Vaults  : ", CAMUNDA_TOPICS_VAULT);
 
 interface File {
   name: string;
