@@ -122,6 +122,30 @@ const HEALTHZ_PORT = !isNaN(parseInt(args["--healthz-port"]))
   ? parseInt(args["--healthz-port"])
   : 0;
 
+const WORK_ITEM_ADAPTER = `
+from RPA.Robocorp.WorkItems import FileAdapter, RobocorpAdapter, State
+from typing import Optional
+
+import os
+import json
+
+class WorkItemAdapter(FileAdapter):
+    def release_input(
+        self, item_id: str, state: State, exception: Optional[dict] = None
+    ):
+        body = {"workItemId": item_id, "state": state.value}
+        if exception:
+            body["exception"] = {
+                "type": (exception.get("type") or "").strip(),
+                "code": (exception.get("code") or "").strip(),
+                "message": (exception.get("message") or "").strip(),
+            }
+        path = os.environ["RPA_RELEASE_WORKITEM_PATH"]
+        with open(path, "w", encoding="utf-8") as fp:
+            fp.write(json.dumps(body))
+        super(WorkItemAdapter, self).release_input(item_id, state, exception)
+`;
+
 // Disable telemetry by default
 if (!RCC_TELEMETRY) {
   spawnSync(RCC_EXECUTABLE, ["configuration", "identity", "-t"], {
@@ -283,6 +307,10 @@ const load = async (
         : reject(stdout.join("") + stderr.join(""))
     );
   });
+  fs.writeFileSync(
+    path.join(tasksDir, "WorkItemAdapter.py"),
+    WORK_ITEM_ADAPTER
+  );
   // Fetch and prepare items
   await new Promise(async (resolve) => {
     const variables = task.variables.getAll();
@@ -677,6 +705,18 @@ const subscribe = (topic: string) => {
     // Execute with temporary working directory
     const tasksDir = await fs.mkdtempSync(path.join(os.tmpdir(), "rcc-tasks-"));
     const itemsDir = await fs.mkdtempSync(path.join(os.tmpdir(), "rcc-items-"));
+
+    // Resolve remaining retries
+    let retries =
+      task.retries === 0
+        ? 0
+        : typeof task.retries !== "undefined" &&
+          !isNaN(task.retries) &&
+          task.retries !== null
+        ? task.retries - 1
+        : CAMUNDA_TOPICS_RETRY[topic]?.retries || 0;
+    let retryTimeout = CAMUNDA_TOPICS_RETRY[topic]?.retryTimeout;
+
     try {
       // Prepare robot
       const files = await load(task, tasksDir, itemsDir, topic);
@@ -701,9 +741,10 @@ const subscribe = (topic: string) => {
             env: {
               RPA_SECRET_MANAGER: "RPA.Robocloud.Secrets.FileSecrets",
               RPA_SECRET_FILE: `${itemsDir}/vault.json`,
-              RPA_WORKITEMS_ADAPTER: "RPA.Robocloud.Items.FileAdapter",
+              RPA_WORKITEMS_ADAPTER: "WorkItemAdapter.WorkItemAdapter",
               RPA_INPUT_WORKITEM_PATH: `${itemsDir}/items.json`,
               RPA_OUTPUT_WORKITEM_PATH: `${itemsDir}/items.output.json`,
+              RPA_RELEASE_WORKITEM_PATH: `${itemsDir}/items.release.json`,
               RC_WORKSPACE_ID: "1",
               RC_WORKITEM_ID: "1",
               ...process.env,
@@ -739,12 +780,43 @@ const subscribe = (topic: string) => {
             code = 255; // Unexpected error
           }
           if (code === 0) {
-            let retries = 0;
-            while (retries < 3) {
+            const relpath = path.join(itemsDir, "items.release.json");
+            const release = fs.existsSync(relpath)
+              ? JSON.parse(fs.readFileSync(relpath) as unknown as string)
+              : {};
+            let retries_ = 0;
+            while (retries_ < 3) {
               code = 0;
-              retries++;
+              retries_++;
               try {
-                await taskService.complete(task);
+                if (
+                  release?.state === "FAILED" &&
+                  release?.exception?.type === "APPLICATION" &&
+                  !!release?.exception?.message
+                ) {
+                  // RPA.Robocorp.WorkItems.Release with application error
+                  await taskService.handleFailure(task, {
+                    errorMessage:
+                      release.exception?.code || release.exception.message,
+                    errorDetails: release.exception.message,
+                    retries,
+                    retryTimeout,
+                  });
+                } else if (
+                  release?.state === "FAILED" &&
+                  release?.exception?.type === "BUSINESS" &&
+                  !!release?.exception?.code &&
+                  !!release?.exception?.message
+                ) {
+                  // RPA.Robocorp.WorkItems.Release with business error
+                  await taskService.handleBpmnError(
+                    task,
+                    release.exception.code,
+                    release.exception.message
+                  );
+                } else {
+                  await taskService.complete(task);
+                }
               } catch (e) {
                 LOG.error(`${e}`);
                 stderr.push(`${e}`);
@@ -780,15 +852,6 @@ const subscribe = (topic: string) => {
       });
     } catch (e: any) {
       LOG.debug(e);
-      let retries =
-        task.retries === 0
-          ? 0
-          : typeof task.retries !== "undefined" &&
-            !isNaN(task.retries) &&
-            task.retries !== null
-          ? task.retries - 1
-          : CAMUNDA_TOPICS_RETRY[topic]?.retries || 0;
-      let retryTimeout = CAMUNDA_TOPICS_RETRY[topic]?.retryTimeout;
       await taskService.handleFailure(task, {
         errorMessage: `${e?.error?.message ?? e}`,
         errorDetails: e.stack || JSON.stringify(e),
