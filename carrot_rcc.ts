@@ -666,6 +666,14 @@ client.on("complete:error", ({ id }, e) => {
   }
 });
 
+const handleBpmnError: Map<string, string> = new Map();
+// @ts-ignore // outdated @types
+client.on("handleBpmnError:error", ({ id }, e) => {
+  if (id) {
+    handleBpmnError.set(id, `${e}`);
+  }
+});
+
 let counter = 0;
 
 const subscribe = (topic: string) => {
@@ -791,29 +799,25 @@ const subscribe = (topic: string) => {
               try {
                 if (
                   release?.state === "FAILED" &&
-                  release?.exception?.type === "APPLICATION" &&
-                  !!release?.exception?.message
-                ) {
-                  // RPA.Robocorp.WorkItems.Release with application error
-                  await taskService.handleFailure(task, {
-                    errorMessage:
-                      release.exception?.code || release.exception.message,
-                    errorDetails: release.exception.message,
-                    retries,
-                    retryTimeout,
-                  });
-                } else if (
-                  release?.state === "FAILED" &&
-                  release?.exception?.type === "BUSINESS" &&
-                  !!release?.exception?.code &&
-                  !!release?.exception?.message
+                  release?.exception?.type === "BUSINESS"
                 ) {
                   // RPA.Robocorp.WorkItems.Release with business error
                   await taskService.handleBpmnError(
                     task,
-                    release.exception.code,
-                    release.exception.message
+                    release?.exception?.code || null,
+                    release?.exception?.message || null
                   );
+                } else if (release?.state === "FAILED") {
+                  // RPA.Robocorp.WorkItems.Release with application error
+                  await taskService.handleFailure(task, {
+                    errorMessage:
+                      release?.exception?.code ||
+                      release?.exception?.message ||
+                      null,
+                    errorDetails: release?.exception?.message || null,
+                    retries,
+                    retryTimeout,
+                  });
                 } else {
                   await taskService.complete(task);
                 }
@@ -826,6 +830,16 @@ const subscribe = (topic: string) => {
                 stderr.push(`${completeError.get(task.id)}`);
                 completeError.delete(task.id);
                 code = 255; // Unexpected error
+              } else if (task.id && handleBpmnError.has(task.id)) {
+                stderr.push(`${handleBpmnError.get(task.id)}`);
+                handleBpmnError.delete(task.id);
+                code = 255; // Unexpected error
+                break;
+              } else if (task.id && handleFailureError.has(task.id)) {
+                stderr.push(`${handleFailureError.get(task.id)}`);
+                handleFailureError.delete(task.id);
+                code = 255; // Unexpected error
+                break;
               } else {
                 break;
               }
