@@ -33,11 +33,14 @@ options:
   --rcc-executable[=<path>]                [env: RCC_EXECUTABLE] (or RCC_EXE) [default: rcc]
   --rcc-controller[=<controller>]          [env: RCC_CONTROLLER] [default: carrot]
   --rcc-encoding[=<encoding>]              [env: RCC_ENCODING] [default: utf-8]
-  --rcc-telemetry                          [env: RCC_TELEMETRY] (default: do not track)
-  --rcc-fixed-spaces                       [env: RCC_FIXED_SPACES] (default: circulate spaces)
+  --rcc-telemetry                          [env: RCC_TELEMETRY]
+  --rcc-fixed-spaces                       [env: RCC_FIXED_SPACES]
 
   --vault-addr[=<addr>]                    [env: VAULT_ADDR] [default: http://127.0.0.1:8200]
   --vault-token[=<token>]                  [env: VAULT_TOKEN] [default: token]
+
+  --healthz-host[=<host>]                  [env: HEALTHZ_HOST] [default: localhost]
+  --healthz-port[=<port>]                  [env: HEALTHZ_PORT] (default: disabled)
 
   -h, --help
 
@@ -50,6 +53,9 @@ examples:
   $ RCC_ROBOTS="robot1.zip,robot2.zip" LOG_LEVEL="debug" carrot-rcc
 
   $ CAMUNDA_API_AUTHORIZATION="Bearer MY_TOKEN" carrot-rcc robot1.zip
+
+When --rcc-fixed-spaces is set, concurrent tasks for the same topic may share
+RCC space, possibly resulting in faster startup.
 ```
 
 Design
@@ -116,6 +122,24 @@ $ carrot-rcc.exe robot.zip --base-url=http://192.168.86.156:8080/engine-rest --l
 The project's repository includes [example Camunda processes](https://github.com/datakurre/carrot-rcc/tree/main/camunda/deployment) with example RCC compatible robots ([1](https://github.com/datakurre/carrot-rcc/blob/main/xkcd-bot/robot.zip?raw=true), [2](https://github.com/datakurre/carrot-rcc/blob/main/fleamarket-bot/robot.zip?raw=true)) available.
 
 ![](https://github.com/datakurre/carrot-rcc/raw/main/example-process.png)
+
+
+Retry on failure
+================
+
+It is possible to define automatic retries on failure with defining `retries` with a number and `retryTimout` with milliseconds to wait before the retry.
+
+```yaml
+tasks:
+
+  Camunda Topic:
+    robotTaskName:
+      My Robot Task
+    retries: 3
+    retryTimeout: 60000
+    :
+```
+
 
 Vault support
 =============

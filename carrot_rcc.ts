@@ -69,8 +69,8 @@ options:
   --rcc-executable[=<path>]                [env: RCC_EXECUTABLE] (or RCC_EXE) [default: rcc]
   --rcc-controller[=<controller>]          [env: RCC_CONTROLLER] [default: carrot]
   --rcc-encoding[=<encoding>]              [env: RCC_ENCODING] [default: utf-8]
-  --rcc-telemetry                          [env: RCC_TELEMETRY] (default: do not track)
-  --rcc-fixed-spaces                       [env: RCC_FIXED_SPACES] (default: circulate spaces)
+  --rcc-telemetry                          [env: RCC_TELEMETRY]
+  --rcc-fixed-spaces                       [env: RCC_FIXED_SPACES]
 
   --vault-addr[=<addr>]                    [env: VAULT_ADDR] [default: http://127.0.0.1:8200]
   --vault-token[=<token>]                  [env: VAULT_TOKEN] [default: token]
@@ -89,6 +89,11 @@ examples:
   $ RCC_ROBOTS="robot1.zip,robot2.zip" LOG_LEVEL="debug" carrot-rcc
 
   $ CAMUNDA_API_AUTHORIZATION="Bearer MY_TOKEN" carrot-rcc robot1.zip
+
+RCC telemetry is disabled until --rcc-telemetry is set.
+
+When --rcc-fixed-spaces is set, concurrent tasks for the same topic may share
+RCC space, possibly resulting in faster startup.
 `);
 
 const RCC_ROBOTS = (args["<robots>"] || []).concat(
@@ -116,6 +121,30 @@ const HEALTHZ_HOST = args["--healthz-host"];
 const HEALTHZ_PORT = !isNaN(parseInt(args["--healthz-port"]))
   ? parseInt(args["--healthz-port"])
   : 0;
+
+const WORK_ITEM_ADAPTER = `
+from RPA.Robocorp.WorkItems import FileAdapter, RobocorpAdapter, State
+from typing import Optional
+
+import os
+import json
+
+class WorkItemAdapter(FileAdapter):
+    def release_input(
+        self, item_id: str, state: State, exception: Optional[dict] = None
+    ):
+        body = {"workItemId": item_id, "state": state.value}
+        if exception:
+            body["exception"] = {
+                "type": (exception.get("type") or "").strip(),
+                "code": (exception.get("code") or "").strip(),
+                "message": (exception.get("message") or "").strip(),
+            }
+        path = os.environ["RPA_RELEASE_WORKITEM_PATH"]
+        with open(path, "w", encoding="utf-8") as fp:
+            fp.write(json.dumps(body))
+        super(WorkItemAdapter, self).release_input(item_id, state, exception)
+`;
 
 // Disable telemetry by default
 if (!RCC_TELEMETRY) {
@@ -151,7 +180,13 @@ const LOG = {
 const toAbsolute = (p: string): string =>
   fs.existsSync(p) && !path.isAbsolute(p) ? path.join(process.cwd(), p) : p;
 
+interface RetryOnFailure {
+  retries: number;
+  retryTimeout: number;
+}
+
 const CAMUNDA_TOPICS: Record<string, string> = {};
+const CAMUNDA_TOPICS_RETRY: Record<string, RetryOnFailure> = {};
 const CAMUNDA_TOPICS_VAULT: Record<string, Record<string, string>> = {};
 
 for (const candidate of RCC_ROBOTS) {
@@ -167,6 +202,16 @@ for (const candidate of RCC_ROBOTS) {
         for (const task of Object.keys(yaml.tasks || {})) {
           CAMUNDA_TOPICS[task] = robot;
           CAMUNDA_TOPICS_VAULT[task] = secrets;
+          let retries = parseInt(yaml.tasks[task].retries, 10);
+          let retryTimeout = parseInt(yaml.tasks[task].retryTimeout, 10);
+          if (!isNaN(retries)) {
+            CAMUNDA_TOPICS_RETRY[task] = {
+              retries: retries,
+              retryTimeout: isNaN(retryTimeout)
+                ? CLIENT_POLL_INTERVAL
+                : retryTimeout,
+            };
+          }
         }
       }
     });
@@ -207,9 +252,10 @@ const client = new Client({
   use: (logger as any).level(CLIENT_LOG_LEVEL),
 });
 
-LOG.debug((client as any).options);
-LOG.debug(CAMUNDA_TOPICS);
-LOG.debug(CAMUNDA_TOPICS_VAULT);
+LOG.debug("Options : ", (client as any).options);
+LOG.debug("Robots  : ", CAMUNDA_TOPICS);
+LOG.debug("Retries : ", CAMUNDA_TOPICS_RETRY);
+LOG.debug("Vaults  : ", CAMUNDA_TOPICS_VAULT);
 
 interface File {
   name: string;
@@ -261,6 +307,10 @@ const load = async (
         : reject(stdout.join("") + stderr.join(""))
     );
   });
+  fs.writeFileSync(
+    path.join(tasksDir, "WorkItemAdapter.py"),
+    WORK_ITEM_ADAPTER
+  );
   // Fetch and prepare items
   await new Promise(async (resolve) => {
     const variables = task.variables.getAll();
@@ -436,13 +486,15 @@ const save = async (
   };
 
   const old = task.variables.getAllTyped();
-  const { payload: current, files: filenames } = JSON.parse(
-    fs.readFileSync(
-      fs.existsSync(path.join(itemsDir, "items.output.json"))
-        ? path.join(itemsDir, "items.output.json")
-        : path.join(itemsDir, "items.json")
-    ) as unknown as string
-  )[0];
+  const { payload: current, files: filenames } = fs.existsSync(
+    path.join(itemsDir, "items.output.json")
+  )
+    ? JSON.parse(
+        fs.readFileSync(
+          path.join(itemsDir, "items.output.json")
+        ) as unknown as string
+      )[0]
+    : { payload: {}, files: {} };
   const patch: PatchVariablesDto = {
     modifications: {},
   };
@@ -614,6 +666,14 @@ client.on("complete:error", ({ id }, e) => {
   }
 });
 
+const handleBpmnError: Map<string, string> = new Map();
+// @ts-ignore // outdated @types
+client.on("handleBpmnError:error", ({ id }, e) => {
+  if (id) {
+    handleBpmnError.set(id, `${e}`);
+  }
+});
+
 let counter = 0;
 
 const subscribe = (topic: string) => {
@@ -653,6 +713,18 @@ const subscribe = (topic: string) => {
     // Execute with temporary working directory
     const tasksDir = await fs.mkdtempSync(path.join(os.tmpdir(), "rcc-tasks-"));
     const itemsDir = await fs.mkdtempSync(path.join(os.tmpdir(), "rcc-items-"));
+
+    // Resolve remaining retries
+    let retries =
+      task.retries === 0
+        ? 0
+        : typeof task.retries !== "undefined" &&
+          !isNaN(task.retries) &&
+          task.retries !== null
+        ? task.retries - 1
+        : CAMUNDA_TOPICS_RETRY[topic]?.retries || 0;
+    let retryTimeout = CAMUNDA_TOPICS_RETRY[topic]?.retryTimeout;
+
     try {
       // Prepare robot
       const files = await load(task, tasksDir, itemsDir, topic);
@@ -677,9 +749,10 @@ const subscribe = (topic: string) => {
             env: {
               RPA_SECRET_MANAGER: "RPA.Robocloud.Secrets.FileSecrets",
               RPA_SECRET_FILE: `${itemsDir}/vault.json`,
-              RPA_WORKITEMS_ADAPTER: "RPA.Robocloud.Items.FileAdapter",
+              RPA_WORKITEMS_ADAPTER: "WorkItemAdapter.WorkItemAdapter",
               RPA_INPUT_WORKITEM_PATH: `${itemsDir}/items.json`,
               RPA_OUTPUT_WORKITEM_PATH: `${itemsDir}/items.output.json`,
+              RPA_RELEASE_WORKITEM_PATH: `${itemsDir}/items.release.json`,
               RC_WORKSPACE_ID: "1",
               RC_WORKITEM_ID: "1",
               ...process.env,
@@ -715,12 +788,39 @@ const subscribe = (topic: string) => {
             code = 255; // Unexpected error
           }
           if (code === 0) {
-            let retries = 0;
-            while (retries < 3) {
+            const relpath = path.join(itemsDir, "items.release.json");
+            const release = fs.existsSync(relpath)
+              ? JSON.parse(fs.readFileSync(relpath) as unknown as string)
+              : {};
+            let retries_ = 0;
+            while (retries_ < 3) {
               code = 0;
-              retries++;
+              retries_++;
               try {
-                await taskService.complete(task);
+                if (
+                  release?.state === "FAILED" &&
+                  release?.exception?.type === "BUSINESS"
+                ) {
+                  // RPA.Robocorp.WorkItems.Release with business error
+                  await taskService.handleBpmnError(
+                    task,
+                    release?.exception?.code || null,
+                    release?.exception?.message || null
+                  );
+                } else if (release?.state === "FAILED") {
+                  // RPA.Robocorp.WorkItems.Release with application error
+                  await taskService.handleFailure(task, {
+                    errorMessage:
+                      release?.exception?.code ||
+                      release?.exception?.message ||
+                      null,
+                    errorDetails: release?.exception?.message || null,
+                    retries,
+                    retryTimeout,
+                  });
+                } else {
+                  await taskService.complete(task);
+                }
               } catch (e) {
                 LOG.error(`${e}`);
                 stderr.push(`${e}`);
@@ -730,6 +830,16 @@ const subscribe = (topic: string) => {
                 stderr.push(`${completeError.get(task.id)}`);
                 completeError.delete(task.id);
                 code = 255; // Unexpected error
+              } else if (task.id && handleBpmnError.has(task.id)) {
+                stderr.push(`${handleBpmnError.get(task.id)}`);
+                handleBpmnError.delete(task.id);
+                code = 255; // Unexpected error
+                break;
+              } else if (task.id && handleFailureError.has(task.id)) {
+                stderr.push(`${handleFailureError.get(task.id)}`);
+                handleFailureError.delete(task.id);
+                code = 255; // Unexpected error
+                break;
               } else {
                 break;
               }
@@ -759,6 +869,8 @@ const subscribe = (topic: string) => {
       await taskService.handleFailure(task, {
         errorMessage: `${e?.error?.message ?? e}`,
         errorDetails: e.stack || JSON.stringify(e),
+        retries,
+        retryTimeout,
       });
       // TODO: Maybe do something special on handleFailureError
       if (task.id && handleFailureError.has(task.id)) {
