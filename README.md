@@ -123,6 +123,24 @@ The project's repository includes [example Camunda processes](https://github.com
 
 ![](https://github.com/datakurre/carrot-rcc/raw/main/example-process.png)
 
+
+Retry on failure
+================
+
+It is possible to define automatic retries on failure with defining `retries` with a number and `retryTimout` with milliseconds to wait before the retry.
+
+```yaml
+tasks:
+
+  Camunda Topic:
+    robotTaskName:
+      My Robot Task
+    retries: 3
+    retryTimeout: 60000
+    :
+```
+
+
 Vault support
 =============
 
