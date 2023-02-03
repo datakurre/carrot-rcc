@@ -244,7 +244,7 @@ const client = new Client({
   interval: 300,
   // lock must have safe minimal duration to allow renewing
   lockDuration: Math.max(10000, CLIENT_POLL_INTERVAL * 2),
-  autoPoll: true,
+  autoPoll: false,  // we start after subscribtions
   interceptors: [AuthorizationHeaderInterceptor],
   // Client will wait for asyncResponseTimeout until scheduling a new poll
   // after "interval" specified timeout.
