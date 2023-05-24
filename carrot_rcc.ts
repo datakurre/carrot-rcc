@@ -244,7 +244,7 @@ const client = new Client({
   interval: 300,
   // lock must have safe minimal duration to allow renewing
   lockDuration: Math.max(10000, CLIENT_POLL_INTERVAL * 2),
-  autoPoll: false,  // we start after subscribtions
+  autoPoll: false, // we start after subscribtions
   interceptors: [AuthorizationHeaderInterceptor],
   // Client will wait for asyncResponseTimeout until scheduling a new poll
   // after "interval" specified timeout.
@@ -346,16 +346,18 @@ const load = async (
             return await typed[name].value.load();
           }
         })();
-        const filename = path.join(itemsDir, file.filename);
+        const hashSum = crypto.createHash("sha256");
+        hashSum.update(file.content);
+        const hashDigest = hashSum.digest("hex");
+        fs.mkdirSync(path.join(itemsDir, hashDigest), { recursive: true });
+        const filename = path.join(itemsDir, hashDigest, file.filename);
         delete variables[name];
         await new Promise((resolve) => {
           fs.writeFile(filename, file.content, resolve);
         });
-        const hashSum = crypto.createHash("sha256");
-        hashSum.update(file.content);
         files[name] = {
           name: filename.replace(/\\/g, "\\\\"),
-          hex: hashSum.digest("hex"),
+          hex: hashDigest,
         };
       }
     }
