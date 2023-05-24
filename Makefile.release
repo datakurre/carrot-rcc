@@ -1,0 +1,32 @@
+ARTIFACT_NAME = camunda-rcc-worker
+ARTIFACT_VERSION ?= 0.8.2
+ARTIFACT_FULLNAME ?= $(ARTIFACT_NAME)-$(ARTIFACT_VERSION).tar.gz
+REPOSITORY ?= nomad-local
+
+.PHONY: all
+all: ${ARTIFACT_FULLNAME}
+
+.PHONY: build
+build: $(SOURCES)
+	nix-build release.nix -o build
+
+${ARTIFACT_FULLNAME}:
+	nix-build release.nix $(NIX_ARGS) --no-out-link --argstr name $(ARTIFACT_FULLNAME)\
+	| xargs -Iresult cp -aL result $(ARTIFACT_FULLNAME)
+	chmod u+w $(ARTIFACT_FULLNAME)
+
+.PHONY: clean
+clean:
+	$(RM) $(ARTIFACT_NAME)-*.tar.*
+
+.PHONY: publish
+publish: $(ARTIFACT_FULLNAME)
+	jfrog-cli rt u $(ARTIFACT_FULLNAME) $(REPOSITORY)/$(ARTIFACT_NAME)/
+
+
+###
+
+.PHONY: nix-%
+nix-%:
+	@echo "run inside nix-shell: $*"
+	nix-shell --pure --run "$(MAKE) $*"

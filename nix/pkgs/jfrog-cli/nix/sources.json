@@ -1,0 +1,14 @@
+{
+    "jfrog-cli": {
+        "branch": "v1.39.1",
+        "description": "JFrog CLI is a client that provides a simple interface that automates access to the JFrog products.",
+        "homepage": "https://www.jfrog.com/confluence/display/CLI/JFrog+CLI",
+        "owner": "jfrog",
+        "repo": "jfrog-cli",
+        "rev": "cd945dfd05c0b002c5882fa92e3c70e06fb3b852",
+        "sha256": "1f3plyr5d2dlyb4adxib7aib430m3ax6g4lx1fi5l4l215ly0w7h",
+        "type": "tarball",
+        "url": "https://github.com/jfrog/jfrog-cli/archive/cd945dfd05c0b002c5882fa92e3c70e06fb3b852.tar.gz",
+        "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
+    }
+}
