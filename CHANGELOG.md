@@ -1,6 +1,13 @@
 Changelog
 =========
 
+0.8.2 (2023-08-24)
+------------------
+
+- Add to catch Python exception message from stdout
+  [Asko Soukka]
+- Fix to prefix file variable paths with hash to support multiple files with equal names
+  [Asko Soukka]
 
 0.8.0 (2023-02-03)
 ------------------
