@@ -418,8 +418,7 @@ const failReason = async (tasksDir: string): Promise<string> => {
       for (const match of xml.matchAll(/status="FAIL"[^>]*.([^<]*)/g)) {
         reason = match[1].trim() || reason;
       }
-    }
-    else if (path.basename(file) === "stdout.log") {
+    } else if (path.basename(file) === "stdout.log") {
       const xml = fs.readFileSync(file).toString("utf-8");
       for (const match of xml.matchAll(/([a-zA-Z0-9\.]+:\s.*)/g)) {
         reason = match[1].trim() || reason;
