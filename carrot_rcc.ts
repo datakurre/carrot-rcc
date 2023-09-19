@@ -418,11 +418,6 @@ const failReason = async (tasksDir: string): Promise<string> => {
       for (const match of xml.matchAll(/status="FAIL"[^>]*.([^<]*)/g)) {
         reason = match[1].trim() || reason;
       }
-    } else if (path.basename(file) === "stdout.log") {
-      const xml = fs.readFileSync(file).toString("utf-8");
-      for (const match of xml.matchAll(/([a-zA-Z0-9\.]+:\s.*)/g)) {
-        reason = match[1].trim() || reason;
-      }
     }
   }
   return reason;
@@ -856,6 +851,19 @@ const subscribe = (topic: string) => {
               );
             }
           }
+          // Replace dummy error message with the last
+          if (errorMessage === "fail") {
+            for (const line of stdout.concat(stderr)) {
+              const match = line.match(/([a-zA-Z0-9\.]+:\s.*)/g);
+              if (
+                match &&
+                match.length &&
+                !match[match.length - 1].trim().startsWith("Error: exit status")
+              ) {
+                errorMessage = match[match.length - 1].trim() || errorMessage;
+              }
+            }
+          }
           return code === 0
             ? resolve(task)
             : reject({
@@ -865,9 +873,10 @@ const subscribe = (topic: string) => {
                 stack:
                   errorMessage === "error"
                     ? stdout.join("") + stderr.join("")
-                    : stdout
-                        .join("")
-                        .replace(/[a-zA-Z0-9\-.]+==[a-zA-Z0-9\-.]+\n/g, ""),
+                    : (stdout.join("") + stderr.join("")).replace(
+                        /[a-zA-Z0-9\-.]+==[a-zA-Z0-9\-.]+\n/g,
+                        ""
+                      ),
               });
         });
       });
