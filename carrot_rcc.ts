@@ -729,9 +729,11 @@ const subscribe = (topic: string) => {
 
     try {
       // Prepare robot
+      LOG.debug("Preparing task", task.topicName, task.id);
       const files = await load(task, tasksDir, itemsDir, topic);
 
       // Execute robot
+      LOG.debug("Executing task", task.topicName, task.id);
       await new Promise((resolve, reject) => {
         const stdout: string[] = [];
         const stderr: string[] = [];
@@ -770,6 +772,7 @@ const subscribe = (topic: string) => {
           LOG.debug(data.toString());
         });
         exec.on("close", async (code) => {
+          LOG.debug("Executing task exit code", code, task.topicName, task.id);
           let errorMessage = "error";
           if (code !== null && code > 0 && code < 251) {
             errorMessage = await failReason(tasksDir);
@@ -784,12 +787,15 @@ const subscribe = (topic: string) => {
               stderr.join(""),
               code || 0
             );
+            LOG.debug("Result collection completed", task.topicName, task.id);
           } catch (e) {
+            LOG.debug("Result collection failed", task.topicName, task.id);
             LOG.error(`${e}`);
             stderr.push(`${e}`);
             code = 255; // Unexpected error
           }
           if (code === 0) {
+            LOG.debug("Completing task...", task.topicName, task.id);
             const relpath = path.join(itemsDir, "items.release.json");
             const release = fs.existsSync(relpath)
               ? JSON.parse(fs.readFileSync(relpath) as unknown as string)
@@ -804,6 +810,11 @@ const subscribe = (topic: string) => {
                   release?.exception?.type === "BUSINESS"
                 ) {
                   // RPA.Robocorp.WorkItems.Release with business error
+                  LOG.debug(
+                    "Completing task with business error",
+                    task.topicName,
+                    task.id
+                  );
                   await taskService.handleBpmnError(
                     task,
                     release?.exception?.code || null,
@@ -811,6 +822,11 @@ const subscribe = (topic: string) => {
                   );
                 } else if (release?.state === "FAILED") {
                   // RPA.Robocorp.WorkItems.Release with application error
+                  LOG.debug(
+                    "Completing task with technical failure",
+                    task.topicName,
+                    task.id
+                  );
                   await taskService.handleFailure(task, {
                     errorMessage:
                       release?.exception?.code ||
@@ -821,9 +837,15 @@ const subscribe = (topic: string) => {
                     retryTimeout,
                   });
                 } else {
+                  LOG.debug(
+                    "Completing task with success",
+                    task.topicName,
+                    task.id
+                  );
                   await taskService.complete(task);
                 }
               } catch (e) {
+                LOG.debug("Completing task failed", task.topicName, task.id);
                 LOG.error(`${e}`);
                 stderr.push(`${e}`);
                 code = 255; // Unexpected error
@@ -881,6 +903,7 @@ const subscribe = (topic: string) => {
         });
       });
     } catch (e: any) {
+      LOG.debug("Completed task with failure", task.topicName, task.id);
       LOG.debug(e);
       await taskService.handleFailure(task, {
         errorMessage: `${e?.error?.message ?? e}`,
