@@ -289,29 +289,64 @@ const load = async (
   };
   const files: Record<string, File> = {};
   // Fetch and prepare robot
-  await new Promise((resolve, reject) => {
-    const stdout: string[] = [];
-    const stderr: string[] = [];
-    const exec = spawn(
-      RCC_EXECUTABLE,
-      ["robot", "unwrap", "-d", tasksDir, "-z", CAMUNDA_TOPICS[topic]],
-      {
-        env: process.env,
+  LOG.debug("Preparing task robot", task.topicName, task.id);
+  LOG.debug(
+    "Preparing task robot",
+    task.topicName,
+    task.id,
+    RCC_EXECUTABLE,
+    "robot",
+    "unwrap",
+    "-d",
+    tasksDir,
+    "-z",
+    CAMUNDA_TOPICS[topic]
+  );
+  let retries = 3;
+  while (true) {
+    try {
+      await new Promise((resolve, reject) => {
+        const stdout: string[] = [];
+        const stderr: string[] = [];
+        const exec = spawn(
+          RCC_EXECUTABLE,
+          ["robot", "unwrap", "-d", tasksDir, "-z", CAMUNDA_TOPICS[topic]],
+          {
+            env: process.env,
+          }
+        );
+        exec.stdout.on("data", (data) => stdout.push(data.toString()));
+        exec.stderr.on("data", (data) => stderr.push(data.toString()));
+        exec.on("close", (code) => {
+          LOG.debug(
+            "Preparing task robot exit code",
+            code,
+            task.topicName,
+            task.id
+          );
+          return code === 0
+            ? resolve(stdout.join("") + stderr.join(""))
+            : reject(stdout.join("") + stderr.join(""));
+        });
+      });
+      break;
+    } catch (e) {
+      if (retries > 0) {
+        fs.rmdirSync(tasksDir, { recursive: true });
+        fs.mkdirSync(tasksDir, { recursive: true });
+        retries = retries - 1;
+      } else {
+        throw e;
       }
-    );
-    exec.stdout.on("data", (data) => stdout.push(data.toString()));
-    exec.stderr.on("data", (data) => stderr.push(data.toString()));
-    exec.on("close", (code) =>
-      code === 0
-        ? resolve(stdout.join("") + stderr.join(""))
-        : reject(stdout.join("") + stderr.join(""))
-    );
-  });
+    }
+  }
+  LOG.debug("Preparing task adapter", task.topicName, task.id);
   fs.writeFileSync(
     path.join(tasksDir, "WorkItemAdapter.py"),
     WORK_ITEM_ADAPTER
   );
   // Fetch and prepare items
+  LOG.debug("Preparing task variables", task.topicName, task.id);
   await new Promise(async (resolve) => {
     const variables = task.variables.getAll();
     const typed = task.variables.getAllTyped();
@@ -376,6 +411,7 @@ const load = async (
     );
   });
   // Save secrets
+  LOG.debug("Preparing task secrets", task.topicName, task.id);
   await new Promise(async (resolve) => {
     const secrets: Record<string, Record<string, string>> = {};
     // Try to resolve Vault secrets
@@ -734,6 +770,19 @@ const subscribe = (topic: string) => {
 
       // Execute robot
       LOG.debug("Executing task", task.topicName, task.id);
+      LOG.debug(
+        "Executing task",
+        task.topicName,
+        task.id,
+        RCC_EXECUTABLE,
+        "run",
+        "--controller",
+        RCC_CONTROLLER,
+        "--space",
+        space,
+        "--task",
+        topic
+      );
       await new Promise((resolve, reject) => {
         const stdout: string[] = [];
         const stderr: string[] = [];
