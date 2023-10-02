@@ -183,11 +183,16 @@ const toAbsolute = (p: string): string =>
 interface RetryOnFailure {
   retries: number;
   retryTimeout: number;
+  retryTimeoutMax: number;
 }
 
 const CAMUNDA_TOPICS: Record<string, string> = {};
 const CAMUNDA_TOPICS_RETRY: Record<string, RetryOnFailure> = {};
 const CAMUNDA_TOPICS_VAULT: Record<string, Record<string, string>> = {};
+
+// https://www.desmos.com/calculator/n8c16ahnrx
+const nextRetryTimeout = (a: number, b: number, n: number): number =>
+  a + (b - a) * (2 - Math.sin(Math.PI * 0.5 * n)) * Math.sin(Math.PI * 0.5 * n);
 
 for (const candidate of RCC_ROBOTS) {
   const robot = toAbsolute(candidate);
@@ -204,12 +209,18 @@ for (const candidate of RCC_ROBOTS) {
           CAMUNDA_TOPICS_VAULT[task] = secrets;
           let retries = parseInt(yaml.tasks[task].retries, 10);
           let retryTimeout = parseInt(yaml.tasks[task].retryTimeout, 10);
+          let retryTimeoutMax = parseInt(yaml.tasks[task].retryTimeoutMax, 10);
           if (!isNaN(retries)) {
             CAMUNDA_TOPICS_RETRY[task] = {
               retries: retries,
               retryTimeout: isNaN(retryTimeout)
                 ? CLIENT_POLL_INTERVAL
                 : retryTimeout,
+              retryTimeoutMax: isNaN(retryTimeoutMax)
+                ? isNaN(retryTimeout)
+                  ? CLIENT_POLL_INTERVAL
+                  : retryTimeout
+                : retryTimeoutMax,
             };
           }
         }
@@ -453,7 +464,7 @@ const failReason = async (tasksDir: string): Promise<string> => {
       const xml = fs.readFileSync(file).toString("utf-8");
       for (const match of xml
         .replace(/(\r\n|\n|\r)/gm, "")
-        .match(/status="FAIL"[^>]*.[^<]*/g)) {
+        .match(/status="FAIL"[^>]*.[^<]*/g) || []) {
         reason = match.substring(match.indexOf(">") + 1).trim() || reason;
       }
     }
@@ -467,7 +478,7 @@ const inlineScreenshots = async (
 ): Promise<string> => {
   for (const match of log
     .replace(/(\r\n|\n|\r)/gm, "")
-    .match(/img src=\\"[^"]+/g)) {
+    .match(/img src=\\"[^"]+/g) || []) {
     const src = match
       .substring(match.indexOf('"') + 1)
       .replace(/\\$/, "")
@@ -776,12 +787,16 @@ const subscribe = (topic: string) => {
     let retries =
       task.retries === 0
         ? 0
-        : typeof task.retries !== "undefined" &&
-          !isNaN(task.retries) &&
-          task.retries !== null
+        : typeof task.retries === "number"
         ? task.retries - 1
         : CAMUNDA_TOPICS_RETRY[topic]?.retries || 0;
-    let retryTimeout = CAMUNDA_TOPICS_RETRY[topic]?.retryTimeout;
+    let retriesMax =
+      Math.max(CAMUNDA_TOPICS_RETRY[topic]?.retries || 0, 1) * 1.0;
+    let retryTimeout = nextRetryTimeout(
+      CAMUNDA_TOPICS_RETRY[topic]?.retryTimeout,
+      CAMUNDA_TOPICS_RETRY[topic]?.retryTimeoutMax,
+      (retriesMax - retries) / retriesMax
+    );
 
     try {
       // Prepare robot
