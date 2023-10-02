@@ -451,7 +451,9 @@ const failReason = async (tasksDir: string): Promise<string> => {
   for (const file of taskFiles as PathsOutput) {
     if (path.basename(file) === "output.xml") {
       const xml = fs.readFileSync(file).toString("utf-8");
-      for (const match of xml.replace(/(\r\n|\n|\r)/gm, "").match(/status="FAIL"[^>]*.[^<]*/g)) {
+      for (const match of xml
+        .replace(/(\r\n|\n|\r)/gm, "")
+        .match(/status="FAIL"[^>]*.[^<]*/g)) {
         reason = match.substring(match.indexOf(">") + 1).trim() || reason;
       }
     }
@@ -463,8 +465,13 @@ const inlineScreenshots = async (
   log: string,
   dirname: string
 ): Promise<string> => {
-  for (const match of log.replace(/(\r\n|\n|\r)/gm, "").match(/img src=\\"[^"]+/g)) {
-    const src = match.substring(match.indexOf('"') + 1).replace(/\\$/, "").trim();
+  for (const match of log
+    .replace(/(\r\n|\n|\r)/gm, "")
+    .match(/img src=\\"[^"]+/g)) {
+    const src = match
+      .substring(match.indexOf('"') + 1)
+      .replace(/\\$/, "")
+      .trim();
     let file: string;
     if (src.startsWith("data:")) {
       continue;
@@ -938,13 +945,11 @@ const subscribe = (topic: string) => {
           // Replace dummy error message with the last
           if (errorMessage === "fail") {
             for (const line of stdout.concat(stderr)) {
-              const match = line.match(/([a-zA-Z0-9\.]+:\s.*)/g);
-              if (
-                match &&
-                match.length &&
-                !match[match.length - 1].trim().startsWith("Error: exit status") &&
-                !match[match.length - 1].trim().startsWith("[rcc] exit status")
-              ) {
+              if (line.match(/exit status/i)) {
+                break;
+              }
+              const match = line.match(/([a-zA-Z]+[a-zA-Z0-9\.]+:\s.*)/g);
+              if (match && match.length) {
                 errorMessage = match[match.length - 1].trim() || errorMessage;
               }
             }
