@@ -14,10 +14,6 @@ build carrot rcc:
     - mkdir -p /var/tmp
   script:
     -  $NIX_SHELL make test
-  artifacts:
-    when: always
-    paths:
-      - output
 
 dist carrot rcc:
   stage: dist
