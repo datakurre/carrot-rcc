@@ -332,7 +332,7 @@ const load = async (
       break;
     } catch (e) {
       if (retries > 0) {
-        fs.rmdirSync(tasksDir, { recursive: true });
+        fs.rmSync(tasksDir, { recursive: true });
         fs.mkdirSync(tasksDir, { recursive: true });
         retries = retries - 1;
       } else {
@@ -451,8 +451,8 @@ const failReason = async (tasksDir: string): Promise<string> => {
   for (const file of taskFiles as PathsOutput) {
     if (path.basename(file) === "output.xml") {
       const xml = fs.readFileSync(file).toString("utf-8");
-      for (const match of xml.matchAll(/status="FAIL"[^>]*.([^<]*)/g)) {
-        reason = match[1].trim() || reason;
+      for (const match of xml.replace(/(\r\n|\n|\r)/gm, "").match(/status="FAIL"[^>]*.[^<]*/g)) {
+        reason = match.substring(match.indexOf(">") + 1).trim() || reason;
       }
     }
   }
@@ -463,8 +463,8 @@ const inlineScreenshots = async (
   log: string,
   dirname: string
 ): Promise<string> => {
-  for (const match of log.matchAll(/img src=\\"([^"]+)/g)) {
-    const src = match[1].replace(/\\$/, "");
+  for (const match of log.replace(/(\r\n|\n|\r)/gm, "").match(/img src=\\"[^"]+/g)) {
+    const src = match.substring(match.indexOf('"') + 1).replace(/\\$/, "").trim();
     let file: string;
     if (src.startsWith("data:")) {
       continue;
@@ -644,7 +644,20 @@ const save = async (
             encoding: "utf-8",
           },
         };
-        break;
+      }
+      if (path.basename(file) === "geckodriver-1.log") {
+        const dirname = path.dirname(file);
+        const log = fs.readFileSync(file).toString("utf-8");
+        patch.modifications["geckodriver"] = {
+          value: Buffer.from(log).toString("base64"),
+          type: "File",
+          valueInfo: {
+            filename: "geckodriver.txt",
+            mimetype: "text/plain",
+            mimeType: "text/plain",
+            encoding: "utf-8",
+          },
+        };
       }
     }
     if ((code > 0 && stdout) || old["stdout"]) {
@@ -929,7 +942,8 @@ const subscribe = (topic: string) => {
               if (
                 match &&
                 match.length &&
-                !match[match.length - 1].trim().startsWith("Error: exit status")
+                !match[match.length - 1].trim().startsWith("Error: exit status") &&
+                !match[match.length - 1].trim().startsWith("[rcc] exit status")
               ) {
                 errorMessage = match[match.length - 1].trim() || errorMessage;
               }
@@ -966,8 +980,8 @@ const subscribe = (topic: string) => {
       }
     } finally {
       // Cleanup
-      fs.rmdirSync(tasksDir, { recursive: true });
-      fs.rmdirSync(itemsDir, { recursive: true });
+      fs.rmSync(tasksDir, { recursive: true });
+      fs.rmSync(itemsDir, { recursive: true });
 
       // Stop extending expiration timeout
       clearTimeout(extendLockTimeout);

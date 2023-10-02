@@ -1,20 +1,10 @@
-{ pkgs ? import ./nix { nixpkgs = sources."nixpkgs-21.05"; }
-, sources ? import ./nix/sources.nix
-}:
-
-pkgs.mkShell {
-  buildInputs = with pkgs; [
-    entr
-    gnumake
-    niv
-    node2nix
-    nodejs-14_x
-    poetry
-    poetry2nix.cli
-    rccFHSUserEnv
-    jfrog-cli
-  ];
-  shellHook = ''
-    export SSL_CERT_FILE=${pkgs.cacert}/etc/ssl/certs/ca-bundle.crt
-  '';
-}
+(import
+  (
+    let lock = builtins.fromJSON (builtins.readFile ./flake.lock); in
+    fetchTarball {
+      url = "https://github.com/edolstra/flake-compat/archive/${lock.nodes.flake-compat.locked.rev}.tar.gz";
+      sha256 = lock.nodes.flake-compat.locked.narHash;
+    }
+  )
+  { src = ./.; }
+).shellNix

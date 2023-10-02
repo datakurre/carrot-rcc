@@ -1,6 +1,5 @@
 channels:
   - conda-forge
-  - cf-staging
 
 dependencies:
   # https://anaconda.org/search
@@ -11,10 +10,13 @@ dependencies:
   - xorg-libxcomposite
   - xorg-libxrandr
   - xorg-libxinerama
-  - firefox=94.0.2
-  - geckodriver=0.30.0
-  - python=3.9.7
-  - pip=21.3.1
+  - pyyaml
+  - firefox==113.0
+  - geckodriver=0.33.0
+  - python=3.10.12
+  - pip=23.2.1
   - pip:
-      - rpaframework==11.6.4
-      - robotframework-seleniumtestability==1.1.0
+      # Old enough versions to support old style headlessfirefox
+      - rpaframework==22.5.2
+      - robotframework-seleniumtestability==2.1.0
+      - selenium==4.8.3

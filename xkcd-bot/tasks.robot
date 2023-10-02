@@ -51,6 +51,8 @@ Search for XKCD image
             Append to list  ${results}  ${href}
         END
     END
+
+    Create output work item
     Set work item variable  results  ${results}
     Save work item
 
@@ -66,6 +68,8 @@ Download XKCD image
     ${has image}=  Run Selenium keyword and return status
     ...  Page should contain element
     ...  css:#comic img
+
+    Create output work item
 
     ${alt}=  Get Element Attribute  css:#comic img  alt
     ${title}=  Get Element Attribute  css:#comic img  title

@@ -1,34 +1,25 @@
 SHELL := /usr/bin/env bash
 export PATH := node_modules/.bin:$(PATH)
 
+NIX_OPTIONS ?= --accept-flake-config
+
 .PHONY: all
 all: format
-
-env: poetry.lock
-	nix-build -E "with import ./nix {}; poetry2nix.mkPoetryEnv { projectDir = ./.; }" -o env
 
 .PHONY: format
 format:
 	npm run prettier:format
 
-default.nix: package-lock.json
-	rm -rf node_modules
-	nix-shell --run "node2nix --nodejs-14 -l nix/package-lock.json"
-
 package-lock.json: package.json
 	npm install --package-lock-only
-
-nix/node-dev-composition.nix: package-lock.json
-	rm -rf node_modules
-	node2nix --development --nodejs-14 -l package-lock.json --output nix/node-dev-packages.nix --node-env nix/node-dev-env.nix --composition nix/node-dev-composition.nix
-
-nix/node-run-composition.nix: package-lock.json
-	rm -rf node_modules
-	node2nix --nodejs-14 -l package-lock.json --output nix/node-run-packages.nix --node-env nix/node-run-env.nix --composition nix/node-run-composition.nix
 
 .PHONY: shell
 shell:
 	nix-shell default.nix
+
+.PHONY: test
+test: node_modules
+	npm run test
 
 .PHONY: watch
 watch:
@@ -38,8 +29,11 @@ watch:
 
 .PHONY: nix-%
 nix-%:
-	nix-shell $(NIX_OPTIONS) --run "$(MAKE) $*"
+	nix develop $(NIX_OPTIONS) --command $(MAKE) $*
 
-node_modules: package.json
-	npm ci
+node_modules:
+	nix build $(NIX_OPTIONS) --json .#node_modules_dev|jq -r .[0].outputs.out|xargs -Ix cp -a x/node_modules node_modules
+	chmod u+w -R node_modules
 	touch node_modules
+
+include release-container.mk

@@ -1,0 +1,34 @@
+image: nixpkgs/cachix-flakes:nixos-23.05
+
+stages:
+- build
+- dist
+
+build message gateway:
+  stage: build
+  variables:
+    CACHIX_CACHE_NAME: vasara-bpm
+    NIX_SHELL: cachix watch-exec $CACHIX_CACHE_NAME -- nix develop .#with-podman --accept-flake-config --command
+  before_script:
+    - cachix use "$CACHIX_CACHE_NAME"
+    - mkdir -p /var/tmp
+  script:
+    -  $NIX_SHELL make test atest
+  artifacts:
+    when: always
+    paths:
+      - output
+
+dist message gateway:
+  stage: dist
+  variables:
+    CACHIX_CACHE_NAME: vasara-bpm
+    NIX_SHELL: cachix watch-exec $CACHIX_CACHE_NAME -- nix develop .#with-podman --accept-flake-config --command
+  before_script:
+  - cachix use "$CACHIX_CACHE_NAME"
+  script:
+  - git fetch --tags --unshallow || true
+  - $NIX_SHELL podman login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+  - $NIX_SHELL make container-show
+  - $NIX_SHELL make container-publish
+  when: manual

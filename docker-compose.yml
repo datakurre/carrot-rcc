@@ -10,3 +10,11 @@ services:
     build: ./camunda
     command: "/usr/bin/curl -X POST http://camunda:8080/engine-rest/deployment/create -F \"deployment-name=Demo\" -F \"deploy-changed-only=true\" -F \"deployment-source=Demo\" -F \"a=@/tmp/deployment/xkcd-fetch-review.bpmn\" -F \"b=@/tmp/deployment/xkcd-search.bpmn\" -F \"c=@/tmp/deployment/xkcd-review.html\" -F \"d=@/tmp/deployment/fleamarket-submission.bpmn\" -F \"e=@/tmp/deployment/fleamarket-submit.html\" -F \"f=@/tmp/deployment/fleamarket-review.bpmn\" -F \"g=@/tmp/deployment/fleamarket-pricing.dmn\" -F \"h=@/tmp/deployment/fleamarket-review.html\" -F \"i=@/tmp/deployment/fleamarket-download.html\""
     restart: on-failure
+  rcc:
+    image: registry.gitlab.com/vasara-bpm/carrot-rcc/carrot-rcc
+    command:
+      - /src/xkcd-bot/robot.zip
+      - --base-url=http://camunda:8080/engine-rest
+      - --log-level=debug
+    volumes:
+      - ./:/src
