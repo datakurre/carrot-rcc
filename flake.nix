@@ -158,7 +158,7 @@
 
         devShells.default = pkgs.mkShell {
           buildInputs =
-            [ pkgs-unstable.cachix pkgs.entr pkgs.openssl pkgs.nodejs ];
+            [ pkgs-unstable.cachix pkgs.entr pkgs.openssl pkgs.nodejs pkgs.jq ];
         };
 
         devShells.with-podman =
