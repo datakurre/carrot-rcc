@@ -4,7 +4,7 @@ stages:
 - build
 - dist
 
-build message gateway:
+build carrot rcc:
   stage: build
   variables:
     CACHIX_CACHE_NAME: vasara-bpm
@@ -13,13 +13,13 @@ build message gateway:
     - cachix use "$CACHIX_CACHE_NAME"
     - mkdir -p /var/tmp
   script:
-    -  $NIX_SHELL make test atest
+    -  $NIX_SHELL make test
   artifacts:
     when: always
     paths:
       - output
 
-dist message gateway:
+dist carrot rcc:
   stage: dist
   variables:
     CACHIX_CACHE_NAME: vasara-bpm
