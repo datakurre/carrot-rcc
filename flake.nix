@@ -109,11 +109,12 @@
                 pkgs.bashInteractive
                 pkgs.coreutils
                 pkgs.curl
+                pkgs.dejavu_fonts
                 pkgs.dockerTools.caCertificates
                 pkgs.dockerTools.fakeNss
+                pkgs.findutils
                 pkgs.micromamba
                 pkgs.tini
-                pkgs.dejavu_fonts
                 (pkgs.stdenv.mkDerivation {
                   name = "fonts.conf";
                   src = (pkgs.makeFontsConf {
