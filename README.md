@@ -127,7 +127,7 @@ The project's repository includes [example Camunda processes](https://github.com
 Retry on failure
 ================
 
-It is possible to define automatic retries on failure with defining `retries` with a number and `retryTimout` with milliseconds to wait before the retry.
+It is possible to define automatic retries on failure with defining `retries` with a number and `retryTimout` and `retryTimeoutMax` (optional) with milliseconds to wait before the retry. When `retryTimeoutMax` is defined with larger value than `retryTimeout`, timeout will [be gradually increased between retries](https://www.desmos.com/calculator/n8c16ahnrx).
 
 ```yaml
 tasks:
@@ -135,9 +135,9 @@ tasks:
   Camunda Topic:
     robotTaskName:
       My Robot Task
-    retries: 3
+    retries: 10
     retryTimeout: 60000
-    :
+    retryTimeoutMax: 3600000
 ```
 
 
