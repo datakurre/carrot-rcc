@@ -114,6 +114,7 @@
                 pkgs.dockerTools.fakeNss
                 pkgs.findutils
                 pkgs.micromamba
+                pkgs.gitMinimal
                 pkgs.tini
                 (pkgs.stdenv.mkDerivation {
                   name = "fonts.conf";
