@@ -358,100 +358,110 @@ const load = async (
   );
   // Fetch and prepare items
   LOG.debug("Preparing task variables", task.topicName, task.id);
-  await new Promise(async (resolve) => {
-    const variables = task.variables.getAll();
-    const typed = task.variables.getAllTyped();
-    // TODO: This could be optimized to make parallel variable fetch
-    for (const name of Object.keys(typed)) {
-      if (typed[name].type === "object") {
-        // fixes camunda-external-task-client-js not deserializing lists / maps
-        let variable =
-          (await camunda.get<VariableValueDto>(
-            `execution/${task.executionId}/localVariables/${name}`,
-            options
-          )) ||
-          (await camunda.get<VariableValueDto>(
-            `process-instance/${task.processInstanceId}/variables/${name}`,
-            options
-          ));
-        variables[name] = variable.result?.value;
-      } else if (typed[name].type === "file") {
-        // fixes camunda-external-task-client-js not supporting local scope files
-        const file = await (async () => {
-          // Try to load file first from local variable scope
+  const variables = task.variables.getAll();
+  const typed = task.variables.getAllTyped();
+  // TODO: This could be optimized to make parallel variable fetch
+  for (const name of Object.keys(typed)) {
+    if (typed[name].type === "object") {
+      // fixes camunda-external-task-client-js not deserializing lists / maps
+      let variable =
+        (await camunda.get<VariableValueDto>(
+          `execution/${task.executionId}/localVariables/${name}`,
+          options
+        )) ||
+        (await camunda.get<VariableValueDto>(
+          `process-instance/${task.processInstanceId}/variables/${name}`,
+          options
+        ));
+      variables[name] = variable.result?.value;
+    } else if (typed[name].type === "file") {
+      // fixes camunda-external-task-client-js not supporting local scope files
+      const file = await (async () => {
+        // Try to load file first from local variable scope
+        typed[
+          name
+        ].value.remotePath = `/execution/${task.executionId}/localVariables/${name}/data`;
+        try {
+          return await typed[name].value.load();
+        } catch (e) {
+          // If the file is not on the local scope, try process scope
           typed[
             name
-          ].value.remotePath = `/execution/${task.executionId}/localVariables/${name}/data`;
-          try {
-            return await typed[name].value.load();
-          } catch (e) {
-            // If the file is not on the local scope, try process scope
-            typed[
-              name
-            ].value.remotePath = `/process-instance/${task.processInstanceId}/variables/${name}/data`;
-            return await typed[name].value.load();
-          }
-        })();
-        const hashSum = crypto.createHash("sha256");
-        hashSum.update(file.content);
-        const hashDigest = hashSum.digest("hex");
-        fs.mkdirSync(path.join(itemsDir, hashDigest), { recursive: true });
-        const filename = path.join(itemsDir, hashDigest, file.filename);
-        delete variables[name];
-        await new Promise((resolve) => {
+          ].value.remotePath = `/process-instance/${task.processInstanceId}/variables/${name}/data`;
+          return await typed[name].value.load();
+        }
+      })();
+      const hashSum = crypto.createHash("sha256");
+      hashSum.update(file.content);
+      const hashDigest = hashSum.digest("hex");
+      fs.mkdirSync(path.join(itemsDir, hashDigest), { recursive: true });
+      const filename = path.join(itemsDir, hashDigest, file.filename);
+      delete variables[name];
+      await new Promise((resolve, reject) => {
+        try {
           fs.writeFile(filename, file.content, resolve);
-        });
-        files[name] = {
-          name: filename.replace(/\\/g, "\\\\"),
-          hex: hashDigest,
-        };
-      }
+        } catch (e: any) {
+          reject(e);
+        }
+      });
+      files[name] = {
+        name: filename.replace(/\\/g, "\\\\"),
+        hex: hashDigest,
+      };
     }
-    const items = [
-      {
-        payload: variables,
-        files: Object.fromEntries(
-          Object.entries<File>(files).map(([name, file]) => [name, file.name])
-        ),
-      },
-    ];
-    fs.writeFile(
-      path.join(itemsDir, "items.json"),
-      JSON.stringify(items),
-      resolve
-    );
+  }
+  const items = [
+    {
+      payload: variables,
+      files: Object.fromEntries(
+        Object.entries<File>(files).map(([name, file]) => [name, file.name])
+      ),
+    },
+  ];
+  await new Promise((resolve, reject) => {
+    try {
+      fs.writeFile(
+        path.join(itemsDir, "items.json"),
+        JSON.stringify(items),
+        resolve
+      );
+    } catch (e: any) {
+      reject(e);
+    }
   });
   // Save secrets
   LOG.debug("Preparing task secrets", task.topicName, task.id);
-  await new Promise(async (resolve) => {
-    const secrets: Record<string, Record<string, string>> = {};
-    // Try to resolve Vault secrets
-    for (const [key, path] of Object.entries(
-      CAMUNDA_TOPICS_VAULT[topic] || {}
-    )) {
-      const apiPath = path.replace(/^\//, "");
-      try {
-        const response = await vault.get<VaultSecretResponse>(
-          apiPath,
-          vaultOptions
-        );
-        secrets[key] = response.result?.data?.data || {};
-        if (!response.result?.data?.data) {
-          LOG.warn(`Vault secret "${path}" was not resolved.`);
-        }
-      } catch (e) {
-        LOG.warn(`Vault secret "${path}" was not resolved. ${e}`);
+  const secrets: Record<string, Record<string, string>> = {};
+  // Try to resolve Vault secrets
+  for (const [key, path] of Object.entries(CAMUNDA_TOPICS_VAULT[topic] || {})) {
+    const apiPath = path.replace(/^\//, "");
+    try {
+      const response = await vault.get<VaultSecretResponse>(
+        apiPath,
+        vaultOptions
+      );
+      secrets[key] = response.result?.data?.data || {};
+      if (!response.result?.data?.data) {
+        LOG.warn(`Vault secret "${path}" was not resolved.`);
       }
+    } catch (e) {
+      LOG.warn(`Vault secret "${path}" was not resolved. ${e}`);
     }
-    // Save resolved secrets with env as extra secrets
-    fs.writeFile(
-      path.join(itemsDir, "vault.json"),
-      JSON.stringify({
-        ...secrets,
-        env: process.env,
-      }),
-      resolve
-    );
+  }
+  // Save resolved secrets with env as extra secrets
+  await new Promise((resolve, reject) => {
+    try {
+      fs.writeFile(
+        path.join(itemsDir, "vault.json"),
+        JSON.stringify({
+          ...secrets,
+          env: process.env,
+        }),
+        resolve
+      );
+    } catch (e: any) {
+      reject(e);
+    }
   });
   return files;
 };
@@ -499,9 +509,13 @@ const inlineScreenshots = async (
     }
     const type = mime.lookup(file) || "application/octet-stream";
     const data = (
-      await new Promise<Buffer>((resolve) =>
-        fs.readFile(file, (err, data) => resolve(data))
-      )
+      await new Promise<Buffer>((resolve, reject) => {
+        try {
+          fs.readFile(file, (err, data) => resolve(data));
+        } catch (e: any) {
+          reject(e);
+        }
+      })
     ).toString("base64");
     const uri = `data:${type};base64,${data}`;
     log = log
@@ -952,23 +966,30 @@ const subscribe = (topic: string) => {
                 break;
               }
               // Retry to work around optimistic locking exceptions
-              await new Promise((resolve) =>
-                setTimeout(resolve, 1000 * retries)
-              );
+              await new Promise((resolve, reject) => {
+                try {
+                  setTimeout(resolve, 1000 * retries);
+                } catch (e: any) {
+                  reject(e);
+                }
+              });
             }
           }
           // Replace dummy error message with the last
-          if (errorMessage === "fail") {
-            for (const line of stdout.concat(stderr)) {
-              if (line.match(/exit status/i)) {
-                break;
-              }
-              const match = line.match(/([a-zA-Z]+[a-zA-Z0-9\.]+:\s.*)/g);
-              if (match && match.length) {
-                errorMessage = match[match.length - 1].trim() || errorMessage;
+          [stdout, stderr].map((lines) => {
+            if (errorMessage === "fail") {
+              for (const line of lines) {
+                if (line.match(/exit status/i)) {
+                  break;
+                }
+                const match = line.match(/([a-zA-Z]+[a-zA-Z0-9\.]+:\s.*)/g);
+                if (match && match.length) {
+                  errorMessage = match[match.length - 1].trim() || errorMessage;
+                  LOG.debug(errorMessage);
+                }
               }
             }
-          }
+          });
           return code === 0
             ? resolve(task)
             : reject({
