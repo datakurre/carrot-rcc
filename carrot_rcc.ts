@@ -849,6 +849,18 @@ const subscribe = (topic: string) => {
           {
             cwd: tasksDir,
             env: {
+              TASK_ACTIVITY_ID: task.activityId,
+              TASK_ACTIVITY_INSTANCE_ID: task.activityInstanceId,
+              TASK_BUSINESS_KEY: task.businessKey,
+              TASK_ID: task.id,
+              TASK_ERROR_MESSAGE: task.errorMessage,
+              TASK_ERROR_DETAILS: task.errorDetails,
+              TASK_PROCESS_DEFINITION_ID: task.processDefinitionId,
+              TASK_PROCESS_DEFINITION_KEY: task.processDefinitionKey,
+              TASK_PROCESS_INSTANCE_ID: task.processInstanceId,
+              TASK_RETRIES: task.retries == null ? "" : `${task.retries}`,
+              TASK_PRIORITY: task.priority == null ? "" : `${task.retries}`,
+              TASK_TENANT_ID: task.tenantId,
               RPA_SECRET_MANAGER: "RPA.Robocloud.Secrets.FileSecrets",
               RPA_SECRET_FILE: `${itemsDir}/vault.json`,
               RPA_WORKITEMS_ADAPTER: "WorkItemAdapter.WorkItemAdapter",
