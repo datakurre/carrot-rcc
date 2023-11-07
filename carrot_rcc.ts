@@ -322,9 +322,7 @@ const load = async (
         const exec = spawn(
           RCC_EXECUTABLE,
           ["robot", "unwrap", "-d", tasksDir, "-z", CAMUNDA_TOPICS[topic]],
-          {
-            env: process.env,
-          }
+          {}
         );
         exec.stdout.on("data", (data) => stdout.push(data.toString()));
         exec.stderr.on("data", (data) => stderr.push(data.toString()));
@@ -869,7 +867,6 @@ const subscribe = (topic: string) => {
               RPA_RELEASE_WORKITEM_PATH: `${itemsDir}/items.release.json`,
               RC_WORKSPACE_ID: "1",
               RC_WORKITEM_ID: "1",
-              ...process.env,
             },
           }
         );
