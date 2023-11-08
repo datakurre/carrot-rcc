@@ -111,7 +111,14 @@
                 pkgs.curl
                 pkgs.dejavu_fonts
                 pkgs.dockerTools.caCertificates
-                pkgs.dockerTools.fakeNss
+                (pkgs.dockerTools.fakeNss.override {
+                  extraPasswdLines = [
+                    "container:x:65:65:Container user:/var/empty:/bin/sh"
+                  ];
+                  extraGroupLines = [
+                    "container:!:65:"
+                  ];
+                })
                 pkgs.findutils
                 pkgs.micromamba
                 pkgs.gitMinimal
@@ -154,7 +161,7 @@
               "LD_LIBRARY_PATH=${pkgs.dbus-glib}/lib:${pkgs.libGL}/lib:${pkgs.alsaLib}/lib"
             ];
             Labels = { };
-            User = "nobody";
+            User = "nobody";  # also container:65:65 supported
           };
         };
 
