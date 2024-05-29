@@ -205,7 +205,7 @@ for (const candidate of RCC_ROBOTS) {
       if (entry.entryName == "robot.yaml") {
         const data = entry.getData().toString(RCC_ENCODING as BufferEncoding);
         const yaml = YAML.parse(data);
-        const secrets = yaml[VAULT_KEY] || {};
+        const secrets = yaml[VAULT_KEY] || yaml.vault || {};
         for (const task of Object.keys(yaml.tasks || {})) {
           CAMUNDA_TOPICS[task] = robot;
           CAMUNDA_TOPICS_VAULT[task] = secrets;
