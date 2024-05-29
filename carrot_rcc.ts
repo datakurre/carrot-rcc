@@ -47,7 +47,7 @@ usage: carrot-rcc [<robots>...]
                   [--worker-id] [--max-tasks] [--poll-interval]
                   [--rcc-executable] [--rcc-encoding] [--rcc-telemetry]
                   [--rcc-controller] [--rcc-fixed-spaces]
-                  [--vault-addr] [--vault-token]
+                  [--vault-addr] [--vault-token] [--vault-yaml-key]
                   [--healthz-host] [--healthz-port]
                   [--log-level]
                   [-h] [--help]
@@ -74,6 +74,7 @@ options:
 
   --vault-addr[=<addr>]                    [env: VAULT_ADDR] [default: http://127.0.0.1:8200]
   --vault-token[=<token>]                  [env: VAULT_TOKEN] [default: token]
+  --vault-key[=<key>]                      [env: VAULT_KEY] [default: vault]
 
   --healthz-host[=<host>]                  [env: HEALTHZ_HOST] [default: localhost]
   --healthz-port[=<port>]                  [env: HEALTHZ_PORT] (default: disabled)
@@ -116,6 +117,7 @@ const RCC_FIXED_SPACES = !!args["--rcc-fixed-spaces"];
 
 const VAULT_ADDR = args["--vault-addr"];
 const VAULT_TOKEN = args["--vault-token"];
+const VAULT_KEY = args["--vault-key"];
 
 const HEALTHZ_HOST = args["--healthz-host"];
 const HEALTHZ_PORT = !isNaN(parseInt(args["--healthz-port"]))
@@ -203,7 +205,7 @@ for (const candidate of RCC_ROBOTS) {
       if (entry.entryName == "robot.yaml") {
         const data = entry.getData().toString(RCC_ENCODING as BufferEncoding);
         const yaml = YAML.parse(data);
-        const secrets = yaml.vault || {};
+        const secrets = yaml[VAULT_KEY] || {};
         for (const task of Object.keys(yaml.tasks || {})) {
           CAMUNDA_TOPICS[task] = robot;
           CAMUNDA_TOPICS_VAULT[task] = secrets;
