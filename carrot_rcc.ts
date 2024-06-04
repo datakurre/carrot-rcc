@@ -262,7 +262,9 @@ const client = new Client({
   // Client will wait for asyncResponseTimeout until scheduling a new poll
   // after "interval" specified timeout.
   asyncResponseTimeout: Math.max(1000, CLIENT_POLL_INTERVAL) - 300,
-  use: (logger as any).level(CLIENT_LOG_LEVEL),
+  use: (logger as any).level(
+    CLIENT_LOG_LEVEL === "debug" ? CLIENT_LOG_LEVEL : "warn"
+  ),
 });
 
 LOG.debug("Options : ", (client as any).options);
@@ -786,6 +788,7 @@ const subscribe = (topic: string) => {
 
       // On error, stop extending lock expiration
       if (task.id && !extendLockError.has(task.id)) {
+        LOG.info("Extended lock", task.topicName, task.id);
         extendLockTimeout = setTimeout(extendLock, lockExpiration / 3.0);
       } else if (task.id) {
         extendLockError.delete(task.id);
@@ -1023,7 +1026,7 @@ const subscribe = (topic: string) => {
         });
       });
     } catch (e: any) {
-      LOG.debug("Completed task with failure", task.topicName, task.id);
+      LOG.warn("Completed task with failure", task.topicName, task.id);
       LOG.debug(e);
       await taskService.handleFailure(task, {
         errorMessage: `${e?.error?.message ?? e}`,
@@ -1047,7 +1050,7 @@ const subscribe = (topic: string) => {
       }
 
       counter -= 1;
-      LOG.debug("Completed task", task.topicName, task.id);
+      LOG.info("Completed task", task.topicName, task.id);
     }
   });
 };
