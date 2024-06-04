@@ -267,10 +267,10 @@ const client = new Client({
   ),
 });
 
-LOG.debug("Options : ", (client as any).options);
-LOG.debug("Robots  : ", CAMUNDA_TOPICS);
-LOG.debug("Retries : ", CAMUNDA_TOPICS_RETRY);
-LOG.debug("Vaults  : ", CAMUNDA_TOPICS_VAULT);
+LOG.info("Options : ", (client as any).options);
+LOG.info("Robots  : ", CAMUNDA_TOPICS);
+LOG.info("Retries : ", CAMUNDA_TOPICS_RETRY);
+LOG.info("Vaults  : ", CAMUNDA_TOPICS_VAULT);
 
 interface File {
   name: string;
