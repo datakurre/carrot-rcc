@@ -1081,42 +1081,42 @@ if (HEALTHZ_HOST && HEALTHZ_PORT) {
 }
 
 const start = async (client: Client) => {
-  // Unlock locked tasks for this worker id before subscribing new tasks
-  const camunda = new rest.RestClient("carrot-rcc", CAMUNDA_API_BASE_URL, []);
-  try {
-    const response = await camunda.get<ExternalTaskDto[]>(`external-task`, {
-      additionalHeaders: CAMUNDA_API_AUTHORIZATION
-        ? {
-            Authorization: CAMUNDA_API_AUTHORIZATION,
-          }
-        : {},
-      queryParameters: {
-        params: {
-          workerId: CLIENT_WORKER_ID,
-        },
-      },
-    });
-    for (const task of response?.result || []) {
-      try {
-        await camunda.create<any>(`external-task/${task.id}/unlock`, null, {
-          additionalHeaders: CAMUNDA_API_AUTHORIZATION
-            ? {
-                Authorization: CAMUNDA_API_AUTHORIZATION,
-              }
-            : {},
-        });
-        LOG.debug("Unlocked task", task.topicName, task.id);
-      } catch (e) {
-        LOG.debug("Failed to unlock task", task.topicName, task.id, e);
-      }
-    }
-  } catch (e) {
-    LOG.info("Unable to fetch tasks to unlock", e);
+  // Subscribe
+  for (const topic of Object.keys(CAMUNDA_TOPICS)) {
+    subscribe(topic);
   }
-  setTimeout(() => {
-    // Subscribe
-    for (const topic of Object.keys(CAMUNDA_TOPICS)) {
-      subscribe(topic);
+  setTimeout(async () => {
+    // Unlock locked tasks for this worker id before subscribing new tasks
+    const camunda = new rest.RestClient("carrot-rcc", CAMUNDA_API_BASE_URL, []);
+    try {
+      const response = await camunda.get<ExternalTaskDto[]>(`external-task`, {
+        additionalHeaders: CAMUNDA_API_AUTHORIZATION
+          ? {
+              Authorization: CAMUNDA_API_AUTHORIZATION,
+            }
+          : {},
+        queryParameters: {
+          params: {
+            workerId: CLIENT_WORKER_ID,
+          },
+        },
+      });
+      for (const task of response?.result || []) {
+        try {
+          await camunda.create<any>(`external-task/${task.id}/unlock`, null, {
+            additionalHeaders: CAMUNDA_API_AUTHORIZATION
+              ? {
+                  Authorization: CAMUNDA_API_AUTHORIZATION,
+                }
+              : {},
+          });
+          LOG.debug("Unlocked task", task.topicName, task.id);
+        } catch (e) {
+          LOG.debug("Failed to unlock task", task.topicName, task.id, e);
+        }
+      }
+    } catch (e) {
+      LOG.info("Unable to fetch tasks to unlock", e);
     }
     // Start client
     client.start();
