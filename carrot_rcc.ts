@@ -848,7 +848,7 @@ const subscribe = (topic: string) => {
         TASK_RETRIES: task.retries == null ? "" : `${task.retries}`,
         TASK_PRIORITY: task.priority == null ? "" : `${task.retries}`,
         TASK_TENANT_ID: !task.tenantId ? "" : task.tenantId,
-        RPA_SECRET_MANAGER: "RPA.Robocloud.Secrets.FileSecrets",
+        RPA_SECRET_MANAGER: "RPA.Robocorp.Vault.FileSecrets",
         RPA_SECRET_FILE: `${itemsDir}/vault.json`,
         RPA_WORKITEMS_ADAPTER: "WorkItemAdapter.WorkItemAdapter",
         RPA_INPUT_WORKITEM_PATH: `${itemsDir}/items.json`,
