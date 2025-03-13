@@ -125,7 +125,7 @@ const HEALTHZ_PORT = !isNaN(parseInt(args["--healthz-port"]))
   : 0;
 
 const WORK_ITEM_ADAPTER = `
-from RPA.Robocorp.WorkItems import FileAdapter, RobocorpAdapter, State
+from RPA.Robocorp.WorkItems import FileAdapter, State
 from typing import Optional
 
 import os
