@@ -492,11 +492,11 @@
         "vscode": "vscode"
       },
       "locked": {
-        "lastModified": 1696166460,
-        "narHash": "sha256-FsIlBvIsKwPqZOlR8+WhyVfzyJmGlXI7mK5lb/UQ4fI=",
+        "lastModified": 1702981129,
+        "narHash": "sha256-RAIXzw9Co6vpXUfnUSYqGhzPcJ5igBYyz85Ghv3pkww=",
         "owner": "vasara-bpm",
         "repo": "pkgs",
-        "rev": "bd9c3effb9e89eb1b3afbdc497c81644a74ec3d3",
+        "rev": "58b075b0e5a789ee494e984b54715a1873798aa8",
         "type": "gitlab"
       },
       "original": {

@@ -13,7 +13,7 @@ usage: carrot-rcc [<robots>...]
                   [--worker-id] [--max-tasks] [--poll-interval]
                   [--rcc-executable] [--rcc-encoding] [--rcc-telemetry]
                   [--rcc-controller] [--rcc-fixed-spaces]
-                  [--vault-addr] [--vault-token]
+                  [--vault-addr] [--vault-token] [--vault-yaml-key]
                   [--healthz-host] [--healthz-port]
                   [--log-level]
                   [-h] [--help]
@@ -38,6 +38,7 @@ options:
 
   --vault-addr[=<addr>]                    [env: VAULT_ADDR] [default: http://127.0.0.1:8200]
   --vault-token[=<token>]                  [env: VAULT_TOKEN] [default: token]
+  --vault-key[=<key>]                      [env: VAULT_KEY] [default: vault]
 
   --healthz-host[=<host>]                  [env: HEALTHZ_HOST] [default: localhost]
   --healthz-port[=<port>]                  [env: HEALTHZ_PORT] (default: disabled)
@@ -164,5 +165,7 @@ condaConfigFile:
 artifactsDir:
   output
 ```
+
+Vault configuration key is configurable eg. with `VAULT_KEY` environment variable (default: vault).
 
 Note: `carrot-rcc` does NOT manage renewal for the given `VAULT_TOKEN`.

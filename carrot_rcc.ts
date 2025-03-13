@@ -47,7 +47,7 @@ usage: carrot-rcc [<robots>...]
                   [--worker-id] [--max-tasks] [--poll-interval]
                   [--rcc-executable] [--rcc-encoding] [--rcc-telemetry]
                   [--rcc-controller] [--rcc-fixed-spaces]
-                  [--vault-addr] [--vault-token]
+                  [--vault-addr] [--vault-token] [--vault-key]
                   [--healthz-host] [--healthz-port]
                   [--log-level]
                   [-h] [--help]
@@ -74,6 +74,7 @@ options:
 
   --vault-addr[=<addr>]                    [env: VAULT_ADDR] [default: http://127.0.0.1:8200]
   --vault-token[=<token>]                  [env: VAULT_TOKEN] [default: token]
+  --vault-key[=<key>]                      [env: VAULT_KEY] [default: vault]
 
   --healthz-host[=<host>]                  [env: HEALTHZ_HOST] [default: localhost]
   --healthz-port[=<port>]                  [env: HEALTHZ_PORT] (default: disabled)
@@ -116,6 +117,7 @@ const RCC_FIXED_SPACES = !!args["--rcc-fixed-spaces"];
 
 const VAULT_ADDR = args["--vault-addr"];
 const VAULT_TOKEN = args["--vault-token"];
+const VAULT_KEY = args["--vault-key"];
 
 const HEALTHZ_HOST = args["--healthz-host"];
 const HEALTHZ_PORT = !isNaN(parseInt(args["--healthz-port"]))
@@ -203,7 +205,7 @@ for (const candidate of RCC_ROBOTS) {
       if (entry.entryName == "robot.yaml") {
         const data = entry.getData().toString(RCC_ENCODING as BufferEncoding);
         const yaml = YAML.parse(data);
-        const secrets = yaml.vault || {};
+        const secrets = yaml[VAULT_KEY] || yaml.vault || {};
         for (const task of Object.keys(yaml.tasks || {})) {
           CAMUNDA_TOPICS[task] = robot;
           CAMUNDA_TOPICS_VAULT[task] = secrets;
@@ -260,13 +262,15 @@ const client = new Client({
   // Client will wait for asyncResponseTimeout until scheduling a new poll
   // after "interval" specified timeout.
   asyncResponseTimeout: Math.max(1000, CLIENT_POLL_INTERVAL) - 300,
-  use: (logger as any).level(CLIENT_LOG_LEVEL),
+  use: (logger as any).level(
+    CLIENT_LOG_LEVEL === "debug" ? CLIENT_LOG_LEVEL : "warn"
+  ),
 });
 
-LOG.debug("Options : ", (client as any).options);
-LOG.debug("Robots  : ", CAMUNDA_TOPICS);
-LOG.debug("Retries : ", CAMUNDA_TOPICS_RETRY);
-LOG.debug("Vaults  : ", CAMUNDA_TOPICS_VAULT);
+LOG.info("Options : ", (client as any).options);
+LOG.info("Robots  : ", CAMUNDA_TOPICS);
+LOG.info("Retries : ", CAMUNDA_TOPICS_RETRY);
+LOG.info("Vaults  : ", CAMUNDA_TOPICS_VAULT);
 
 interface File {
   name: string;
@@ -358,100 +362,110 @@ const load = async (
   );
   // Fetch and prepare items
   LOG.debug("Preparing task variables", task.topicName, task.id);
-  await new Promise(async (resolve) => {
-    const variables = task.variables.getAll();
-    const typed = task.variables.getAllTyped();
-    // TODO: This could be optimized to make parallel variable fetch
-    for (const name of Object.keys(typed)) {
-      if (typed[name].type === "object") {
-        // fixes camunda-external-task-client-js not deserializing lists / maps
-        let variable =
-          (await camunda.get<VariableValueDto>(
-            `execution/${task.executionId}/localVariables/${name}`,
-            options
-          )) ||
-          (await camunda.get<VariableValueDto>(
-            `process-instance/${task.processInstanceId}/variables/${name}`,
-            options
-          ));
-        variables[name] = variable.result?.value;
-      } else if (typed[name].type === "file") {
-        // fixes camunda-external-task-client-js not supporting local scope files
-        const file = await (async () => {
-          // Try to load file first from local variable scope
+  const variables = task.variables.getAll();
+  const typed = task.variables.getAllTyped();
+  // TODO: This could be optimized to make parallel variable fetch
+  for (const name of Object.keys(typed)) {
+    if (typed[name].type === "object") {
+      // fixes camunda-external-task-client-js not deserializing lists / maps
+      let variable =
+        (await camunda.get<VariableValueDto>(
+          `execution/${task.executionId}/localVariables/${name}`,
+          options
+        )) ||
+        (await camunda.get<VariableValueDto>(
+          `process-instance/${task.processInstanceId}/variables/${name}`,
+          options
+        ));
+      variables[name] = variable.result?.value;
+    } else if (typed[name].type === "file") {
+      // fixes camunda-external-task-client-js not supporting local scope files
+      const file = await (async () => {
+        // Try to load file first from local variable scope
+        typed[
+          name
+        ].value.remotePath = `/execution/${task.executionId}/localVariables/${name}/data`;
+        try {
+          return await typed[name].value.load();
+        } catch (e) {
+          // If the file is not on the local scope, try process scope
           typed[
             name
-          ].value.remotePath = `/execution/${task.executionId}/localVariables/${name}/data`;
-          try {
-            return await typed[name].value.load();
-          } catch (e) {
-            // If the file is not on the local scope, try process scope
-            typed[
-              name
-            ].value.remotePath = `/process-instance/${task.processInstanceId}/variables/${name}/data`;
-            return await typed[name].value.load();
-          }
-        })();
-        const hashSum = crypto.createHash("sha256");
-        hashSum.update(file.content);
-        const hashDigest = hashSum.digest("hex");
-        fs.mkdirSync(path.join(itemsDir, hashDigest), { recursive: true });
-        const filename = path.join(itemsDir, hashDigest, file.filename);
-        delete variables[name];
-        await new Promise((resolve) => {
+          ].value.remotePath = `/process-instance/${task.processInstanceId}/variables/${name}/data`;
+          return await typed[name].value.load();
+        }
+      })();
+      const hashSum = crypto.createHash("sha256");
+      hashSum.update(file.content);
+      const hashDigest = hashSum.digest("hex");
+      fs.mkdirSync(path.join(itemsDir, hashDigest), { recursive: true });
+      const filename = path.join(itemsDir, hashDigest, file.filename);
+      delete variables[name];
+      await new Promise((resolve, reject) => {
+        try {
           fs.writeFile(filename, file.content, resolve);
-        });
-        files[name] = {
-          name: filename.replace(/\\/g, "\\\\"),
-          hex: hashDigest,
-        };
-      }
+        } catch (e: any) {
+          reject(e);
+        }
+      });
+      files[name] = {
+        name: filename.replace(/\\/g, "\\\\"),
+        hex: hashDigest,
+      };
     }
-    const items = [
-      {
-        payload: variables,
-        files: Object.fromEntries(
-          Object.entries<File>(files).map(([name, file]) => [name, file.name])
-        ),
-      },
-    ];
-    fs.writeFile(
-      path.join(itemsDir, "items.json"),
-      JSON.stringify(items),
-      resolve
-    );
+  }
+  const items = [
+    {
+      payload: variables,
+      files: Object.fromEntries(
+        Object.entries<File>(files).map(([name, file]) => [name, file.name])
+      ),
+    },
+  ];
+  await new Promise((resolve, reject) => {
+    try {
+      fs.writeFile(
+        path.join(itemsDir, "items.json"),
+        JSON.stringify(items),
+        resolve
+      );
+    } catch (e: any) {
+      reject(e);
+    }
   });
   // Save secrets
   LOG.debug("Preparing task secrets", task.topicName, task.id);
-  await new Promise(async (resolve) => {
-    const secrets: Record<string, Record<string, string>> = {};
-    // Try to resolve Vault secrets
-    for (const [key, path] of Object.entries(
-      CAMUNDA_TOPICS_VAULT[topic] || {}
-    )) {
-      const apiPath = path.replace(/^\//, "");
-      try {
-        const response = await vault.get<VaultSecretResponse>(
-          apiPath,
-          vaultOptions
-        );
-        secrets[key] = response.result?.data?.data || {};
-        if (!response.result?.data?.data) {
-          LOG.warn(`Vault secret "${path}" was not resolved.`);
-        }
-      } catch (e) {
-        LOG.warn(`Vault secret "${path}" was not resolved. ${e}`);
+  const secrets: Record<string, Record<string, string>> = {};
+  // Try to resolve Vault secrets
+  for (const [key, path] of Object.entries(CAMUNDA_TOPICS_VAULT[topic] || {})) {
+    const apiPath = path.replace(/^\//, "");
+    try {
+      const response = await vault.get<VaultSecretResponse>(
+        apiPath,
+        vaultOptions
+      );
+      secrets[key] = response.result?.data?.data || {};
+      if (!response.result?.data?.data) {
+        LOG.warn(`Vault secret "${path}" was not resolved.`);
       }
+    } catch (e) {
+      LOG.warn(`Vault secret "${path}" was not resolved. ${e}`);
     }
-    // Save resolved secrets with env as extra secrets
-    fs.writeFile(
-      path.join(itemsDir, "vault.json"),
-      JSON.stringify({
-        ...secrets,
-        env: process.env,
-      }),
-      resolve
-    );
+  }
+  // Save resolved secrets with env as extra secrets
+  await new Promise((resolve, reject) => {
+    try {
+      fs.writeFile(
+        path.join(itemsDir, "vault.json"),
+        JSON.stringify({
+          ...secrets,
+          env: process.env,
+        }),
+        resolve
+      );
+    } catch (e: any) {
+      reject(e);
+    }
   });
   return files;
 };
@@ -499,9 +513,13 @@ const inlineScreenshots = async (
     }
     const type = mime.lookup(file) || "application/octet-stream";
     const data = (
-      await new Promise<Buffer>((resolve) =>
-        fs.readFile(file, (err, data) => resolve(data))
-      )
+      await new Promise<Buffer>((resolve, reject) => {
+        try {
+          fs.readFile(file, (err, data) => resolve(data));
+        } catch (e: any) {
+          reject(e);
+        }
+      })
     ).toString("base64");
     const uri = `data:${type};base64,${data}`;
     log = log
@@ -770,6 +788,7 @@ const subscribe = (topic: string) => {
 
       // On error, stop extending lock expiration
       if (task.id && !extendLockError.has(task.id)) {
+        LOG.info("Extended lock", task.topicName, task.id);
         extendLockTimeout = setTimeout(extendLock, lockExpiration / 3.0);
       } else if (task.id) {
         extendLockError.delete(task.id);
@@ -818,6 +837,27 @@ const subscribe = (topic: string) => {
         "--task",
         topic
       );
+      const env = {
+        TASK_ACTIVITY_ID: task.activityId,
+        TASK_ACTIVITY_INSTANCE_ID: task.activityInstanceId,
+        TASK_BUSINESS_KEY: !task.businessKey ? "" : task.businessKey,
+        TASK_ID: task.id,
+        TASK_PROCESS_DEFINITION_ID: task.processDefinitionId,
+        TASK_PROCESS_DEFINITION_KEY: task.processDefinitionKey,
+        TASK_PROCESS_INSTANCE_ID: task.processInstanceId,
+        TASK_RETRIES: task.retries == null ? "" : `${task.retries}`,
+        TASK_PRIORITY: task.priority == null ? "" : `${task.retries}`,
+        TASK_TENANT_ID: !task.tenantId ? "" : task.tenantId,
+        RPA_SECRET_MANAGER: "RPA.Robocloud.Secrets.FileSecrets",
+        RPA_SECRET_FILE: `${itemsDir}/vault.json`,
+        RPA_WORKITEMS_ADAPTER: "WorkItemAdapter.WorkItemAdapter",
+        RPA_INPUT_WORKITEM_PATH: `${itemsDir}/items.json`,
+        RPA_OUTPUT_WORKITEM_PATH: `${itemsDir}/items.output.json`,
+        RPA_RELEASE_WORKITEM_PATH: `${itemsDir}/items.release.json`,
+        RC_WORKSPACE_ID: "1",
+        RC_WORKITEM_ID: "1",
+      };
+      LOG.debug(JSON.stringify(env));
       await new Promise((resolve, reject) => {
         const stdout: string[] = [];
         const stderr: string[] = [];
@@ -835,15 +875,8 @@ const subscribe = (topic: string) => {
           {
             cwd: tasksDir,
             env: {
-              RPA_SECRET_MANAGER: "RPA.Robocloud.Secrets.FileSecrets",
-              RPA_SECRET_FILE: `${itemsDir}/vault.json`,
-              RPA_WORKITEMS_ADAPTER: "WorkItemAdapter.WorkItemAdapter",
-              RPA_INPUT_WORKITEM_PATH: `${itemsDir}/items.json`,
-              RPA_OUTPUT_WORKITEM_PATH: `${itemsDir}/items.output.json`,
-              RPA_RELEASE_WORKITEM_PATH: `${itemsDir}/items.release.json`,
-              RC_WORKSPACE_ID: "1",
-              RC_WORKITEM_ID: "1",
               ...process.env,
+              ...env,
             },
           }
         );
@@ -952,23 +985,30 @@ const subscribe = (topic: string) => {
                 break;
               }
               // Retry to work around optimistic locking exceptions
-              await new Promise((resolve) =>
-                setTimeout(resolve, 1000 * retries)
-              );
+              await new Promise((resolve, reject) => {
+                try {
+                  setTimeout(resolve, 1000 * retries);
+                } catch (e: any) {
+                  reject(e);
+                }
+              });
             }
           }
           // Replace dummy error message with the last
-          if (errorMessage === "fail") {
-            for (const line of stdout.concat(stderr)) {
-              if (line.match(/exit status/i)) {
-                break;
-              }
-              const match = line.match(/([a-zA-Z]+[a-zA-Z0-9\.]+:\s.*)/g);
-              if (match && match.length) {
-                errorMessage = match[match.length - 1].trim() || errorMessage;
+          [stdout, stderr].map((lines) => {
+            if (errorMessage === "fail") {
+              for (const line of lines) {
+                if (line.match(/exit status/i)) {
+                  break;
+                }
+                const match = line.match(/([a-zA-Z]+[a-zA-Z0-9\.]+:\s.*)/g);
+                if (match && match.length) {
+                  errorMessage = match[match.length - 1].trim() || errorMessage;
+                  LOG.debug(errorMessage);
+                }
               }
             }
-          }
+          });
           return code === 0
             ? resolve(task)
             : reject({
@@ -986,7 +1026,7 @@ const subscribe = (topic: string) => {
         });
       });
     } catch (e: any) {
-      LOG.debug("Completed task with failure", task.topicName, task.id);
+      LOG.warn("Completed task with failure", task.topicName, task.id);
       LOG.debug(e);
       await taskService.handleFailure(task, {
         errorMessage: `${e?.error?.message ?? e}`,
@@ -1010,7 +1050,7 @@ const subscribe = (topic: string) => {
       }
 
       counter -= 1;
-      LOG.debug("Completed task", task.topicName, task.id);
+      LOG.info("Completed task", task.topicName, task.id);
     }
   });
 };

@@ -43,6 +43,10 @@
                 pkgs.callPackage inputs.npmlock2nix { inherit pkgs; };
             })
           ];
+          config = {
+            allowUnfreePredicate = pkg:
+              builtins.elem (builtins.getAttr "pname" pkg) [ "corefonts" ];
+          };
         };
         gitignoreSource = inputs.gitignore.lib.gitignoreSource;
         packagesSource = builtins.filterSource (path: type:
@@ -110,8 +114,13 @@
                 pkgs.coreutils
                 pkgs.curl
                 pkgs.dejavu_fonts
+                pkgs.corefonts
                 pkgs.dockerTools.caCertificates
-                pkgs.dockerTools.fakeNss
+                (pkgs.dockerTools.fakeNss.override {
+                  extraPasswdLines =
+                    [ "container:x:65:65:Container user:/var/empty:/bin/sh" ];
+                  extraGroupLines = [ "container:!:65:" ];
+                })
                 pkgs.findutils
                 pkgs.micromamba
                 pkgs.gitMinimal
@@ -119,7 +128,7 @@
                 (pkgs.stdenv.mkDerivation {
                   name = "fonts.conf";
                   src = (pkgs.makeFontsConf {
-                    fontDirectories = [ pkgs.dejavu_fonts ];
+                    fontDirectories = [ pkgs.dejavu_fonts pkgs.corefonts ];
                   });
                   phases = [ "installPhase" ];
                   installPhase = ''
@@ -154,7 +163,7 @@
               "LD_LIBRARY_PATH=${pkgs.dbus-glib}/lib:${pkgs.libGL}/lib:${pkgs.alsaLib}/lib"
             ];
             Labels = { };
-            User = "nobody";
+            User = "nobody"; # also container:65:65 supported
           };
         };
 
